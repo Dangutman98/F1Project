@@ -15,9 +15,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="BL%28classes%29\" />
-    <Folder Include="Controlers\" />
-  </ItemGroup>
-
 </Project>
