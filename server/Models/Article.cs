@@ -2,10 +2,33 @@
 {
     public class Article
     {
-        public int Id { get; set; } // Primary Key
-        public required string Title { get; set; }
-        public required string Content { get; set; }
-        public int AuthorId { get; set; } // Foreign Key to User (author of the article)
-        public DateTime PublishedAt { get; set; }
+        private int id;
+        private string title;
+        private string content;
+        private int authorId;
+        private DateTime publishedAt;
+
+        public int Id { get => id; set => id = value; }
+        public string Title { get => title; set => title = value; }
+        public string Content { get => content; set => content = value; }
+        public int AuthorId { get => authorId; set => authorId = value; }
+        public DateTime PublishedAt { get => publishedAt; set => publishedAt = value; }
+
+        // empty constructor
+        public Article()
+        {
+        }
+
+        public Article(int id, string title, string content, int authorId, DateTime publishedAt)
+        {
+            Id = id;
+            Title = title;
+            Content = content;
+            AuthorId = authorId;
+            PublishedAt = publishedAt;
+        }
     }
 }
+
+
+

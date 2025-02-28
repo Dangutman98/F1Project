@@ -2,10 +2,31 @@
 {
     public class Race
     {
-        public int Id { get; set; } // Primary Key
-        public required string RaceName { get; set; }
-        public DateTime RaceDate { get; set; }
-        public required string Location { get; set; }
-        public required string ImageUrl { get; set; }
+        private int id;
+        private string raceName;
+        private DateTime raceDate;
+        private string location;
+        private string imageUrl;
+
+        public int Id { get => id; set => id = value; }
+        public string RaceName { get => raceName; set => raceName = value; }
+        public DateTime RaceDate { get => raceDate; set => raceDate = value; }
+        public string Location { get => location; set => location = value; }
+        public string ImageUrl { get => imageUrl; set => imageUrl = value; }
+
+        // empty constructor
+        public Race()
+        {
+        }
+
+        public Race(int id, string raceName, DateTime raceDate, string location, string imageUrl)
+        {
+            Id = id;
+            RaceName = raceName;
+            RaceDate = raceDate;
+            Location = location;
+            ImageUrl = imageUrl;
+        }
     }
 }
+

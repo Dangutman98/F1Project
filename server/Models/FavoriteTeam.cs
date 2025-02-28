@@ -2,7 +2,23 @@
 {
     public class FavoriteTeam
     {
-        public int UserId { get; set; } // Foreign Key to User
-        public required string TeamName { get; set; }
+        private int userId;
+        private string teamName;
+
+        public int UserId { get => userId; set => userId = value; }
+        public string TeamName { get => teamName; set => teamName = value; }
+
+        // empty constructor
+        public FavoriteTeam()
+        {
+        }
+
+        public FavoriteTeam(int userId, string teamName)
+        {
+            UserId = userId;
+            TeamName = teamName;
+        }
     }
 }
+
+

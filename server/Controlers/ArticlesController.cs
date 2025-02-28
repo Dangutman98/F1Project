@@ -7,5 +7,6 @@ namespace server.Controlers
     [ApiController]
     public class ArticlesController : ControllerBase
     {
+        
     }
 }

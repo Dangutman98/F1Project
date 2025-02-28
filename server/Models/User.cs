@@ -2,32 +2,42 @@
 {
     public class User
     {
-        public int Id { get; set; } // Primary Key
-        public required string Username { get; set; }
-        public required string PasswordHash { get; set; }
-        public required string Email { get; set; }
-        public required string FavoriteAnimal { get; set; }
+        //user properties
+        private int id;
+        private string username;
+        private string passwordHash;
+        private string email;
+        private string favoriteAnimal;
+        private int favoriteDriverId;
+        private int favoriteTeamId;
+        private int favoriteRacingSpotId;
 
-        // Foreign Key references
-        public int? FavoriteDriverId { get; set; }
-        public int? FavoriteTeamId { get; set; }
-        public int? FavoriteRacingSpotId { get; set; }
+        //get/set
+        public int Id { get => id; set => id = value; }
+        public required string Username { get => username; set => username = value; }
+        public string PasswordHash { get => passwordHash; set => passwordHash = value; }
+        public required string Email { get => email; set => email = value; }
+        public string FavoriteAnimal { get => favoriteAnimal; set => favoriteAnimal = value; }
+        public int FavoriteDriverId { get => favoriteDriverId; set => favoriteDriverId = value; }
+        public int FavoriteTeamId { get => favoriteTeamId; set => favoriteTeamId = value; }
+        public int FavoriteRacingSpotId { get => favoriteRacingSpotId; set => favoriteRacingSpotId = value; }
+
+        // empty constructor
+        public User()
+        {
+        }
+        // constructor with parameters
+        public User(int id, string username, string passwordHash, string email, string favoriteAnimal, int favoriteDriverId, int favoriteTeamId, int favoriteRacingSpotId)
+        {
+            Id = id;
+            Username = username;
+            PasswordHash = passwordHash;
+            Email = email;
+            FavoriteAnimal = favoriteAnimal;
+            FavoriteDriverId = favoriteDriverId;
+            FavoriteTeamId = favoriteTeamId;
+            FavoriteRacingSpotId = favoriteRacingSpotId;
+        }
     }
+    
 }
-public class User
-{
-    int Id;
-    string Username;
-    string PasswordHash;
-    string Email;
-    string FavoriteAnimal
-
-    public Author(string name, string summary, string image, string link)
-    {
-        this.Name = name;
-        this.Summary = summary;
-        this.Image = image;
-        this.Link = link;
-    }
-
-    public User() { }
