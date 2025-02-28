@@ -2,7 +2,24 @@
 {
     public class FavoriteDriver
     {
-        public int UserId { get; set; } // Foreign Key to User
-        public required string DriverName { get; set; }
+        private int userId;
+        private string driverName;
+
+        public int UserId { get => userId; set => userId = value; }
+        public string DriverName { get => driverName; set => driverName = value; }
+
+        // empty constructor
+        public FavoriteDriver()
+        {
+        }
+
+        public FavoriteDriver(int userId, string driverName)
+        {
+            UserId = userId;
+            DriverName = driverName;
+        }
     }
 }
+
+
+

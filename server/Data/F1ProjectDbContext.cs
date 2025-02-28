@@ -11,7 +11,6 @@ namespace server.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Standings> Standings { get; set; }
         public DbSet<Race> Races { get; set; }
-        public DbSet<Profile> Profiles { get; set; }
         public DbSet<FavoriteTeam> FavoriteTeams { get; set; }
         public DbSet<FavoriteRacingSpot> FavoriteRacingSpots { get; set; }
         public DbSet<FavoriteDriver> FavoriteDrivers { get; set; }
