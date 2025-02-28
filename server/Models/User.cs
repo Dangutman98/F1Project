@@ -14,3 +14,20 @@
         public int? FavoriteRacingSpotId { get; set; }
     }
 }
+public class User
+{
+    int Id;
+    string Username;
+    string PasswordHash;
+    string Email;
+    string FavoriteAnimal
+
+    public Author(string name, string summary, string image, string link)
+    {
+        this.Name = name;
+        this.Summary = summary;
+        this.Image = image;
+        this.Link = link;
+    }
+
+    public User() { }
