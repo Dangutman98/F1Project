@@ -17,6 +17,9 @@
         // empty constructor
         public Race()
         {
+            raceName = string.Empty;
+            location = string.Empty;
+            imageUrl = string.Empty;
         }
 
         public Race(int id, string raceName, DateTime raceDate, string location, string imageUrl)
@@ -29,4 +32,3 @@
         }
     }
 }
-

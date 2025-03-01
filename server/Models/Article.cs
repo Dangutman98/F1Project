@@ -3,8 +3,8 @@
     public class Article
     {
         private int id;
-        private string title;
-        private string content;
+        private string title = string.Empty; // Initialize with default value
+        private string content = string.Empty; // Initialize with default value
         private int authorId;
         private DateTime publishedAt;
 
@@ -29,6 +29,3 @@
         }
     }
 }
-
-
-

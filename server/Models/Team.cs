@@ -13,18 +13,16 @@
         // empty constructor
         public Team()
         {
+            //created it because properties are non-nullable(c# Compiler Error issue)
+            name = string.Empty;
+            color = string.Empty;
         }
 
         public Team(int id, string name, string color)
         {
-            Id = id;
-            Name = name;
-            Color = color;
+            this.id = id;
+            this.name = name;
+            this.color = color;
         }
     }
 }
-
-
-
-
-
