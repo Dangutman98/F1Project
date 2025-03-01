@@ -17,19 +17,18 @@
         // empty constructor
         public Driver()
         {
+            name = string.Empty;
+            photoURL = string.Empty;
+            acronymName = string.Empty;
         }
 
         public Driver(int id, string name, string photoURL, int teamId, string acronymName)
         {
-            Id = id;
-            Name = name;
-            PhotoURL = photoURL;
-            TeamId = teamId;
-            AcronymName = acronymName;
+            this.id = id;
+            this.name = name;
+            this.photoURL = photoURL;
+            this.teamId = teamId;
+            this.acronymName = acronymName;
         }
     }
 }
-
-
-
-
