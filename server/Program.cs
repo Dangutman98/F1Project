@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using server.Data;
+using server.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,17 @@ builder.Services.AddDbContext<F1ProjectDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+// Add HttpClient and Database Access Layer (DAL)
+builder.Services.AddHttpClient<DriverDal>();
+builder.Services.AddSingleton<DriverDal>(provider =>
+{
+    var httpClient = provider.GetRequiredService<HttpClient>();
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new DriverDal(httpClient, connectionString);
+});
+
 
 var app = builder.Build();
 
