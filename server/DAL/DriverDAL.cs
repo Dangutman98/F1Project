@@ -1,50 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using Microsoft.Data.SqlClient;
 using server.Models;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace server.DAL
 {
     public class DriverDal
     {
-        private readonly HttpClient _httpClient;
         private readonly string _connectionString;
-        private const string OpenF1ApiUrl = "https://api.openf1.org/v1/drivers";
+        private readonly HttpClient _httpClient;
 
-        public DriverDal(HttpClient httpClient, string connectionString)
+        // Constructor to accept both the connection string and HttpClient
+        public DriverDal(string connectionString, HttpClient httpClient)
         {
-            _httpClient = httpClient;
             _connectionString = connectionString;
+            _httpClient = httpClient; // Inject HttpClient
         }
 
         // Fetch drivers from OpenF1 API
         public async Task<List<Driver>> FetchDriversAsync()
         {
+            var driverList = new List<Driver>();
+
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(OpenF1ApiUrl);
+                // Fetch data from OpenF1 API
+                var response = await _httpClient.GetStringAsync("https://api.openf1.org/v1/drivers");
 
-                if (!response.IsSuccessStatusCode)
+                // Log the raw response for debugging
+                Console.WriteLine("Raw API Response: ");
+                Console.WriteLine(response);
+
+                // Deserialize the response directly into a list of DriverApiData
+                var driverDataList = JsonConvert.DeserializeObject<List<DriverApiData>>(response);
+
+                if (driverDataList != null && driverDataList.Any())
                 {
-                    throw new Exception($"Failed to fetch drivers: {response.StatusCode}");
+                    foreach (var driver in driverDataList)
+                    {
+                        // Map the API response to the Driver model
+                        driverList.Add(new Driver
+                        {
+                            Id = driver.Id,
+                            Name = driver.Name,
+                            PhotoURL = driver.PhotoUrl,
+                            TeamId = driver.TeamId,
+                            AcronymName = driver.AcronymName
+                        });
+                    }
                 }
-
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                var drivers = JsonSerializer.Deserialize<List<Driver>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-                return drivers ?? new List<Driver>();
+                else
+                {
+                    Console.WriteLine("No driver data found.");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching drivers: {ex.Message}");
-                return new List<Driver>();
             }
+
+            return driverList;
         }
 
-        // Save drivers to SQL Server
+
+        // Save drivers to SQL Server using a stored procedure
         public async Task SaveDriversToDatabaseAsync(List<Driver> drivers)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -53,23 +75,46 @@ namespace server.DAL
 
                 foreach (var driver in drivers)
                 {
-                    string query = @"
-                        IF NOT EXISTS (SELECT 1 FROM Drivers WHERE Id = @Id)
-                        INSERT INTO Drivers (Id, Name, PhotoURL, TeamId, AcronymName)
-                        VALUES (@Id, @Name, @PhotoURL, @TeamId, @AcronymName)";
-
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    try
                     {
-                        cmd.Parameters.AddWithValue("@Id", driver.Id);
-                        cmd.Parameters.AddWithValue("@Name", driver.Name);
-                        cmd.Parameters.AddWithValue("@PhotoURL", driver.PhotoURL ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@TeamId", driver.TeamId ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@AcronymName", driver.AcronymName ?? (object)DBNull.Value);
+                        string query = "SP_AddDriver"; // Stored Procedure name
 
-                        await cmd.ExecuteNonQueryAsync();
+                        using (SqlCommand cmd = new SqlCommand(query, connection))
+                        {
+                            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                            // Add parameters matching the stored procedure
+                            cmd.Parameters.AddWithValue("@Id", driver.Id);
+                            cmd.Parameters.AddWithValue("@Name", driver.Name);
+                            cmd.Parameters.AddWithValue("@PhotoURL", driver.PhotoURL ?? (object)DBNull.Value);
+                            cmd.Parameters.AddWithValue("@TeamId", driver.TeamId ?? (object)DBNull.Value);
+                            cmd.Parameters.AddWithValue("@AcronymName", driver.AcronymName ?? (object)DBNull.Value);
+
+                            // Execute the stored procedure
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting driver {driver.Name}: {ex.Message}");
                     }
                 }
             }
         }
+    }
+
+    // Create a response model for deserializing the API response
+    public class ApiResponse
+    {
+        public List<DriverApiData> Data { get; set; }
+    }
+
+    public class DriverApiData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string PhotoUrl { get; set; }
+        public int TeamId { get; set; }
+        public string AcronymName { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using server.DAL;
 using server.Models;
 
@@ -26,13 +27,26 @@ namespace server.Controllers
 
         // Fetch drivers from OpenF1 API
         [HttpGet("fetch")]
+        
         public async Task<ActionResult<List<Driver>>> FetchDrivers()
         {
             var drivers = await _driverDal.FetchDriversAsync();
-            return Ok(drivers);
+
+            // Ensure the data is not empty or null before returning
+            if (drivers != null && drivers.Any())
+            {
+                Console.WriteLine("Drivers fetched successfully.");
+                return Ok(drivers); // Return the list of drivers if data is present
+                
+            }
+            else
+            {
+                return NotFound("No drivers found"); // Return 404 if no data found
+            }
         }
 
-        // Fetch and save drivers to database
+
+        // Fetch and save drivers to the database
         [HttpPost("save")]
         public async Task<ActionResult> SaveDrivers()
         {
