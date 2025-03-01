@@ -17,13 +17,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-// Add HttpClient and Database Access Layer (DAL)
-builder.Services.AddHttpClient<DriverDal>();
-builder.Services.AddSingleton<DriverDal>(provider =>
+// Register HttpClient and DriverDal
+builder.Services.AddHttpClient(); // Register HttpClient for Dependency Injection
+
+builder.Services.AddScoped<DriverDal>(provider =>
 {
-    var httpClient = provider.GetRequiredService<HttpClient>();
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    return new DriverDal(httpClient, connectionString);
+    var httpClient = provider.GetRequiredService<HttpClient>(); // Get the HttpClient instance
+    var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb"); // Get connection string from configuration
+    return new DriverDal(connectionString, httpClient); // Pass both to the DriverDal constructor
 });
 
 
