@@ -30,7 +30,7 @@ namespace server.Controllers
         public async Task<ActionResult<List<Driver>>> FetchDrivers()
         {
             var drivers = await _driverDal.FetchDriversAsync();
-
+            
             // If the list is not empty, return it; otherwise, return a message
             if (drivers != null && drivers.Any())
             {
@@ -43,14 +43,20 @@ namespace server.Controllers
         }
 
 
-        // Fetch and save drivers to the database
-        [HttpPost("save")]
-        public async Task<ActionResult> SaveDrivers()
+        [HttpPost("fetch-and-save")]
+        public async Task<ActionResult> FetchAndSaveDrivers()
         {
             var drivers = await _driverDal.FetchDriversAsync();
+
+            if (drivers == null || !drivers.Any())
+            {
+                return NotFound("No drivers found from API.");
+            }
+
             await _driverDal.SaveDriversToDatabaseAsync(drivers);
-            return Ok("Drivers saved successfully.");
+            return Ok("Drivers fetched and saved successfully.");
         }
+
 
         // GET api/<DriverController>/5
         [HttpGet("{id}")]

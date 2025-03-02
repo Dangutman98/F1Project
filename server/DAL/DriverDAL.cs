@@ -27,26 +27,31 @@ namespace server.DAL
                 var response = await _httpClient.GetStringAsync("https://api.openf1.org/v1/drivers");
 
                 // Log the raw response for debugging
-                Console.WriteLine("Raw API Response: ");
-                Console.WriteLine(response);
+
+                Console.WriteLine("Raw API Response:" + response);
 
                 // Deserialize the response directly into a list of DriverApiData
                 var driverDataList = JsonConvert.DeserializeObject<List<DriverApiData>>(response);
 
                 if (driverDataList != null && driverDataList.Any())
+
                 {
                     foreach (var driver in driverDataList)
                     {
-                        // Map the API response to the Driver model
+                        //Map the API response to the Driver model
                         driverList.Add(new Driver
                         {
                             Id = driver.Id,
                             Name = driver.Name,
                             PhotoURL = driver.PhotoUrl,
-                            TeamId = driver.TeamId,
+                            TeamId = int.TryParse(driver.TeamId, out int teamId) ? teamId : (int?)null,
                             AcronymName = driver.AcronymName
                         });
+
+                        //Console.WriteLine(driverDataList);
+                        //Console.WriteLine(driver);
                     }
+
                 }
                 else
                 {
@@ -63,7 +68,6 @@ namespace server.DAL
 
 
 
-        // Save drivers to SQL Server using a stored procedure
         public async Task SaveDriversToDatabaseAsync(List<Driver> drivers)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -93,25 +97,36 @@ namespace server.DAL
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error inserting driver {driver.Name}: {ex.Message}");
+                        Console.WriteLine($"Error inserting/updating driver {driver.Name}: {ex.Message}");
                     }
                 }
             }
         }
-    }
 
-    // Create a response model for deserializing the API response
-    public class ApiResponse
-    {
-        public List<DriverApiData> Data { get; set; }
-    }
 
-    public class DriverApiData
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string PhotoUrl { get; set; }
-        public int TeamId { get; set; }
-        public string AcronymName { get; set; }
+        // Create a response model for deserializing the API response
+        public class ApiResponse
+        {
+            public List<DriverApiData> Data { get; set; }
+        }
+
+        public class DriverApiData
+        {
+            // Map the JSON properties to C# properties like the api provides.
+            [JsonProperty("driver_number")]
+            public int Id { get; set; }
+
+            [JsonProperty("full_name")]
+            public string Name { get; set; }
+
+            [JsonProperty("headshot_url")]
+            public string PhotoUrl { get; set; }
+
+            [JsonProperty("team_name")]
+            public string TeamId { get; set; }
+
+            [JsonProperty("name_acronym")]
+            public string AcronymName { get; set; }
+        }
     }
 }

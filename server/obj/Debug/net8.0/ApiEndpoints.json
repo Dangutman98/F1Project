@@ -138,8 +138,8 @@
   },
   {
     "ContainingType": "server.Controllers.DriverController",
-    "Method": "SaveDrivers",
-    "RelativePath": "api/Driver/save",
+    "Method": "FetchAndSaveDrivers",
+    "RelativePath": "api/Driver/fetch-and-save",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
