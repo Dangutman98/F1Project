@@ -18,25 +18,44 @@ namespace server.Controllers
         {
             _userDAL = new UserDAL(configuration);
         }
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
         public class UserInput
         {
             public string Username { get; set; }
             public string Password { get; set; }
             public string Email { get; set; }
         }
+
+        // Get all users
+        [HttpGet]
+        public IActionResult GetAllUsers()
+        {
+            var users = _userDAL.GetAllUsers();
+
+            if (users == null || users.Count == 0)
+            {
+                return NotFound("No users found.");
+            }
+
+            return Ok(users);
+        }
+
+        // Get user by id
+        [HttpGet("{id}")]
+        public IActionResult GetUserById(int id)
+        {
+            var user = _userDAL.GetUserById(id);
+
+            if (user == null)
+            {
+                return NotFound($"User with Id {id} not found.");
+            }
+
+            return Ok(user);
+        }
+
+
+
         // POST api/<UserController>
         /// <summary>
         /// Creates a new user.
@@ -64,16 +83,43 @@ namespace server.Controllers
 
             return Ok(new { Message = "User created successfully", UserId = newUserId });
         }
-        // PUT api/<UserController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] UserDto userDto)
         {
+            if (userDto == null)
+            {
+                return BadRequest("Invalid user data.");
+            }
+
+            var existingUser = _userDAL.GetUserById(id);
+            if (existingUser == null)
+            {
+                return NotFound($"User with Id {id} not found.");
+            }
+
+            // Update user in the database
+            bool updateSuccess = _userDAL.UpdateUser(id, userDto);
+
+            if (!updateSuccess)
+            {
+                return StatusCode(500, "Failed to update user.");
+            }
+
+            return Ok(new { Message = "User updated successfully" });
         }
 
-        // DELETE api/<UserController>/5
+        // Delete user by id
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult DeleteUser(int id)
         {
+            bool isDeleted = _userDAL.DeleteUser(id);
+
+            if (!isDeleted)
+            {
+                return NotFound($"User with Id {id} not found.");
+            }
+
+            return Ok(new { Message = "User deleted successfully" });
         }
     }
 }
