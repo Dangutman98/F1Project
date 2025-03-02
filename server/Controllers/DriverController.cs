@@ -27,21 +27,18 @@ namespace server.Controllers
 
         // Fetch drivers from OpenF1 API
         [HttpGet("fetch")]
-        
         public async Task<ActionResult<List<Driver>>> FetchDrivers()
         {
             var drivers = await _driverDal.FetchDriversAsync();
 
-            // Ensure the data is not empty or null before returning
+            // If the list is not empty, return it; otherwise, return a message
             if (drivers != null && drivers.Any())
             {
-                Console.WriteLine("Drivers fetched successfully.");
-                return Ok(drivers); // Return the list of drivers if data is present
-                
+                return Ok(drivers); // This will automatically serialize the list of Driver objects to JSON
             }
             else
             {
-                return NotFound("No drivers found"); // Return 404 if no data found
+                return NotFound("No drivers found");
             }
         }
 

@@ -1,10 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
-using server.Models;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using server.Models;
 
 namespace server.DAL
 {
@@ -64,6 +60,7 @@ namespace server.DAL
 
             return driverList;
         }
+
 
 
         // Save drivers to SQL Server using a stored procedure
