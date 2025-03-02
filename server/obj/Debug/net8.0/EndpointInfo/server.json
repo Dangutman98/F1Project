@@ -115,7 +115,7 @@
         }
       }
     },
-    "/api/Driver/save": {
+    "/api/Driver/fetch-and-save": {
       "post": {
         "tags": [
           "Driver"
