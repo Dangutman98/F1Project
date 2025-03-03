@@ -1,19 +1,17 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
+using server.Models;
 using server.Data;
 using server.DAL;
-using Newtonsoft.Json;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 // Add controllers with Newtonsoft.Json for JSON serialization
 builder.Services.AddControllers()
     .AddNewtonsoftJson(); // Add this line to use Newtonsoft.Json for JSON serialization
 
 // Configure DbContext for SQL Server
-builder.Services.AddDbContext<F1ProjectDbContext>(options =>
+builder.Services.AddDbContext<server.Data.F1ProjectDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("F1ProjectDb"))); // Ensure connection string is correctly set in appsettings.json
 
 // Add services for Swagger (for API documentation)
@@ -23,12 +21,22 @@ builder.Services.AddSwaggerGen();
 // Register HttpClient for Dependency Injection
 builder.Services.AddHttpClient(); // Register HttpClient for Dependency Injection
 
-// Register DriverDal with constructor dependencies (HttpClient and connection string)
 builder.Services.AddScoped<DriverDal>(provider =>
 {
     var httpClient = provider.GetRequiredService<HttpClient>(); // Get HttpClient instance
     var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb"); // Get connection string from configuration
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
+    }
     return new DriverDal(connectionString, httpClient); // Pass both to the DriverDal constructor
+});
+
+// Register TeamDal with constructor dependencies (DbContext)
+builder.Services.AddScoped<TeamDal>(provider =>
+{
+    var context = provider.GetRequiredService<server.Data.F1ProjectDbContext>(); // Get DbContext instance
+    return new TeamDal(context); // Pass DbContext to the TeamDal constructor
 });
 
 var app = builder.Build();
@@ -47,3 +55,4 @@ app.MapControllers(); // Map controllers to routes
 
 // Run the application
 app.Run();
+

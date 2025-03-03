@@ -8,31 +8,19 @@ namespace server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DriverController : ControllerBase
+    public class DriverController(DriverDal driverDal) : ControllerBase
     {
+        private readonly DriverDal _driverDal = driverDal;
 
-        private readonly DriverDal _driverDal;
-
-        public DriverController(DriverDal driverDal)
-        {
-            _driverDal = driverDal;
-        }
-
-        // GET: api/<DriverController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
+  
         // Fetch drivers from OpenF1 API
         [HttpGet("fetch")]
         public async Task<ActionResult<List<Driver>>> FetchDrivers()
         {
             var drivers = await _driverDal.FetchDriversAsync();
-            
+
             // If the list is not empty, return it; otherwise, return a message
-            if (drivers != null && drivers.Any())
+            if (drivers != null && drivers.Count != 0)
             {
                 return Ok(drivers); // This will automatically serialize the list of Driver objects to JSON
             }
@@ -42,45 +30,43 @@ namespace server.Controllers
             }
         }
 
-
-        [HttpPost("fetch-and-save")]
-        public async Task<ActionResult> FetchAndSaveDrivers()
+        [HttpPost("save/clearAndSave")]
+        public async Task<ActionResult> ClearAndSaveDrivers()
         {
+            // First, delete all existing drivers in the database
+            await _driverDal.DeleteAllDriversAsync();
+
+            // Fetch the new drivers data
             var drivers = await _driverDal.FetchDriversAsync();
 
-            if (drivers == null || !drivers.Any())
+            // Save the new drivers to the database
+            await _driverDal.SaveDriversToDatabaseAsync(drivers);
+
+            return Ok("All previous drivers were deleted, and new drivers were saved successfully.");
+        }
+
+   
+
+        [HttpPut("update/{id}")]
+        public async Task<ActionResult> UpdateDriver(int id)
+        {
+            // Fetch the driver data from the API
+            var drivers = await _driverDal.FetchDriversAsync();
+
+            // Find the driver with the specified ID
+            var driverToUpdate = drivers.FirstOrDefault(d => d.Id == id);
+
+            if (driverToUpdate == null)
             {
-                return NotFound("No drivers found from API.");
+                return NotFound("Driver not found.");
             }
 
-            await _driverDal.SaveDriversToDatabaseAsync(drivers);
-            return Ok("Drivers fetched and saved successfully.");
+            // Save the updated driver data to the database
+            await _driverDal.SaveDriversToDatabaseAsync([driverToUpdate]);
+
+            return Ok("Driver updated successfully.");
         }
 
-
-        // GET api/<DriverController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<DriverController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<DriverController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<DriverController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+    
     }
 }

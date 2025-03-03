@@ -2,27 +2,25 @@
 {
     public class Team
     {
-        private int id;
-        private string name;
-        private string color;
+        // Use auto-implemented properties
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Color { get; set; }
 
-        public int Id { get => id; set => id = value; }
-        public string Name { get => name; set => name = value; }
-        public string Color { get => color; set => color = value; }
-
-        // empty constructor
+        // Empty constructor
         public Team()
         {
-            //created it because properties are non-nullable(c# Compiler Error issue)
-            name = string.Empty;
-            color = string.Empty;
+            // Ensure properties are non-nullable
+            Name = string.Empty;
+            Color = string.Empty;
         }
 
+        // Constructor for initialization
         public Team(int id, string name, string color)
         {
-            this.id = id;
-            this.name = name;
-            this.color = color;
+            Id = id;
+            Name = name;
+            Color = color;
         }
     }
 }
