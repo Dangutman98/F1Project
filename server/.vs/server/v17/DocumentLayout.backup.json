@@ -42,8 +42,7 @@
               "RelativeToolTip": "DAL\\UserDAL.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAQwBMAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-02T20:21:44.376Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-02T20:21:44.376Z"
             },
             {
               "$type": "Document",
@@ -55,8 +54,7 @@
               "RelativeToolTip": "Models\\Driver.cs",
               "ViewState": "AgIAABQAAAAAAAAAAAAqwCEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-02T20:21:16.829Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-02T20:21:16.829Z"
             },
             {
               "$type": "Document",
@@ -68,8 +66,7 @@
               "RelativeToolTip": "DAL\\DriverDAL.cs",
               "ViewState": "AgIAAHoAAAAAAAAAAIA0wIMAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-02T20:21:15.583Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-02T20:21:15.583Z"
             },
             {
               "$type": "Document",
@@ -79,7 +76,7 @@
               "RelativeDocumentMoniker": "Controllers\\DriverController.cs",
               "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\DriverController.cs",
               "RelativeToolTip": "Controllers\\DriverController.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAUwDcAAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAACsAAAAAAAAAAAAUwDwAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-02T20:21:00.182Z",
               "EditorCaption": ""
@@ -94,8 +91,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAACQAAAAAAAAAAAASwDEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-01T17:03:51.155Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-01T17:03:51.155Z"
             }
           ]
         }
