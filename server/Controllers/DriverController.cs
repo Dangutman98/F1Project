@@ -33,19 +33,27 @@ namespace server.Controllers
         [HttpPost("save/clearAndSave")]
         public async Task<ActionResult> ClearAndSaveDrivers()
         {
-            // First, delete all existing drivers in the database
+            Console.WriteLine("Deleting all drivers...");
             await _driverDal.DeleteAllDriversAsync();
 
-            // Fetch the new drivers data
+            Console.WriteLine("Fetching new drivers...");
             var drivers = await _driverDal.FetchDriversAsync();
 
-            // Save the new drivers to the database
+            if (drivers == null || !drivers.Any())
+            {
+                return BadRequest("No drivers fetched from API.");
+            }
+
+            Console.WriteLine($"Fetched {drivers.Count} drivers.");
+            
+
+            Console.WriteLine("Saving drivers to database...");
             await _driverDal.SaveDriversToDatabaseAsync(drivers);
 
             return Ok("All previous drivers were deleted, and new drivers were saved successfully.");
         }
 
-   
+
 
         [HttpPut("update/{id}")]
         public async Task<ActionResult> UpdateDriver(int id)
