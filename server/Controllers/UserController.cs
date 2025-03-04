@@ -21,24 +21,10 @@ namespace server.Controllers
 
         public class UserInput
         {
-            public string Username { get; set; }
-            public string Password { get; set; }
-            public string Email { get; set; }
+            public required string Username { get; set; }
+            public required string Password { get; set; }
         }
 
-        // Get all users
-        [HttpGet]
-        public IActionResult GetAllUsers()
-        {
-            var users = _userDAL.GetAllUsers();
-
-            if (users == null || users.Count == 0)
-            {
-                return NotFound("No users found.");
-            }
-
-            return Ok(users);
-        }
 
         // Get user by id
         [HttpGet("{id}")]
@@ -83,6 +69,34 @@ namespace server.Controllers
 
             return Ok(new { Message = "User created successfully", UserId = newUserId });
         }
+
+        // POST /api/user/login - Check if user exists in the database
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] UserInput userInput)
+        {
+            if (userInput == null || string.IsNullOrEmpty(userInput.Username) || string.IsNullOrEmpty(userInput.Password))
+            {
+                return BadRequest("Invalid login credentials.");
+            }
+
+            // Check if the user credentials are valid
+            bool isValidUser = _userDAL.CheckUserCredentials(userInput.Username, userInput.Password);
+
+            if (!isValidUser)
+            {
+                return Unauthorized("Invalid username or password.");
+            }
+
+            // You can implement JWT or other tokens here for successful login
+            return Ok(new { Message = "Login successful." });
+        }
+
+
+
+
+
+
+        // PUT api/<UserController>/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] UserDto userDto)
         {
