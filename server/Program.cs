@@ -21,6 +21,7 @@ builder.Services.AddSwaggerGen();
 // Register HttpClient for Dependency Injection
 builder.Services.AddHttpClient(); // Register HttpClient for Dependency Injection
 
+//Register DriverDal for Dependency Injection
 builder.Services.AddScoped<DriverDal>(provider =>
 {
     var httpClient = provider.GetRequiredService<HttpClient>(); // Get HttpClient instance
@@ -32,12 +33,18 @@ builder.Services.AddScoped<DriverDal>(provider =>
     return new DriverDal(connectionString, httpClient); // Pass both to the DriverDal constructor
 });
 
-// Register TeamDal with constructor dependencies (DbContext)
+//Register TeamDal for Dependency Injection
 builder.Services.AddScoped<TeamDal>(provider =>
 {
-    var context = provider.GetRequiredService<server.Data.F1ProjectDbContext>(); // Get DbContext instance
-    return new TeamDal(context); // Pass DbContext to the TeamDal constructor
+    var httpClient = provider.GetRequiredService<HttpClient>(); // Get HttpClient instance
+    var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb"); // Get connection string from configuration
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
+    }
+    return new TeamDal(connectionString, httpClient); // Pass both to the TeamDal constructor
 });
+
 
 var app = builder.Build();
 

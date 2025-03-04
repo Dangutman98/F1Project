@@ -5,13 +5,13 @@
         private int id;
         private string name;
         private string photoURL;
-        private int? teamId;
+        private string teamName;
         private string acronymName;
 
         public int Id { get => id; set => id = value; }
         public string Name { get => name; set => name = value; }
         public string PhotoURL { get => photoURL; set => photoURL = value; }
-        public int? TeamId { get => teamId; set => teamId = value; }
+        public string TeamId { get => teamName; set => teamName = value; }
         public string AcronymName { get => acronymName; set => acronymName = value; }
 
         // empty constructor
@@ -20,14 +20,15 @@
             name = string.Empty;
             photoURL = string.Empty;
             acronymName = string.Empty;
+            teamName = string.Empty;
         }
 
-        public Driver(int id, string name, string photoURL, int teamId, string acronymName)
+        public Driver(int id, string name, string photoURL, string teamName, string acronymName)
         {
             this.id = id;
             this.name = name;
             this.photoURL = photoURL;
-            this.teamId = teamId;
+            this.teamName = teamName;
             this.acronymName = acronymName;
         }
     }

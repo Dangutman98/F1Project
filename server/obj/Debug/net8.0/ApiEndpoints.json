@@ -47,7 +47,7 @@
   },
   {
     "ContainingType": "server.Controllers.TeamController",
-    "Method": "GetAllTeams",
+    "Method": "GetTeams",
     "RelativePath": "api/Team",
     "HttpMethod": "GET",
     "IsController": true,
@@ -55,7 +55,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[server.DAL.TeamApiData, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[server.Models.Team, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -67,9 +67,19 @@
   },
   {
     "ContainingType": "server.Controllers.TeamController",
-    "Method": "GetTeamById",
-    "RelativePath": "api/Team/{id}",
-    "HttpMethod": "GET",
+    "Method": "SaveTeams",
+    "RelativePath": "api/Team/save",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.TeamController",
+    "Method": "UpdateTeam",
+    "RelativePath": "api/Team/update/{id}",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -77,39 +87,14 @@
         "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
+      },
+      {
+        "Name": "team",
+        "Type": "server.Models.Team",
+        "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "server.DAL.TeamApiData",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "server.Controllers.TeamController",
-    "Method": "FetchTeams",
-    "RelativePath": "api/Team/fetch",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.List\u00601[[server.DAL.TeamApiData, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "server.Controllers.UserController",

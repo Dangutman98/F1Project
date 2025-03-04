@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+TeamDAL.cs
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using server.Data; 
@@ -24,7 +25,7 @@ namespace server.DAL
                 var response = await _httpClient.GetStringAsync("https://api.openf1.org/v1/drivers");
 
                 // Log the raw response for debugging
-                //Console.WriteLine("Raw API Response:" + response);
+                Console.WriteLine("Raw API Response:" + response);
 
                 // Deserialize the response into a list of TeamApiData
                 var teamDataList = JsonConvert.DeserializeObject<List<TeamApiData>>(response);
@@ -64,46 +65,25 @@ namespace server.DAL
         }
 
 
-        //method to save teams to databas
-        public async Task SaveTeamsToDatabaseAsync(List<Team> teams)
+
+
+        //method to delete all teams from the database
+        public async Task DeleteAllTeamsAsync()
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
-
-            foreach (var team in teams)
-            {
-                using var command = new SqlCommand("SP_SaveTeams", connection)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                command.Parameters.AddWithValue("@TeamId", team.Id);
-                command.Parameters.AddWithValue("@TeamName", team.Name);
-                command.Parameters.AddWithValue("@TeamColor", team.Color);
-
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        //method to update team by ID 
-
-        public async Task UpdateTeamAsync(Team team)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            using var command = new SqlCommand("SP_UpdateTeam", connection);
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@TeamId", team.Id);
-            command.Parameters.AddWithValue("@TeamName", team.Name);
-            command.Parameters.AddWithValue("@TeamColor", team.Color);
-
+            var query = "DELETE FROM Teams";
+            using var command = new SqlCommand(query, connection);
             await command.ExecuteNonQueryAsync();
         }
+
+
 
         public class TeamApiData
         {
             // Map the JSON properties to C# properties like the API provides.
+
+            
             public int Id { get; set; }
 
             [JsonProperty("team_name")]

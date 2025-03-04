@@ -14,34 +14,35 @@ namespace server.DAL
         {
             var driverList = new List<Driver>();
 
+            // List of relevant driver IDs
+            var relevantDriverIds = new HashSet<int> { 1, 2, 4, 10, 11, 14, 16, 20, 21, 22, 24, 27, 31, 44, 55, 63, 81, 23, 77, 18 };
+
             try
             {
                 // Fetch data from OpenF1 API
                 var response = await _httpClient.GetStringAsync("https://api.openf1.org/v1/drivers");
 
-                // Log the raw response for debugging
-                Console.WriteLine("Raw API Response:" + response);
-
-                // Deserialize the response directly into a list of DriverApiData
+                // Deserialize the response into a list of DriverApiData
                 var driverDataList = JsonConvert.DeserializeObject<List<DriverApiData>>(response);
 
                 if (driverDataList != null && driverDataList.Count != 0)
                 {
-                    // Filter out duplicate drivers by their names
+                    // Filter out duplicate drivers by name and only keep those with relevant IDs
                     var uniqueDriverDataList = driverDataList
-                        .GroupBy(driver => driver.Name) // Group by driver name
-                        .Select(group => group.First()) // Take the first driver from each group (unique names)
-                        .ToList();
+                   .Where(driver => relevantDriverIds.Contains(driver.Id)) // Keep only relevant IDs
+                   .GroupBy(driver => driver.Id)  // Group by ID
+                   .Select(group => group.First()) // Take only the first occurrence of each ID
+                   .ToList();
+
 
                     foreach (var driver in uniqueDriverDataList)
                     {
-                        // Map the API response to the Driver model
                         driverList.Add(new Driver
                         {
                             Id = driver.Id,
                             Name = driver.Name,
                             PhotoURL = driver.PhotoUrl,
-                            TeamId = int.TryParse(driver.TeamId, out int teamId) ? teamId : (int?)null,
+                            TeamId = driver.TeamId,
                             AcronymName = driver.AcronymName
                         });
                     }
@@ -59,6 +60,7 @@ namespace server.DAL
             return driverList;
         }
 
+
         //delete method
         public async Task DeleteAllDriversAsync()
         {
@@ -73,34 +75,55 @@ namespace server.DAL
         //post method to save drivers
         public async Task SaveDriversToDatabaseAsync(List<Driver> drivers)
         {
-            await using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            foreach (var driver in drivers)
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                try
+                await conn.OpenAsync();
+
+                foreach (var driver in drivers)
                 {
-                    string query = "SP_AddDriver"; // Stored Procedure name
+                    // Get the TeamId from Teams table
+                    int? teamId = await GetTeamIdByNameAsync(conn, driver.TeamId);
+                    if (teamId == null)
+                    {
+                        Console.WriteLine($"Error: No team found for driver {driver.Name}");
+                        continue; // Skip this driver if no matching team
+                    }
 
-                    using var cmd = new SqlCommand(query, connection);
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    using (SqlCommand cmd = new SqlCommand(@"
+INSERT INTO Drivers (Id, Name, PhotoURL, TeamId, AcronymName) 
+VALUES (@Id, @Name, @PhotoURL, @TeamId, @AcronymName)", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", driver.Id); // Assuming the ID comes from your API
+                        cmd.Parameters.AddWithValue("@Name", driver.Name);
+                        cmd.Parameters.AddWithValue("@PhotoURL", (object)driver.PhotoURL ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@TeamId", teamId);
+                        cmd.Parameters.AddWithValue("@AcronymName", (object)driver.AcronymName ?? DBNull.Value);
 
-                    // Add parameters matching the stored procedure
-                    cmd.Parameters.AddWithValue("@Id", driver.Id);
-                    cmd.Parameters.AddWithValue("@Name", driver.Name);
-                    cmd.Parameters.AddWithValue("@PhotoURL", driver.PhotoURL ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@TeamId", driver.TeamId ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@AcronymName", driver.AcronymName ?? (object)DBNull.Value);
+                        try
+                        {
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error inserting driver {driver.Name}: {ex.Message}");
+                        }
+                    }
 
-                    // Execute the stored procedure
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error inserting/updating driver {driver.Name}: {ex.Message}");
                 }
             }
         }
+
+        // Helper method to fetch TeamId by team name
+        private async Task<int?> GetTeamIdByNameAsync(SqlConnection conn, string teamName)
+        {
+            using (SqlCommand cmd = new SqlCommand("SELECT Id FROM Teams WHERE Name = @TeamName", conn))
+            {
+                cmd.Parameters.AddWithValue("@TeamName", teamName);
+                var result = await cmd.ExecuteScalarAsync();
+                return result != null ? (int?)result : null;
+            }
+        }
+
 
         // Create a response model for deserializing the API response
         public class ApiResponse
@@ -111,6 +134,7 @@ namespace server.DAL
         public class DriverApiData
         {
             // Map the JSON properties to C# properties like the api provides.
+
             [JsonProperty("driver_number")]
             public int Id { get; set; }
 
@@ -127,33 +151,6 @@ namespace server.DAL
             public required string AcronymName { get; set; }
         }
 
-        //method to get team id by name
-        public async Task<int?> GetTeamIdAsync(string teamName)
-        {
-            await using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            // Check if the team already exists
-            string checkTeamQuery = "SELECT Id FROM Teams WHERE Name = @TeamName";
-            using var cmd = new SqlCommand(checkTeamQuery, connection);
-            cmd.Parameters.AddWithValue("@TeamName", teamName);
-
-            var result = await cmd.ExecuteScalarAsync();
-            if (result != null)
-            {
-                // Return the existing team's Id
-                return (int?)result;
-            }
-            else
-            {
-                // Insert the new team and return the new team Id
-                string insertTeamQuery = "INSERT INTO Teams (Name) OUTPUT INSERTED.Id VALUES (@TeamName)";
-                using var insertCmd = new SqlCommand(insertTeamQuery, connection);
-                insertCmd.Parameters.AddWithValue("@TeamName", teamName);
-
-                var insertedTeamId = await insertCmd.ExecuteScalarAsync();
-                return (int?)insertedTeamId;
-            }
-        }
+        
     }
 }
