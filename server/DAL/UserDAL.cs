@@ -13,6 +13,47 @@ namespace server.DAL
             _configuration = configuration;
         }
 
+
+        // Method to check if a user exists based on username and password hash
+        public bool CheckUserCredentials(string username, string passwordHash)
+        {
+            SqlConnection con = null;
+            SqlCommand cmd;
+            SqlDataReader reader;
+
+            try
+            {
+                con = connect();
+                con.Open();
+
+                // SQL command to check if the user exists
+                cmd = new SqlCommand("SELECT COUNT(1) FROM Users WHERE Username = @Username AND PasswordHash = @PasswordHash", con);
+                cmd.Parameters.AddWithValue("@Username", username);
+                cmd.Parameters.AddWithValue("@PasswordHash", passwordHash);
+
+                // Execute the command
+                int userCount = (int)cmd.ExecuteScalar();
+
+                return userCount > 0; // If count > 0, user exists with matching credentials
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Exception: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                con?.Close();
+            }
+        }
+
+
+
         ////////////////// Method to create a new user using UserDto/////////////////
         public int AddNewUserToDB(UserDto userDto)
         {

@@ -98,16 +98,6 @@
   },
   {
     "ContainingType": "server.Controllers.UserController",
-    "Method": "GetAllUsers",
-    "RelativePath": "api/User",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "server.Controllers.UserController",
     "Method": "Post",
     "RelativePath": "api/User",
     "HttpMethod": "POST",
@@ -170,6 +160,22 @@
       {
         "Name": "id",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.UserController",
+    "Method": "Login",
+    "RelativePath": "api/User/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userInput",
+        "Type": "server.Controllers.UserController\u002BUserInput",
         "IsRequired": true
       }
     ],

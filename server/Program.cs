@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using server.Models;
 using server.Data;
 using server.DAL;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +23,7 @@ builder.Services.AddSwaggerGen();
 // Register HttpClient for Dependency Injection
 builder.Services.AddHttpClient(); // Register HttpClient for Dependency Injection
 
-//Register DriverDal for Dependency Injection
+// Register DriverDal for Dependency Injection
 builder.Services.AddScoped<DriverDal>(provider =>
 {
     var httpClient = provider.GetRequiredService<HttpClient>(); // Get HttpClient instance
@@ -33,7 +35,7 @@ builder.Services.AddScoped<DriverDal>(provider =>
     return new DriverDal(connectionString, httpClient); // Pass both to the DriverDal constructor
 });
 
-//Register TeamDal for Dependency Injection
+// Register TeamDal for Dependency Injection
 builder.Services.AddScoped<TeamDal>(provider =>
 {
     var httpClient = provider.GetRequiredService<HttpClient>(); // Get HttpClient instance
@@ -45,6 +47,16 @@ builder.Services.AddScoped<TeamDal>(provider =>
     return new TeamDal(connectionString, httpClient); // Pass both to the TeamDal constructor
 });
 
+// Enable CORS (Cross-Origin Resource Sharing)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin() // Allows any origin
+               .AllowAnyMethod() // Allows any HTTP method
+               .AllowAnyHeader(); // Allows any header
+    });
+});
 
 var app = builder.Build();
 
@@ -58,8 +70,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection(); // Ensures HTTP requests are redirected to HTTPS
 app.UseAuthorization(); // Enable authorization middleware
 
+// Enable CORS in the HTTP request pipeline
+app.UseCors("AllowAllOrigins"); // Use the CORS policy
+
 app.MapControllers(); // Map controllers to routes
 
 // Run the application
 app.Run();
-
