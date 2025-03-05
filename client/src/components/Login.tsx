@@ -4,8 +4,7 @@ import { useUser } from '../context/UserContext';
 
 export default function Login() {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [passwordHash, setPasswordHash] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -17,27 +16,27 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5066/api/user', {
+      const response = await fetch('http://localhost:5066/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           username,
-          passwordHash,
-          email
+          password
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to create user');
+        throw new Error(data.message || 'Login failed');
       }
 
-      const user = await response.json();
-      login({ id: user.id, email: user.email });
+      login({ id: '1', username });
       navigate('/');
     } catch (err) {
-      setError('Failed to create user. Please try again later.');
+      setError(err instanceof Error ? err.message : 'Invalid username or password');
     } finally {
       setIsLoading(false);
     }
@@ -53,20 +52,6 @@ export default function Login() {
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-6">
-          
-        <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            />
-          </div>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
               Username
@@ -80,29 +65,38 @@ export default function Login() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
-          
           <div>
-            <label htmlFor="passwordHash" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
-              id="passwordHash"
+              id="password"
               type="password"
               required
-              value={passwordHash}
-              onChange={(e) => setPasswordHash(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-yellow-300 bg-indigo-600 hover:bg-indigo-700 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
               isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">Don't have an account yet?</p>
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Register here
+            </button>
+          </div>
         </form>
       </div>
     </div>

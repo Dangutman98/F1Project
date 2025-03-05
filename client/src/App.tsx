@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { UserProvider } from './context/UserContext';
 import Login from './components/Login';
 import Register from './components/Register';
-import Home from './components/Home';
+import HomePage from './components/HomePage';
+import Profile from './components/Profile';
 import './App.css';
 
 function App() {
@@ -12,7 +13,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
