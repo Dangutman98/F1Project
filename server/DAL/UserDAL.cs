@@ -280,9 +280,47 @@ namespace server.DAL
             }
         }
 
-        ///// Method to update a user in the database///////////
-        
+        ///// Method to update user preferences///////////
+        public bool UpdateUserPreferences(int userId, User user)
+        {
+            SqlConnection con = null;
+            SqlCommand cmd;
 
+            try
+            {
+                con = connect();
+                con.Open();
+
+                // SQL command to update user preferences
+                cmd = new SqlCommand("UPDATE Users SET FavoriteAnimal = @FavoriteAnimal, FavoriteDriverId = @FavoriteDriverId, FavoriteTeamId = @FavoriteTeamId, FavoriteRacingSpotId = @FavoriteRacingSpotId WHERE Id = @Id", con);
+                cmd.Parameters.AddWithValue("@Id", userId);
+                cmd.Parameters.AddWithValue("@FavoriteAnimal", (object?)user.FavoriteAnimal ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@FavoriteDriverId", (object?)user.FavoriteDriverId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@FavoriteTeamId", (object?)user.FavoriteTeamId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@FavoriteRacingSpotId", (object?)user.FavoriteRacingSpotId ?? DBNull.Value);
+
+                int rowsAffected = cmd.ExecuteNonQuery();
+
+                return rowsAffected > 0; // If rows were affected, return true indicating successful update
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Exception: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                con?.Close();
+            }
+        }
+
+        ///// Method to update user preferences///////////
+        
         // Implement the connection logic, now using the connection string from IConfiguration
         private SqlConnection connect()
         {
