@@ -3,74 +3,99 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [passwordHash, setPasswordHash] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useUser();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5066/api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          passwordHash
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to register');
+      }
+
+      const user = await response.json();
+      login({ id: user.id, username: user.username });
+      navigate('/');
+    } catch (err) {
+      setError('Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-    // Here you would typically make an API call to register
-    // For now, we'll just simulate a successful registration
-    login({ id: '1', email });
-    navigate('/');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <h2 className="text-3xl font-bold text-center">Register</h2>
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              Username
             </label>
             <input
-              id="email"
-              type="email"
+              id="username"
+              type="text"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="passwordHash" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
-              id="password"
+              id="passwordHash"
               type="password"
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              value={passwordHash}
+              onChange={(e) => setPasswordHash(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            disabled={isLoading}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-green-300 bg-indigo-600 hover:bg-indigo-700 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            Register
+            {isLoading ? 'Registering...' : 'Register'}
           </button>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">Already have an account?</p>
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Login here
+            </button>
+          </div>
         </form>
       </div>
     </div>
