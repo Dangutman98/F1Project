@@ -122,6 +122,38 @@ namespace server.Controllers
             return Ok(new { Message = "User updated successfully" });
         }
 
+        // PUT api/<UserController>/5/preferences
+        [HttpPut("{id}/preferences")]
+        public IActionResult UpdatePreferences(int id, [FromBody] User user)
+        {
+            if (user == null)
+            {
+                return BadRequest("Invalid user data.");
+            }
+
+            var existingUser = _userDAL.GetUserById(id);
+            if (existingUser == null)
+            {
+                return NotFound($"User with Id {id} not found.");
+            }
+
+            // Only update the preference fields, keep other fields unchanged
+            existingUser.FavoriteAnimal = user.FavoriteAnimal;
+            existingUser.FavoriteDriverId = user.FavoriteDriverId;
+            existingUser.FavoriteTeamId = user.FavoriteTeamId;
+            existingUser.FavoriteRacingSpotId = user.FavoriteRacingSpotId;
+
+            // Update user preferences in the database
+            bool updateSuccess = _userDAL.UpdateUserPreferences(id, existingUser);
+
+            if (!updateSuccess)
+            {
+                return StatusCode(500, "Failed to update user preferences.");
+            }
+
+            return Ok(new { Message = "User preferences updated successfully" });
+        }
+
         // Delete user by id
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
