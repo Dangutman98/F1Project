@@ -1,16 +1,19 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
 using server.Models;
+using System.Data;
 
 namespace server.DAL
 {
     public class UserDAL
     {
         private readonly IConfiguration _configuration;
+        private readonly string _connectionString;
 
         public UserDAL(IConfiguration configuration)
         {
             _configuration = configuration;
+            _connectionString = _configuration.GetConnectionString("F1ProjectDb");
         }
 
 
@@ -64,22 +67,31 @@ namespace server.DAL
             {
                 con = connect(); // Create the connection
                 con.Open(); // Ensure the connection is open
+                Console.WriteLine("Database connection opened successfully");
+
                 cmd = BuildAddNewUserToDBCommand(con, userDto); // Create the command
+                Console.WriteLine("Command built successfully");
 
                 cmd.ExecuteNonQuery(); // Execute stored procedure
+                Console.WriteLine("Stored procedure executed successfully");
 
                 // Retrieve the new user ID from the output parameter
                 int userID = Convert.ToInt32(cmd.Parameters["@NewUserID"].Value);
+                Console.WriteLine($"New user created with ID: {userID}");
                 return userID;
             }
             catch (SqlException sqlEx)
             {
-                Console.WriteLine($"SQL Exception: {sqlEx.Message}");
+                Console.WriteLine($"SQL Exception in AddNewUserToDB: {sqlEx.Message}");
+                Console.WriteLine($"Error Number: {sqlEx.Number}");
+                Console.WriteLine($"Error State: {sqlEx.State}");
+                Console.WriteLine($"Procedure: {sqlEx.Procedure}");
                 throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
+                Console.WriteLine($"Exception in AddNewUserToDB: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 throw;
             }
             finally
@@ -97,6 +109,7 @@ namespace server.DAL
             cmd.Parameters.AddWithValue("@Username", userDto.Username);
             cmd.Parameters.AddWithValue("@PasswordHash", userDto.PasswordHash);  // Assuming the password is already hashed
             cmd.Parameters.AddWithValue("@Email", userDto.Email);
+            cmd.Parameters.AddWithValue("@FavoriteAnimal", userDto.FavoriteAnimal);
 
             // Output parameter to retrieve the new User ID
             SqlParameter outputParam = new SqlParameter("@NewUserID", System.Data.SqlDbType.Int);
@@ -208,7 +221,7 @@ namespace server.DAL
 
 
         ////////////////// Method to delete users/////////////////
-        public bool DeleteUser(int userId)
+        public bool DeleteUser(int id)
         {
             SqlConnection con = null;
             SqlCommand cmd;
@@ -217,22 +230,41 @@ namespace server.DAL
             {
                 con = connect();
                 con.Open();
-                cmd = new SqlCommand("DELETE FROM Users WHERE Id = @Id", con);
-                cmd.Parameters.AddWithValue("@Id", userId);
+                Console.WriteLine("Database connection opened successfully");
 
-                int rowsAffected = cmd.ExecuteNonQuery();
+                // First check if user exists
+                cmd = new SqlCommand("SELECT COUNT(1) FROM Users WHERE Id = @UserID", con);
+                cmd.Parameters.AddWithValue("@UserID", id);
+                int count = (int)cmd.ExecuteScalar();
 
-                return rowsAffected > 0; // If rows were affected, return true indicating successful deletion
+                if (count == 0)
+                {
+                    Console.WriteLine($"User with ID {id} not found");
+                    return false;
+                }
+
+                // If user exists, proceed with deletion and reordering
+                cmd = new SqlCommand("SP_DeleteUser", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@UserID", id);
+
+                cmd.ExecuteNonQuery();
+                Console.WriteLine($"User with ID {id} deleted and IDs reordered successfully");
+                return true;
             }
             catch (SqlException sqlEx)
             {
-                Console.WriteLine($"SQL Exception: {sqlEx.Message}");
-                throw;
+                Console.WriteLine($"SQL Exception in DeleteUser: {sqlEx.Message}");
+                Console.WriteLine($"Error Number: {sqlEx.Number}");
+                Console.WriteLine($"Error State: {sqlEx.State}");
+                Console.WriteLine($"Procedure: {sqlEx.Procedure}");
+                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
-                throw;
+                Console.WriteLine($"Exception in DeleteUser: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return false;
             }
             finally
             {
@@ -321,11 +353,100 @@ namespace server.DAL
 
         ///// Method to update user preferences///////////
         
+        // Method to check if username exists
+        public bool IsUsernameExists(string username)
+        {
+            SqlConnection con = null;
+            SqlCommand cmd;
+
+            try
+            {
+                con = connect();
+                con.Open();
+
+                cmd = new SqlCommand("SELECT COUNT(1) FROM Users WHERE Username = @Username", con);
+                cmd.Parameters.AddWithValue("@Username", username);
+
+                int count = (int)cmd.ExecuteScalar();
+                return count > 0;
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Exception: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                con?.Close();
+            }
+        }
+
+        // Method to get a user by username
+        public User GetUserByUsername(string username)
+        {
+            SqlConnection con = null;
+            SqlCommand cmd;
+            SqlDataReader reader;
+
+            try
+            {
+                // Console.WriteLine($"GetUserByUsername: Attempting to find user with username: {username}");
+                con = connect();
+                con.Open();
+                // Console.WriteLine("GetUserByUsername: Database connection opened successfully");
+
+                cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Email, FavoriteAnimal FROM Users WHERE Username = @Username", con);
+                cmd.Parameters.AddWithValue("@Username", username);
+                // Console.WriteLine($"GetUserByUsername: Executing query for username: {username}");
+
+                reader = cmd.ExecuteReader();
+                // Console.WriteLine("GetUserByUsername: Query executed successfully");
+
+                if (reader.Read())
+                {
+                    // Console.WriteLine("GetUserByUsername: User found in database");
+                    var user = new User
+                    {
+                        Id = (int)reader["Id"],
+                        Username = reader["Username"].ToString(),
+                        PasswordHash = reader["PasswordHash"].ToString(),
+                        Email = reader["Email"].ToString(),
+                        FavoriteAnimal = reader["FavoriteAnimal"]?.ToString()
+                    };
+                    // Console.WriteLine($"GetUserByUsername: User details - ID: {user.Id}, Username: {user.Username}, Hash Length: {user.PasswordHash?.Length ?? 0}");
+                    return user;
+                }
+                // Console.WriteLine("GetUserByUsername: No user found with the specified username");
+                return null;
+            }
+            catch (SqlException sqlEx)
+            {
+                // Console.WriteLine($"SQL Exception in GetUserByUsername: {sqlEx.Message}");
+                // Console.WriteLine($"Error Number: {sqlEx.Number}");
+                // Console.WriteLine($"Error State: {sqlEx.State}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // Console.WriteLine($"Exception in GetUserByUsername: {ex.Message}");
+                // Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                throw;
+            }
+            finally
+            {
+                con?.Close();
+            }
+        }
+
         // Implement the connection logic, now using the connection string from IConfiguration
         private SqlConnection connect()
         {
-            var connectionString = _configuration.GetConnectionString("F1ProjectDb"); // Get the connection string by name
-            return new SqlConnection(connectionString);
+            return new SqlConnection(_connectionString);
         }
     }
 }

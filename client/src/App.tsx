@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import HomePage from './components/HomePage';
 import Profile from './components/Profile';
+import EditProfile from './components/EditProfile';
 import './App.css';
 
 function App() {
@@ -14,8 +15,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     </UserProvider>

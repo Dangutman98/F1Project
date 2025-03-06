@@ -3,17 +3,76 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 export default function Register() {
-  const [username, setUsername] = useState('');
-  const [passwordHash, setPasswordHash] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useUser();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    email: '',
+    favoriteAnimal: '',
+    dateOfBirth: {
+      day: '',
+      month: '',
+      year: ''
+    }
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    username?: string;
+    password?: string;
+    email?: string;
+    favoriteAnimal?: string;
+    dateOfBirth?: string;
+  }>({});
+
+  const validatePassword = (password: string) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasMinLength = password.length >= 7;
+    return hasUpperCase && hasLowerCase && hasNumber && hasMinLength;
+  };
+
+  const validateForm = () => {
+    const errors: typeof validationErrors = {};
+    
+    if (!formData.username) {
+      errors.username = 'Username is required';
+    }
+    
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (!validatePassword(formData.password)) {
+      errors.password = 'Must contain at least 7 characters with one uppercase letter, one lowercase letter, and one number';
+    }
+    
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    }
+    
+    if (!formData.favoriteAnimal) {
+      errors.favoriteAnimal = 'Favorite animal is required';
+    }
+    
+    if (!formData.dateOfBirth.day || !formData.dateOfBirth.month || !formData.dateOfBirth.year) {
+      errors.dateOfBirth = 'Date of birth is required';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setValidationErrors({});
     setIsLoading(true);
+
+    if (!validateForm()) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:5066/api/user', {
@@ -22,18 +81,35 @@ export default function Register() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username,
-          passwordHash
+          username: formData.username,
+          passwordHash: formData.password, // Note: In a real app, you should hash the password before sending
+          email: formData.email,
+          favoriteAnimal: formData.favoriteAnimal
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to register');
+        if (response.status === 409) {
+          setError('User already exists, choose different');
+        } else {
+          throw new Error('Registration failed');
+        }
+        setIsLoading(false);
+        return;
       }
 
-      const user = await response.json();
-      login({ id: user.id, username: user.username });
-      navigate('/');
+      const userData = await response.json();
+      
+      // After successful registration, log the user in
+      login({
+        id: userData.id,
+        username: userData.username,
+        profile: {
+          favoriteAnimal: userData.favoriteAnimal // Use the value from the server
+        }
+      });
+      
+      navigate('/home');
     } catch (err) {
       setError('Registration failed. Please try again.');
     } finally {
@@ -41,63 +117,218 @@ export default function Register() {
     }
   };
 
+  const handleDateChange = (field: 'day' | 'month' | 'year', value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      dateOfBirth: {
+        ...prev.dateOfBirth,
+        [field]: value
+      }
+    }));
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <h2 className="text-3xl font-bold text-center">Register</h2>
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{error}</span>
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-red-600 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/home')}
+                className="text-black text-2xl font-bold hover:text-gray-800"
+              >
+                F1 Fan Hub
+              </button>
+            </div>
+            <nav className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/login')}
+                className="text-black hover:text-gray-800"
+              >
+                Login
+              </button>
+            </nav>
           </div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            />
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1">
+        <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+            <div className="p-8">
+              <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">Create Account</h2>
+              
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                    Username <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    required
+                    value={formData.username}
+                    onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
+                      validationErrors.username ? 'border-red-500' : ''
+                    }`}
+                  />
+                  {validationErrors.username && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.username}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
+                      validationErrors.password ? 'border-red-500' : ''
+                    }`}
+                  />
+                  {validationErrors.password && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.password}</p>
+                  )}
+                  <p className={`mt-1 text-sm ${validationErrors.password ? 'text-red-600' : 'text-gray-500'}`}>
+                    Must contain at least 7 characters with one uppercase letter, one lowercase letter, and one number
+                  </p>
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
+                      validationErrors.email ? 'border-red-500' : ''
+                    }`}
+                  />
+                  {validationErrors.email && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="favoriteAnimal" className="block text-sm font-medium text-gray-700">
+                    Favorite Animal <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="favoriteAnimal"
+                    required
+                    value={formData.favoriteAnimal}
+                    onChange={(e) => setFormData(prev => ({ ...prev, favoriteAnimal: e.target.value }))}
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
+                      validationErrors.favoriteAnimal ? 'border-red-500' : ''
+                    }`}
+                  />
+                  {validationErrors.favoriteAnimal && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.favoriteAnimal}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date of Birth <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <select
+                        value={formData.dateOfBirth.day}
+                        onChange={(e) => handleDateChange('day', e.target.value)}
+                        className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
+                          validationErrors.dateOfBirth ? 'border-red-500' : ''
+                        }`}
+                      >
+                        <option value="">Day</option>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                          <option key={day} value={day}>{day}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <select
+                        value={formData.dateOfBirth.month}
+                        onChange={(e) => handleDateChange('month', e.target.value)}
+                        className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
+                          validationErrors.dateOfBirth ? 'border-red-500' : ''
+                        }`}
+                      >
+                        <option value="">Month</option>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                          <option key={month} value={month}>{month}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <select
+                        value={formData.dateOfBirth.year}
+                        onChange={(e) => handleDateChange('year', e.target.value)}
+                        className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
+                          validationErrors.dateOfBirth ? 'border-red-500' : ''
+                        }`}
+                      >
+                        <option value="">Year</option>
+                        {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {validationErrors.dateOfBirth && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.dateOfBirth}</p>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/login')}
+                    className="text-sm text-gray-600 hover:text-gray-900"
+                  >
+                    Already have an account? Login
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="bg-red-600 text-black py-2 px-6 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    {isLoading ? 'Creating Account...' : 'Create Account'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-          <div>
-            <label htmlFor="passwordHash" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              id="passwordHash"
-              type="password"
-              required
-              value={passwordHash}
-              onChange={(e) => setPasswordHash(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            />
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800">
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-gray-400">
+            <p>© 2024 F1 Fan Hub. All rights reserved.</p>
           </div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-green-300 bg-indigo-600 hover:bg-indigo-700 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {isLoading ? 'Registering...' : 'Register'}
-          </button>
-          <div className="text-center mt-4">
-            <p className="text-sm text-gray-600">Already have an account?</p>
-            <button
-              type="button"
-              onClick={() => navigate('/login')}
-              className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Login here
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+      </footer>
     </div>
   );
 } 

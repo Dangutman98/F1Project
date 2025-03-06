@@ -475,6 +475,7 @@
       "UserDto": {
         "required": [
           "email",
+          "favoriteAnimal",
           "passwordHash",
           "username"
         ],
@@ -489,6 +490,10 @@
             "nullable": true
           },
           "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "favoriteAnimal": {
             "type": "string",
             "nullable": true
           }
