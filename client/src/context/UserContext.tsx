@@ -1,8 +1,17 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
+interface UserProfile {
+  favoriteDriver?: string;
+  favoriteTeam?: string;
+  favoriteRacingSpot?: string;
+  favoriteAnimal?: string;
+  profilePhoto?: string;
+}
+
 interface User {
   id: string;
   username: string;
+  profile?: UserProfile;
 }
 
 interface UserContextType {
@@ -10,6 +19,7 @@ interface UserContextType {
   isAuthenticated: boolean;
   login: (user: User) => void;
   logout: () => void;
+  updateProfile: (profile: UserProfile) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -25,6 +35,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const updateProfile = (profile: UserProfile) => {
+    if (user) {
+      setUser({
+        ...user,
+        profile: {
+          ...user.profile,
+          ...profile
+        }
+      });
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -32,6 +54,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         login,
         logout,
+        updateProfile,
       }}
     >
       {children}

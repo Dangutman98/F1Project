@@ -34,7 +34,7 @@ export default function Login() {
       }
 
       login({ id: '1', username });
-      navigate('/');
+      navigate('/home');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid username or password');
     } finally {

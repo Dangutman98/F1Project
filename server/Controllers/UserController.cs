@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using server.DAL;
 using server.Models;
+using BCrypt.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,7 +26,6 @@ namespace server.Controllers
             public required string Password { get; set; }
         }
 
-
         // Get user by id
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
@@ -46,7 +46,7 @@ namespace server.Controllers
         /// <summary>
         /// Creates a new user.
         /// </summary>
-        /// <param name="email" name="username" name="passwordHash">The user to create.</param>
+        /// <param name="username" name="passwordHash">The user to create.</param>
         /// using userDto.cs file in models to add only username,password,email when new user created.
         [HttpPost]
         public IActionResult Post([FromBody] UserDto userDto)
@@ -56,18 +56,56 @@ namespace server.Controllers
                 return BadRequest("Invalid user data.");
             }
 
-            Console.WriteLine($"Username = {userDto.Username}");
-            Console.WriteLine($"PasswordHash = {userDto.PasswordHash}");
-            Console.WriteLine($"Email = {userDto.Email}");
-
-            int newUserId = _userDAL.AddNewUserToDB(userDto);
-
-            if (newUserId <= 0)
+            // Validate password requirements
+            if (string.IsNullOrEmpty(userDto.PasswordHash))
             {
-                return StatusCode(500, "Failed to create user.");
+                return BadRequest("Password is required.");
             }
 
-            return Ok(new { Message = "User created successfully", UserId = newUserId });
+            if (userDto.PasswordHash.Length < 7 || 
+                !userDto.PasswordHash.Any(char.IsUpper) || 
+                !userDto.PasswordHash.Any(char.IsLower) || 
+                !userDto.PasswordHash.Any(char.IsDigit))
+            {
+                return BadRequest("Must contain at least 7 characters with one uppercase letter, one lowercase letter, and one number");
+            }
+
+            // Hash the password before saving
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(userDto.PasswordHash);
+            userDto.PasswordHash = hashedPassword;
+
+            Console.WriteLine($"Username = {userDto.Username}");
+            Console.WriteLine($"Email = {userDto.Email}");
+            Console.WriteLine($"FavoriteAnimal = {userDto.FavoriteAnimal}");
+
+            try
+            {
+                int newUserId = _userDAL.AddNewUserToDB(userDto);
+
+                if (newUserId == -1)
+                {
+                    return Conflict("Username already exists. Please choose a different username.");
+                }
+
+                if (newUserId <= 0)
+                {
+                    Console.WriteLine("Failed to create user - newUserId is 0 or negative");
+                    return StatusCode(500, "Failed to create user. Please try again.");
+                }
+
+                return Ok(new { 
+                    Message = "User created successfully", 
+                    UserId = newUserId,
+                    Username = userDto.Username,
+                    Email = userDto.Email,
+                    FavoriteAnimal = userDto.FavoriteAnimal
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating user: {ex.Message}");
+                return StatusCode(500, "Failed to create user. Please try again.");
+            }
         }
 
         // POST /api/user/login - Check if user exists in the database
@@ -79,22 +117,58 @@ namespace server.Controllers
                 return BadRequest("Invalid login credentials.");
             }
 
-            // Check if the user credentials are valid
-            bool isValidUser = _userDAL.CheckUserCredentials(userInput.Username, userInput.Password);
-
-            if (!isValidUser)
+            try
             {
-                return Unauthorized("Invalid username or password.");
+                // Console.WriteLine($"Attempting login for username: {userInput.Username}");
+                
+                // Get the user's stored hash
+                var user = _userDAL.GetUserByUsername(userInput.Username);
+                if (user == null)
+                {
+                    // Console.WriteLine($"User not found: {userInput.Username}");
+                    return Unauthorized("Invalid username or password.");
+                }
+
+                // Console.WriteLine($"User found. Stored hash length: {user.PasswordHash?.Length ?? 0}");
+                // Console.WriteLine($"Attempting to verify password...");
+
+                // Verify the password
+                bool isValidPassword = BCrypt.Net.BCrypt.Verify(userInput.Password, user.PasswordHash);
+                // Console.WriteLine($"Password verification result: {isValidPassword}");
+
+                if (!isValidPassword)
+                {
+                    // Console.WriteLine("Password verification failed");
+                    return Unauthorized("Invalid username or password.");
+                }
+
+                // Console.WriteLine("Login successful, preparing response");
+                try {
+                    var response = new { 
+                        Message = "Login successful.",
+                        UserId = user.Id,
+                        Username = user.Username,
+                        Email = user.Email,
+                        FavoriteAnimal = user.FavoriteAnimal
+                    };
+                    // Console.WriteLine($"Response object created successfully");
+                    // var serializedResponse = System.Text.Json.JsonSerializer.Serialize(response);
+                    // Console.WriteLine($"Response serialized successfully: {serializedResponse}");
+                    return Ok(response);
+                }
+                catch (Exception ex) {
+                    // Console.WriteLine($"Error creating or serializing response: {ex.Message}");
+                    // Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    return StatusCode(500, "Internal server error during response creation");
+                }
             }
-
-            // You can implement JWT or other tokens here for successful login
-            return Ok(new { Message = "Login successful." });
+            catch (Exception ex)
+            {
+                // Console.WriteLine($"Error during login: {ex.Message}");
+                // Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return StatusCode(500, new { Message = "Login failed. Please try again.", Error = ex.Message });
+            }
         }
-
-
-
-
-
 
         // PUT api/<UserController>/5
         [HttpPut("{id}")]

@@ -12,63 +12,117 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Navigation Bar */}
-      <nav className="bg-red-600 shadow-lg">
+      {/* Header */}
+      <header className="bg-red-600 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <button
-                onClick={() => navigate('/')}
-                className="text-white text-2xl font-bold hover:text-gray-200"
+                onClick={() => navigate('/home')}
+                className="text-black text-2xl font-bold hover:text-gray-800"
               >
                 F1 Fan Hub
               </button>
             </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Profile Content */}
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-          <div className="p-8">
-            <div className="text-center">
-              <div className="h-24 w-24 rounded-full bg-red-600 text-white text-3xl font-bold flex items-center justify-center mx-auto mb-4">
-                {user.username.charAt(0).toUpperCase()}
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">{user.username}</h2>
-              <p className="text-gray-500 mt-1">F1 Fan</p>
-            </div>
-
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
-              <div className="space-y-4">
-                <div className="border-b pb-4">
-                  <p className="text-sm text-gray-500">Username</p>
-                  <p className="text-gray-900">{user.username}</p>
-                </div>
-                <div className="border-b pb-4">
-                  <p className="text-sm text-gray-500">Member Since</p>
-                  <p className="text-gray-900">2024</p>
-                </div>
-                <div className="border-b pb-4">
-                  <p className="text-sm text-gray-500">Favorite Team</p>
-                  <p className="text-gray-900">Not Set</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8">
+            <nav className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/')}
-                className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                onClick={() => navigate('/home')}
+                className="text-black hover:text-gray-800"
               >
-                Back to Home
+                Home
               </button>
+              <button
+                onClick={() => navigate('/profile')}
+                className="text-black hover:text-gray-800"
+              >
+                Profile
+              </button>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <div className="bg-red-600">
+          <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              {user.profile?.profilePhoto ? (
+                <img
+                  src={user.profile.profilePhoto}
+                  alt="Profile"
+                  className="h-32 w-32 rounded-full mx-auto mb-6 object-cover border-4 border-white"
+                />
+              ) : (
+                <div className="h-32 w-32 rounded-full bg-white text-red-600 text-4xl font-bold flex items-center justify-center mx-auto mb-6 border-4 border-white">
+                  {user.username.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <h1 className="text-4xl font-bold text-black mb-2">{user.username}</h1>
+              <p className="text-xl text-black">F1 Fan</p>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Profile Information */}
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+            <div className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Information</h2>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Username</h3>
+                      <p className="mt-1 text-gray-600">{user.username}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Favorite Animal</h3>
+                      <p className="mt-1 text-gray-600">{user.profile?.favoriteAnimal || 'Not Set'}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Favorite Driver</h3>
+                      <p className="mt-1 text-gray-600">{user.profile?.favoriteDriver || 'Not Set'}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Favorite Team</h3>
+                      <p className="mt-1 text-gray-600">{user.profile?.favoriteTeam || 'Not Set'}</p>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Information</h2>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Favorite Racing Spot</h3>
+                      <p className="mt-1 text-gray-600">{user.profile?.favoriteRacingSpot || 'Not Set'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-12 flex justify-center">
+                <button
+                  onClick={() => navigate('/edit-profile')}
+                  className="bg-red-600 text-black py-3 px-8 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg font-semibold"
+                >
+                  Edit Profile
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800">
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-gray-400">
+            <p>© 2024 F1 Fan Hub. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 } 
