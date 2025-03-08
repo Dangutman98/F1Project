@@ -2,6 +2,18 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useState, useEffect } from 'react';
 
+// Import team logos
+import alfaRomeoLogo from '../assets/TeamsIcons/alfa romeo.png';
+import alphaTauriLogo from '../assets/TeamsIcons/alpha tauri.jpg';
+import alpineLogo from '../assets/TeamsIcons/alpine.avif';
+import astonMartinLogo from '../assets/TeamsIcons/aston martin.avif';
+import ferrariLogo from '../assets/TeamsIcons/ferrari.avif';
+import haasLogo from '../assets/TeamsIcons/haas.avif';
+import mcLarenLogo from '../assets/TeamsIcons/mclaren.avif';
+import mercedesLogo from '../assets/TeamsIcons/mercedes.avif';
+import redBullLogo from '../assets/TeamsIcons/red bull.avif';
+import williamsLogo from '../assets/TeamsIcons/williams.avif';
+
 interface Team {
   id: number;
   name: string;
@@ -15,6 +27,20 @@ interface Driver {
   teamId: string;
   acronymName: string;
 }
+
+// Map team names to their logos
+const teamLogos: { [key: string]: string } = {
+  'Alfa Romeo': alfaRomeoLogo,
+  'AlphaTauri': alphaTauriLogo,
+  'Alpine': alpineLogo,
+  'Aston Martin': astonMartinLogo,
+  'Ferrari': ferrariLogo,
+  'Haas F1 Team': haasLogo,
+  'McLaren': mcLarenLogo,
+  'Mercedes': mercedesLogo,
+  'Red Bull Racing': redBullLogo,
+  'Williams': williamsLogo
+};
 
 const LoadingSkeleton = () => (
   <div className="space-y-6">
@@ -157,7 +183,7 @@ export default function TeamsAndDrivers() {
                   className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300"
                 >
                   <div 
-                    className="p-6 cursor-pointer transition-colors hover:opacity-90"
+                    className="p-8 cursor-pointer transition-colors hover:opacity-90"
                     onClick={() => handleTeamClick(team.id)}
                     style={{ 
                       backgroundColor: team.color,
@@ -166,9 +192,20 @@ export default function TeamsAndDrivers() {
                   >
                     <div className="flex justify-between items-center">
                       <h2 className="text-2xl font-bold">{team.name}</h2>
-                      <span className="text-2xl">
-                        {expandedTeam === team.id ? '−' : '+'}
-                      </span>
+                      <div className="flex items-center space-x-4">
+                        <img 
+                          src={teamLogos[team.name]} 
+                          alt={`${team.name} logo`}
+                          className="w-20 h-20 object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                        <span className="text-2xl">
+                          {expandedTeam === team.id ? '−' : '+'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   

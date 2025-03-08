@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 export default function EditProfile() {
   const navigate = useNavigate();
   const { user, updateProfile } = useUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     favoriteDriver: '',
     favoriteTeam: '',
@@ -54,6 +55,10 @@ export default function EditProfile() {
     }
   };
 
+  const handlePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
   if (!user) {
     navigate('/login');
     return null;
@@ -77,8 +82,11 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-700">
                   Profile Photo
                 </label>
-                <div className="mt-1 flex items-center">
-                  <div className="h-24 w-24 rounded-full overflow-hidden bg-gray-100">
+                <div className="mt-1 flex justify-center items-center">
+                  <div 
+                    onClick={handlePhotoClick}
+                    className="h-24 w-24 rounded-full overflow-hidden bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
+                  >
                     {formData.profilePhoto ? (
                       <img
                         src={formData.profilePhoto}
@@ -86,16 +94,18 @@ export default function EditProfile() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center text-gray-400">
-                        No photo
+                      <div className="h-full w-full flex flex-col items-center justify-center text-gray-400">
+                        <span className="text-2xl">+</span>
+                        <span className="text-xs mt-1">Upload Photo Here</span>
                       </div>
                     )}
                   </div>
                   <input
+                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handlePhotoUpload}
-                    className="ml-4"
+                    className="hidden"
                   />
                 </div>
               </div>

@@ -26,25 +26,23 @@ builder.Services.AddHttpClient(); // Register HttpClient for Dependency Injectio
 // Register DriverDal for Dependency Injection
 builder.Services.AddScoped<DriverDal>(provider =>
 {
-    var httpClient = provider.GetRequiredService<HttpClient>(); // Get HttpClient instance
     var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb"); // Get connection string from configuration
     if (string.IsNullOrEmpty(connectionString))
     {
         throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
     }
-    return new DriverDal(connectionString, httpClient); // Pass both to the DriverDal constructor
+    return new DriverDal(connectionString); // Only pass connection string
 });
 
 // Register TeamDal for Dependency Injection
 builder.Services.AddScoped<TeamDal>(provider =>
 {
-    var httpClient = provider.GetRequiredService<HttpClient>(); // Get HttpClient instance
     var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb"); // Get connection string from configuration
     if (string.IsNullOrEmpty(connectionString))
     {
         throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
     }
-    return new TeamDal(connectionString, httpClient); // Pass both to the TeamDal constructor
+    return new TeamDal(connectionString); // Only pass connection string
 });
 
 // Enable CORS (Cross-Origin Resource Sharing)
