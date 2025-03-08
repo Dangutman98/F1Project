@@ -20,11 +20,20 @@ export default function HomePage() {
               <span className="text-white text-2xl font-bold">F1 Fan Hub</span>
             </div>
             <div className="flex items-center space-x-4">
+              <span className="text-black">
+                Welcome, {user?.username}
+              </span>
               <button
                 onClick={() => navigate('/profile')}
                 className="text-black hover:text-gray-700"
               >
-                Welcome, {user?.username}
+                My Profile
+              </button>
+              <button
+                onClick={() => navigate('/teams-and-drivers')}
+                className="text-black hover:text-gray-700"
+              >
+                Teams & Drivers
               </button>
               <button
                 onClick={handleLogout}

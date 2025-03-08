@@ -151,22 +151,17 @@ namespace server.Controllers
                         Email = user.Email,
                         FavoriteAnimal = user.FavoriteAnimal
                     };
-                    // Console.WriteLine($"Response object created successfully");
-                    // var serializedResponse = System.Text.Json.JsonSerializer.Serialize(response);
-                    // Console.WriteLine($"Response serialized successfully: {serializedResponse}");
                     return Ok(response);
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     // Console.WriteLine($"Error creating or serializing response: {ex.Message}");
                     // Console.WriteLine($"Stack trace: {ex.StackTrace}");
                     return StatusCode(500, "Internal server error during response creation");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Console.WriteLine($"Error during login: {ex.Message}");
-                // Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                return StatusCode(500, new { Message = "Login failed. Please try again.", Error = ex.Message });
+                return StatusCode(500, new { Message = "Login failed. Please try again." });
             }
         }
 

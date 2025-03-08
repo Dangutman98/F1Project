@@ -5,6 +5,8 @@ import Register from './components/Register';
 import HomePage from './components/HomePage';
 import Profile from './components/Profile';
 import EditProfile from './components/EditProfile';
+import ProtectedRoute from './components/ProtectedRoute';
+import TeamsAndDrivers from './components/TeamsAndDrivers';
 import './App.css';
 
 function App() {
@@ -14,9 +16,10 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/home" element={<HomePage />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+          <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/teams-and-drivers" element={<ProtectedRoute><TeamsAndDrivers /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
