@@ -8,61 +8,39 @@ using static server.DAL.DriverDal;
 
 namespace server.DAL
 {
-    public class TeamDal(string connectionString, HttpClient httpClient)
+    public class TeamDal
     {
-        private readonly string _connectionString = connectionString;
-        private readonly HttpClient _httpClient = httpClient;
+        private readonly string _connectionString;
+
+        public TeamDal(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
 
         // Fetch all teams from the database
         public async Task<List<Team>> GetAllTeamsAsync()
         {
             var teamList = new List<Team>();
 
-            try
+            using (var connection = new SqlConnection(_connectionString))
             {
-                // Fetch data from OpenF1 API
-                var response = await _httpClient.GetStringAsync("https://api.openf1.org/v1/drivers");
-
-                // Log the raw response for debugging
-                //Console.WriteLine("Raw API Response:" + response);
-
-                // Deserialize the response into a list of TeamApiData
-                var teamDataList = JsonConvert.DeserializeObject<List<TeamApiData>>(response);
-
-                if (teamDataList != null && teamDataList.Count != 0)
+                await connection.OpenAsync();
+                using var command = new SqlCommand("SELECT Id, Name, Color FROM Teams ORDER BY Id", connection);
+                
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    // Filter out duplicate teams by name and take the first 10 unique teams
-                    var uniqueTeamDataList = teamDataList
-                        .GroupBy(team => team.Name) // Group by team name
-                        .Select(group => group.First()) // Take the first team from each group (unique names)
-                        .Take(10) // Limit to first 10 teams
-                        .ToList();
-
-                    int counter = 1; // Start counting from 1
-
-                    foreach (var teamData in uniqueTeamDataList)
+                    teamList.Add(new Team
                     {
-                        teamList.Add(new Team
-                        {
-                            Id = counter++, // Assign sequential IDs from 1 to 10
-                            Name = teamData.Name,
-                            Color = teamData.TeamColour
-                        });
-                    }
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1),
+                        Color = reader.GetString(2)
+                    });
                 }
-                else
-                {
-                    Console.WriteLine("No team data found.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching teams: {ex.Message}");
             }
 
             return teamList;
         }
-
 
         //method to save teams to databas
         public async Task SaveTeamsToDatabaseAsync(List<Team> teams)

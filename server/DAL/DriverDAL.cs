@@ -4,62 +4,45 @@ using server.Models;
 
 namespace server.DAL
 {
-    public class DriverDal(string connectionString, HttpClient httpClient)
+    public class DriverDal
     {
-        private readonly string _connectionString = connectionString;
-        private readonly HttpClient _httpClient = httpClient;
+        private readonly string _connectionString;
 
-        // Fetch drivers from OpenF1 API
+        public DriverDal(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        // Fetch drivers from database
         public async Task<List<Driver>> FetchDriversAsync()
         {
             var driverList = new List<Driver>();
 
-            // List of relevant driver IDs
-            var relevantDriverIds = new HashSet<int> { 1, 2, 4, 10, 11, 14, 16, 20, 21, 22, 24, 27, 31, 44, 55, 63, 81, 23, 77, 18 };
-
-            try
+            using (var connection = new SqlConnection(_connectionString))
             {
-                // Fetch data from OpenF1 API
-                var response = await _httpClient.GetStringAsync("https://api.openf1.org/v1/drivers");
-
-                // Deserialize the response into a list of DriverApiData
-                var driverDataList = JsonConvert.DeserializeObject<List<DriverApiData>>(response);
-
-                if (driverDataList != null && driverDataList.Count != 0)
+                await connection.OpenAsync();
+                using var command = new SqlCommand(@"
+                    SELECT d.Id, d.Name, d.PhotoURL, t.Name as TeamName, d.AcronymName 
+                    FROM Drivers d 
+                    INNER JOIN Teams t ON d.TeamId = t.Id 
+                    ORDER BY d.Id", connection);
+                
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    // Filter out duplicate drivers by name and only keep those with relevant IDs
-                    var uniqueDriverDataList = driverDataList
-                   .Where(driver => relevantDriverIds.Contains(driver.Id)) // Keep only relevant IDs
-                   .GroupBy(driver => driver.Id)  // Group by ID
-                   .Select(group => group.First()) // Take only the first occurrence of each ID
-                   .ToList();
-
-
-                    foreach (var driver in uniqueDriverDataList)
+                    driverList.Add(new Driver
                     {
-                        driverList.Add(new Driver
-                        {
-                            Id = driver.Id,
-                            Name = driver.Name,
-                            PhotoURL = driver.PhotoUrl,
-                            TeamId = driver.TeamId,
-                            AcronymName = driver.AcronymName
-                        });
-                    }
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1),
+                        PhotoURL = reader.GetString(2),
+                        TeamId = reader.GetString(3),  // This is actually the team name
+                        AcronymName = reader.GetString(4)
+                    });
                 }
-                else
-                {
-                    Console.WriteLine("No driver data found.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching drivers: {ex.Message}");
             }
 
             return driverList;
         }
-
 
         //delete method
         public async Task DeleteAllDriversAsync()
@@ -124,7 +107,6 @@ VALUES (@Id, @Name, @PhotoURL, @TeamId, @AcronymName)", conn))
             }
         }
 
-
         // Create a response model for deserializing the API response
         public class ApiResponse
         {
@@ -150,7 +132,5 @@ VALUES (@Id, @Name, @PhotoURL, @TeamId, @AcronymName)", conn))
             [JsonProperty("name_acronym")]
             public required string AcronymName { get; set; }
         }
-
-        
     }
 }

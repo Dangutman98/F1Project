@@ -1,14 +1,34 @@
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { useRef } from 'react';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, updateProfile } = useUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!user) {
     navigate('/login');
     return null;
   }
+
+  const handlePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateProfile({
+          ...user.profile,
+          profilePhoto: reader.result as string
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -43,22 +63,35 @@ export default function Profile() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="bg-red-600">
           <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              {user.profile?.profilePhoto ? (
-                <img
-                  src={user.profile.profilePhoto}
-                  alt="Profile"
-                  className="h-32 w-32 rounded-full mx-auto mb-6 object-cover border-4 border-white"
+              <div 
+                onClick={handlePhotoClick} 
+                className="cursor-pointer relative inline-block"
+              >
+                {user.profile?.profilePhoto ? (
+                  <img
+                    src={user.profile.profilePhoto}
+                    alt="Profile"
+                    className="h-32 w-32 rounded-full mx-auto mb-6 object-cover border-4 border-white"
+                  />
+                ) : (
+                  <div className="h-32 w-32 rounded-full bg-white text-red-600 text-4xl font-bold flex flex-col items-center justify-center mx-auto mb-6 border-4 border-white relative group hover:bg-gray-50">
+                    <span className="text-red-600 text-4xl">+</span>
+                    <span className="text-red-600 text-xs mt-1">Upload photo</span>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
                 />
-              ) : (
-                <div className="h-32 w-32 rounded-full bg-white text-red-600 text-4xl font-bold flex items-center justify-center mx-auto mb-6 border-4 border-white">
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
-              )}
+              </div>
               <h1 className="text-4xl font-bold text-black mb-2">{user.username}</h1>
               <p className="text-xl text-black">F1 Fan</p>
             </div>
@@ -66,7 +99,7 @@ export default function Profile() {
         </div>
 
         {/* Profile Information */}
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="bg-white shadow-xl rounded-lg overflow-hidden">
             <div className="p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -102,7 +135,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="mt-12 flex justify-center">
+              <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => navigate('/edit-profile')}
                   className="bg-red-600 text-black py-3 px-8 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg font-semibold"
