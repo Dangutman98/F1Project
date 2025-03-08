@@ -33,7 +33,14 @@ export default function Login() {
         throw new Error(data.message || 'Login failed');
       }
 
-      login({ id: '1', username });
+      login({
+        id: data.userId,
+        username: data.username,
+        profile: {
+          favoriteAnimal: data.favoriteAnimal,
+          email: data.email
+        }
+      });
       navigate('/home');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid username or password');
