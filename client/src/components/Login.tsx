@@ -38,7 +38,9 @@ export default function Login() {
         username: data.username,
         profile: {
           favoriteAnimal: data.favoriteAnimal,
-          email: data.email
+          email: data.email,
+          favoriteDriver: data.favoriteDriverId?.toString(),
+          favoriteTeam: data.favoriteTeamId?.toString()
         }
       });
       navigate('/home');

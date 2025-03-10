@@ -2,10 +2,28 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
+interface Driver {
+  id: number;
+  name: string;
+  photoURL: string;
+  teamId: number;
+  acronymName: string;
+  teamName: string;
+  teamColor: string;
+}
+
+interface Team {
+  id: number;
+  name: string;
+  color: string;
+}
+
 export default function EditProfile() {
   const navigate = useNavigate();
   const { user, updateProfile } = useUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [formData, setFormData] = useState({
     favoriteDriver: '',
     favoriteTeam: '',
@@ -14,6 +32,37 @@ export default function EditProfile() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Fetch drivers and teams
+    const fetchData = async () => {
+      try {
+        const [driversResponse, teamsResponse] = await Promise.all([
+          fetch('http://localhost:5066/api/Driver/fetch'),
+          fetch('http://localhost:5066/api/Team')
+        ]);
+
+        if (!driversResponse.ok || !teamsResponse.ok) {
+          console.error('API Error:', {
+            drivers: driversResponse.status,
+            teams: teamsResponse.status
+          });
+          throw new Error('Failed to fetch data');
+        }
+
+        const driversData = await driversResponse.json();
+        const teamsData = await teamsResponse.json();
+        console.log('Fetched data:', { drivers: driversData, teams: teamsData });
+        setDrivers(driversData);
+        setTeams(teamsData);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load drivers and teams');
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (user?.profile) {
@@ -32,10 +81,42 @@ export default function EditProfile() {
     setError('');
 
     try {
-      updateProfile(formData);
+      // Create the request body with only the preference fields
+      const requestBody = {
+        favoriteDriverId: formData.favoriteDriver ? parseInt(formData.favoriteDriver) : null,
+        favoriteTeamId: formData.favoriteTeam ? parseInt(formData.favoriteTeam) : null,
+        favoriteRacingSpotId: null  // Set to null since it's not used yet
+      };
+
+      console.log('Sending request with data:', requestBody);
+
+      // Update user preferences in the backend
+      const response = await fetch(`http://localhost:5066/api/user/${user?.id}/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Server error details:', errorData);
+        throw new Error(`Failed to update preferences: ${errorData.message || response.statusText}`);
+      }
+
+      // Update local state
+      updateProfile({
+        favoriteDriver: formData.favoriteDriver,
+        favoriteTeam: formData.favoriteTeam,
+        favoriteRacingSpot: formData.favoriteRacingSpot,
+        profilePhoto: formData.profilePhoto
+      });
+      
       navigate('/profile');
     } catch (err) {
-      setError('Failed to update profile');
+      console.error('Error updating profile:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
     } finally {
       setIsLoading(false);
     }
@@ -114,24 +195,36 @@ export default function EditProfile() {
                 <label className="block text-sm font-medium text-gray-700">
                   Favorite Driver
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.favoriteDriver}
                   onChange={(e) => setFormData(prev => ({ ...prev, favoriteDriver: e.target.value }))}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                />
+                >
+                  <option value="">Select a driver</option>
+                  {drivers.map((driver) => (
+                    <option key={driver.id} value={driver.id}>
+                      {driver.name} - {driver.teamName}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Favorite Team
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.favoriteTeam}
                   onChange={(e) => setFormData(prev => ({ ...prev, favoriteTeam: e.target.value }))}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                />
+                >
+                  <option value="">Select a team</option>
+                  {teams.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

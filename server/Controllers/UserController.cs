@@ -149,7 +149,9 @@ namespace server.Controllers
                         UserId = user.Id,
                         Username = user.Username,
                         Email = user.Email,
-                        FavoriteAnimal = user.FavoriteAnimal
+                        FavoriteAnimal = user.FavoriteAnimal,
+                        FavoriteDriverId = user.FavoriteDriverId,
+                        FavoriteTeamId = user.FavoriteTeamId
                     };
                     return Ok(response);
                 }
@@ -193,34 +195,55 @@ namespace server.Controllers
 
         // PUT api/<UserController>/5/preferences
         [HttpPut("{id}/preferences")]
-        public IActionResult UpdatePreferences(int id, [FromBody] User user)
+        public IActionResult UpdatePreferences(int id, [FromBody] dynamic preferences)
         {
-            if (user == null)
+            try
             {
-                return BadRequest("Invalid user data.");
-            }
+                var existingUser = _userDAL.GetUserById(id);
+                if (existingUser == null)
+                {
+                    return NotFound(new { Message = $"User with Id {id} not found." });
+                }
 
-            var existingUser = _userDAL.GetUserById(id);
-            if (existingUser == null)
+                // Extract values from dynamic object, allowing nulls
+                int? favoriteDriverId = preferences.favoriteDriverId;
+                int? favoriteTeamId = preferences.favoriteTeamId;
+                int? favoriteRacingSpotId = preferences.favoriteRacingSpotId;
+
+                Console.WriteLine($"Updating preferences for user {id}:");
+                Console.WriteLine($"FavoriteDriverId: {favoriteDriverId}");
+                Console.WriteLine($"FavoriteTeamId: {favoriteTeamId}");
+                Console.WriteLine($"FavoriteRacingSpotId: {favoriteRacingSpotId}");
+
+                // Update only the preference fields, allowing nulls
+                existingUser.FavoriteDriverId = favoriteDriverId;
+                existingUser.FavoriteTeamId = favoriteTeamId;
+                existingUser.FavoriteRacingSpotId = favoriteRacingSpotId;
+
+                // Update user preferences in the database
+                bool updateSuccess = _userDAL.UpdateUserPreferences(id, existingUser);
+
+                if (!updateSuccess)
+                {
+                    Console.WriteLine("Failed to update user preferences in database");
+                    return StatusCode(500, new { Message = "Failed to update user preferences." });
+                }
+
+                return Ok(new { 
+                    Message = "User preferences updated successfully",
+                    Data = new {
+                        FavoriteDriverId = existingUser.FavoriteDriverId,
+                        FavoriteTeamId = existingUser.FavoriteTeamId,
+                        FavoriteRacingSpotId = existingUser.FavoriteRacingSpotId
+                    }
+                });
+            }
+            catch (Exception ex)
             {
-                return NotFound($"User with Id {id} not found.");
+                Console.WriteLine($"Error updating preferences: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return StatusCode(500, new { Message = $"Failed to update preferences: {ex.Message}" });
             }
-
-            // Only update the preference fields, keep other fields unchanged
-            existingUser.FavoriteAnimal = user.FavoriteAnimal;
-            existingUser.FavoriteDriverId = user.FavoriteDriverId;
-            existingUser.FavoriteTeamId = user.FavoriteTeamId;
-            existingUser.FavoriteRacingSpotId = user.FavoriteRacingSpotId;
-
-            // Update user preferences in the database
-            bool updateSuccess = _userDAL.UpdateUserPreferences(id, existingUser);
-
-            if (!updateSuccess)
-            {
-                return StatusCode(500, "Failed to update user preferences.");
-            }
-
-            return Ok(new { Message = "User preferences updated successfully" });
         }
 
         // Delete user by id
