@@ -323,26 +323,41 @@ namespace server.DAL
                 con = connect();
                 con.Open();
 
-                // SQL command to update user preferences
-                cmd = new SqlCommand("UPDATE Users SET FavoriteAnimal = @FavoriteAnimal, FavoriteDriverId = @FavoriteDriverId, FavoriteTeamId = @FavoriteTeamId, FavoriteRacingSpotId = @FavoriteRacingSpotId WHERE Id = @Id", con);
+                // Direct SQL update statement with proper parameter name
+                string updateSql = @"
+                    UPDATE Users 
+                    SET FavoriteDriverId = @FavoriteDriverId,
+                        FavoriteTeamId = @FavoriteTeamId,
+                        FavoriteRacingSpotId = @FavoriteRacingSpotId
+                    WHERE Id = @Id";
+
+                cmd = new SqlCommand(updateSql, con);
+                
+                // Add parameters with correct names
                 cmd.Parameters.AddWithValue("@Id", userId);
-                cmd.Parameters.AddWithValue("@FavoriteAnimal", (object?)user.FavoriteAnimal ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@FavoriteDriverId", (object?)user.FavoriteDriverId ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@FavoriteTeamId", (object?)user.FavoriteTeamId ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@FavoriteRacingSpotId", (object?)user.FavoriteRacingSpotId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@FavoriteDriverId", 
+                    user.FavoriteDriverId.HasValue ? (object)user.FavoriteDriverId.Value : DBNull.Value);
+                cmd.Parameters.AddWithValue("@FavoriteTeamId", 
+                    user.FavoriteTeamId.HasValue ? (object)user.FavoriteTeamId.Value : DBNull.Value);
+                cmd.Parameters.AddWithValue("@FavoriteRacingSpotId", 
+                    user.FavoriteRacingSpotId.HasValue ? (object)user.FavoriteRacingSpotId.Value : DBNull.Value);
 
-                int rowsAffected = cmd.ExecuteNonQuery();
+                int result = cmd.ExecuteNonQuery();
+                Console.WriteLine($"UpdateUserPreferences: {result} rows affected");
 
-                return rowsAffected > 0; // If rows were affected, return true indicating successful update
+                return result > 0;
             }
             catch (SqlException sqlEx)
             {
-                Console.WriteLine($"SQL Exception: {sqlEx.Message}");
+                Console.WriteLine($"SQL Exception in UpdateUserPreferences: {sqlEx.Message}");
+                Console.WriteLine($"Error Number: {sqlEx.Number}");
+                Console.WriteLine($"Error State: {sqlEx.State}");
                 throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
+                Console.WriteLine($"Exception in UpdateUserPreferences: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 throw;
             }
             finally

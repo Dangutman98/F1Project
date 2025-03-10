@@ -179,8 +179,8 @@
         "IsRequired": true
       },
       {
-        "Name": "user",
-        "Type": "server.Models.User",
+        "Name": "preferences",
+        "Type": "System.Object",
         "IsRequired": true
       }
     ],
