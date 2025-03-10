@@ -1,34 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { useRef } from 'react';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, updateProfile } = useUser();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useUser();
 
   if (!user) {
     navigate('/login');
     return null;
   }
-
-  const handlePhotoClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateProfile({
-          ...user.profile,
-          profilePhoto: reader.result as string
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -68,10 +48,7 @@ export default function Profile() {
         <div className="bg-red-600">
           <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div 
-                onClick={handlePhotoClick} 
-                className="cursor-pointer relative inline-block"
-              >
+              <div className="inline-block">
                 {user.profile?.profilePhoto ? (
                   <img
                     src={user.profile.profilePhoto}
@@ -79,18 +56,10 @@ export default function Profile() {
                     className="h-32 w-32 rounded-full mx-auto mb-6 object-cover border-4 border-white"
                   />
                 ) : (
-                  <div className="h-32 w-32 rounded-full bg-white text-red-600 text-4xl font-bold flex flex-col items-center justify-center mx-auto mb-6 border-4 border-white relative group hover:bg-gray-50">
-                    <span className="text-red-600 text-4xl">+</span>
-                    <span className="text-red-600 text-xs mt-1">Upload photo</span>
+                  <div className="h-32 w-32 rounded-full bg-white text-gray-400 flex items-center justify-center mx-auto mb-6 border-4 border-white">
+                    <span className="text-2xl">No Photo</span>
                   </div>
                 )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  className="hidden"
-                />
               </div>
               <h1 className="text-4xl font-bold text-black mb-2">{user.username}</h1>
               <p className="text-xl text-black">F1 Fan</p>
