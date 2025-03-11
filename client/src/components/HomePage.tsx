@@ -36,6 +36,18 @@ export default function HomePage() {
                 Teams & Drivers
               </button>
               <button
+                onClick={() => navigate('/events')}
+                className="text-black hover:text-gray-700"
+              >
+                Events
+              </button>
+              <button
+                onClick={() => navigate('/racing-spots')}
+                className="text-black hover:text-gray-700"
+              >
+                Racing Spots
+              </button>
+              <button
                 onClick={handleLogout}
                 className="bg-white text-red-600 px-4 py-2 rounded-md hover:bg-gray-100"
               >

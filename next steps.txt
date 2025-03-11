@@ -43,4 +43,6 @@ DriverId
 ]
 
 
-*Password Hash*
+edit profile - 
+saving profile photo in db. 
+saving favorite spot. 

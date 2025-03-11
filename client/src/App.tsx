@@ -7,6 +7,8 @@ import Profile from './components/Profile';
 import EditProfile from './components/EditProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import TeamsAndDrivers from './components/TeamsAndDrivers';
+import Events from './components/Events';
+import RacingSpots from './components/RacingSpots';
 import './App.css';
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
           <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
           <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/teams-and-drivers" element={<ProtectedRoute><TeamsAndDrivers /></ProtectedRoute>} />
+          <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
+          <Route path="/racing-spots" element={<ProtectedRoute><RacingSpots /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
