@@ -76,22 +76,10 @@ export default function Profile() {
                 onClick={() => navigate('/home')}
                 className="text-black text-2xl font-bold hover:text-gray-800"
               >
-                F1 Fan Hub
+                Return to Home Page
               </button>
             </div>
             <nav className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/home')}
-                className="text-black hover:text-gray-800"
-              >
-                Home
-              </button>
-              <button
-                onClick={() => navigate('/profile')}
-                className="text-black hover:text-gray-800"
-              >
-                Profile
-              </button>
             </nav>
           </div>
         </div>

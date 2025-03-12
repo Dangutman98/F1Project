@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Event {
-  meeting_key: number;
-  meeting_name: string;
-  meeting_official_name: string;
-  circuit_short_name: string;
-  country_name: string;
-  date_start: string;
+  id: number;
+  raceName: string;
+  raceDate: string;
   location: string;
+  imageUrl: string;
 }
 
 export default function Events() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -18,7 +18,7 @@ export default function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('https://api.openf1.org/v1/meetings');
+        const response = await fetch('http://localhost:5066/api/event');
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }
@@ -46,49 +46,78 @@ export default function Events() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">F1 Race Events</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {events.map((event) => (
-            <div
-              key={event.meeting_key}
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  {event.meeting_official_name}
-                </h2>
-                <div className="space-y-2 text-gray-600">
-                  <p>
-                    <span className="font-medium">Circuit:</span>{' '}
-                    {event.circuit_short_name}
-                  </p>
-                  <p>
-                    <span className="font-medium">Location:</span>{' '}
-                    {event.location}, {event.country_name}
-                  </p>
-                  <p>
-                    <span className="font-medium">Date:</span>{' '}
-                    {new Date(event.date_start).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-red-600 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/home')}
+                className="text-black text-2xl font-bold hover:text-gray-800"
+              >
+                Return to Home Page
+              </button>
+            </div>
+            <nav className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/profile')}
+                className="text-black text-xl font-bold hover:text-gray-800"
+              >
+                Profile
+              </button>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">F1 Race Events</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events.map((event) => (
+              <div
+                key={event.id}
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                    {event.raceName}
+                  </h2>
+                  <div className="space-y-2 text-gray-600">
+                    <p>
+                      <span className="font-medium">Location:</span> {event.location}
+                    </p>
+                    <p>
+                      <span className="font-medium">Date:</span>{' '}
+                      {new Date(event.raceDate).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

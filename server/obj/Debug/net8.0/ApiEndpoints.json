@@ -46,6 +46,36 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "F1Project.Controllers.EventController",
+    "Method": "GetEvents",
+    "RelativePath": "api/Event",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[F1Project.Models.Event, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "F1Project.Controllers.EventController",
+    "Method": "SyncEvents",
+    "RelativePath": "api/Event/sync",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "server.Controllers.TeamController",
     "Method": "GetTeams",
     "RelativePath": "api/Team",
