@@ -18,7 +18,7 @@ export default function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5066/api/event');
+        const response = await fetch('http://localhost:5066/api/Event');
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }

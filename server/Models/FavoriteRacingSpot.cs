@@ -2,11 +2,8 @@
 {
     public class FavoriteRacingSpot
     {
-        private int userId;
-        private string spotName;
-
-        public int UserId { get => userId; set => userId = value; }
-        public string SpotName { get => spotName; set => spotName = value; }
+        public int UserId { get; set; }
+        public string SpotName { get; set; } = string.Empty;
 
         // empty constructor
         public FavoriteRacingSpot()

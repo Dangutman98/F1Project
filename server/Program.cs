@@ -45,6 +45,17 @@ builder.Services.AddScoped<TeamDal>(provider =>
     return new TeamDal(connectionString); // Only pass connection string
 });
 
+// Register EventDAL for Dependency Injection
+builder.Services.AddScoped<EventDAL>(provider =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
+    }
+    return new EventDAL(connectionString);
+});
+
 // Enable CORS (Cross-Origin Resource Sharing)
 builder.Services.AddCors(options =>
 {
