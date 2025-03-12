@@ -23,41 +23,42 @@ export default function Profile() {
   const { user } = useUser();
   const [favoriteDriver, setFavoriteDriver] = useState<Driver | null>(null);
   const [favoriteTeam, setFavoriteTeam] = useState<Team | null>(null);
+  const [favoriteSpots, setFavoriteSpots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!user?.profile?.favoriteDriver || !user?.profile?.favoriteTeam) {
-        setIsLoading(false);
-        return;
-      }
+    const fetchData = async () => {
+      if (!user?.id) return;
 
       try {
-        const [driversResponse, teamsResponse] = await Promise.all([
+        const [driversResponse, teamsResponse, spotsResponse] = await Promise.all([
           fetch('http://localhost:5066/api/Driver/fetch'),
-          fetch('http://localhost:5066/api/Team')
+          fetch('http://localhost:5066/api/Team'),
+          fetch(`http://localhost:5066/api/event/favorite/all/${user.id}`)
         ]);
 
-        if (!driversResponse.ok || !teamsResponse.ok) {
+        if (!driversResponse.ok || !teamsResponse.ok || !spotsResponse.ok) {
           throw new Error('Failed to fetch data');
         }
 
         const drivers = await driversResponse.json();
         const teams = await teamsResponse.json();
+        const spots = await spotsResponse.json();
 
         const selectedDriver = drivers.find((d: Driver) => d.id === parseInt(user.profile?.favoriteDriver ?? ''));
         const selectedTeam = teams.find((t: Team) => t.id === parseInt(user.profile?.favoriteTeam ?? ''));
 
         setFavoriteDriver(selectedDriver || null);
         setFavoriteTeam(selectedTeam || null);
+        setFavoriteSpots(spots);
       } catch (error) {
-        console.error('Error fetching favorites:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchFavorites();
+    fetchData();
   }, [user]);
 
   if (!user) {
@@ -168,8 +169,32 @@ export default function Profile() {
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Information</h2>
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Favorite Racing Spot</h3>
-                      <p className="mt-1 text-gray-600">{user.profile?.favoriteRacingSpot || 'Not Set'}</p>
+                      <h3 className="text-lg font-semibold text-gray-900">Favorite Racing Spots</h3>
+                      {isLoading ? (
+                        <p className="mt-1 text-gray-600">Loading...</p>
+                      ) : favoriteSpots.length > 0 ? (
+                        <ul className="mt-2 space-y-2">
+                          {favoriteSpots.map((spot, index) => (
+                            <li key={index} className="flex items-center space-x-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 text-red-500"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              <span className="text-gray-600">{spot}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-1 text-gray-600">No favorite racing spots set</p>
+                      )}
                     </div>
                   </div>
                 </div>

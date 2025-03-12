@@ -39,8 +39,8 @@ export default function Login() {
         profile: {
           favoriteAnimal: data.favoriteAnimal,
           email: data.email,
-          favoriteDriver: data.favoriteDriverId?.toString(),
-          favoriteTeam: data.favoriteTeamId?.toString()
+          favoriteDriver: data.favoriteDriverId?.toString() || null,
+          favoriteTeam: data.favoriteTeamId?.toString() || null
         }
       });
       navigate('/home');

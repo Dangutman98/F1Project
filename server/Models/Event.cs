@@ -1,6 +1,6 @@
-﻿namespace server.Models
+namespace server.Models
 {
-    public class Race
+    public class Event
     {
         private int id;
         private string raceName;
@@ -15,14 +15,14 @@
         public string ImageUrl { get => imageUrl; set => imageUrl = value; }
 
         // empty constructor
-        public Race()
+        public Event()
         {
             raceName = string.Empty;
             location = string.Empty;
             imageUrl = string.Empty;
         }
 
-        public Race(int id, string raceName, DateTime raceDate, string location, string imageUrl)
+        public Event(int id, string raceName, DateTime raceDate, string location, string imageUrl)
         {
             Id = id;
             RaceName = raceName;
@@ -31,4 +31,4 @@
             ImageUrl = imageUrl;
         }
     }
-}
+} 
