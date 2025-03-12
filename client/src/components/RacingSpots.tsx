@@ -1,49 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RacingSpot, racingSpots as initialRacingSpots } from '../data/racingSpots';
 
 export default function RacingSpots() {
   const navigate = useNavigate();
-  const [racingSpots, setRacingSpots] = useState<RacingSpot[]>(initialRacingSpots);
+  const [racingSpots] = useState<RacingSpot[]>(initialRacingSpots);
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'current' | 'upcoming' | 'former'>('all');
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchRacingSpots = async () => {
-      try {
-        const response = await fetch('http://localhost:5066/api/racingspots');
-        if (!response.ok) {
-          throw new Error('Failed to fetch racing spots');
-        }
-        const data = await response.json();
-        setRacingSpots(data);
-      } catch (err) {
-        console.error('Error fetching racing spots:', err);
-        // Fallback to initial data if API fails
-        setRacingSpots(initialRacingSpots);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRacingSpots();
-  }, []);
 
   const filteredSpots = racingSpots.filter(spot => {
     if (selectedStatus !== 'all' && spot.status !== selectedStatus) return false;
     if (selectedRegion !== 'all' && spot.region !== selectedRegion) return false;
     return true;
   });
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -54,21 +23,15 @@ export default function RacingSpots() {
             <div className="flex items-center">
               <button
                 onClick={() => navigate('/home')}
-                className="text-black text-2xl font-bold hover:text-gray-800"
+                className="text-black text-2xl font-bold hover:text-gray-700"
               >
-                F1 Fan Hub
+                Return to Home Page
               </button>
             </div>
             <nav className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/home')}
-                className="text-black hover:text-gray-800"
-              >
-                Home
-              </button>
-              <button
                 onClick={() => navigate('/profile')}
-                className="text-black hover:text-gray-800"
+                className="text-black hover:text-gray-700"
               >
                 Profile
               </button>
@@ -113,11 +76,12 @@ export default function RacingSpots() {
               key={spot.id}
               className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
-              <div className="relative h-48">
+              <div className="relative h-48 p-4 flex items-center justify-center bg-gray-50">
                 <img
                   src={spot.imageUrl}
                   alt={spot.spotName}
-                  className="w-full h-full object-cover"
+                  className="max-h-full max-w-full object-contain"
+                  loading="lazy"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = 'https://via.placeholder.com/400x200?text=Circuit+Image';

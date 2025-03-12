@@ -3,6 +3,9 @@
   "WorkspaceRootPath": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dan\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -13,9 +16,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dan\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -41,11 +41,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 191,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "Properties\\launchSettings.json",
@@ -58,16 +58,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "UserDAL.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs",
-              "ToolTip": "C:\\Users\\Dan\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs [Read Only]",
-              "ViewState": "AgIAACwAAAAAAAAAAADwvzwAAAA4AAAAAQAAAA==",
+              "ToolTip": "C:\\Users\\Dan\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\818acc63fc48e003c87d18ddb700174d1c8037b4fff71d83ff11a983d01af045\\UserDAL.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAADwAAAA4AAAAAQAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-06T11:49:25.591Z",
-              "EditorCaption": " [Read Only]"
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -83,7 +83,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -131,7 +131,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
