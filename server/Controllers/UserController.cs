@@ -40,7 +40,19 @@ namespace server.Controllers
             return Ok(user);
         }
 
-
+        [HttpGet("{id}/favorites")]
+        public async Task<ActionResult<UserFavorites>> GetUserFavorites(int id)
+        {
+            try
+            {
+                var favorites = await _userDAL.GetUserFavorites(id);
+                return Ok(favorites);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Error retrieving user favorites: {ex.Message}" });
+            }
+        }
 
         // POST api/<UserController>
         /// <summary>
@@ -258,6 +270,44 @@ namespace server.Controllers
             }
 
             return Ok(new { Message = "User deleted successfully" });
+        }
+
+        [HttpPost("{userId}/favorite/driver/{driverId}")]
+        public async Task<ActionResult> SetFavoriteDriver(int userId, int driverId)
+        {
+            try
+            {
+                var result = await _userDAL.SetFavoriteDriver(userId, driverId);
+                if (result)
+                {
+                    var favorites = await _userDAL.GetFavoriteDrivers(userId);
+                    return Ok(new { Message = "Favorite driver updated successfully", FavoriteDrivers = favorites });
+                }
+                return BadRequest(new { Message = "Failed to update favorite driver" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Error setting favorite driver: {ex.Message}" });
+            }
+        }
+
+        [HttpPost("{userId}/favorite/team/{teamId}")]
+        public async Task<ActionResult> SetFavoriteTeam(int userId, int teamId)
+        {
+            try
+            {
+                var result = await _userDAL.SetFavoriteTeam(userId, teamId);
+                if (result)
+                {
+                    var favorites = await _userDAL.GetFavoriteTeams(userId);
+                    return Ok(new { Message = "Favorite team updated successfully", FavoriteTeams = favorites });
+                }
+                return BadRequest(new { Message = "Failed to update favorite team" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Error setting favorite team: {ex.Message}" });
+            }
         }
     }
 }
