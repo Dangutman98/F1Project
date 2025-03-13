@@ -2,6 +2,18 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useState, useEffect } from 'react';
 
+// Import team logos
+import alfaRomeoLogo from '../assets/TeamsIcons/alfa romeo.png';
+import alphaTauriLogo from '../assets/TeamsIcons/alpha tauri.jpg';
+import alpineLogo from '../assets/TeamsIcons/alpine.avif';
+import astonMartinLogo from '../assets/TeamsIcons/aston martin.avif';
+import ferrariLogo from '../assets/TeamsIcons/ferrari.avif';
+import haasLogo from '../assets/TeamsIcons/haas.avif';
+import mcLarenLogo from '../assets/TeamsIcons/mclaren.avif';
+import mercedesLogo from '../assets/TeamsIcons/mercedes.avif';
+import redBullLogo from '../assets/TeamsIcons/red bull.avif';
+import williamsLogo from '../assets/TeamsIcons/williams.avif';
+
 interface Driver {
   id: number;
   name: string;
@@ -18,11 +30,25 @@ interface Team {
   color: string;
 }
 
+// Map team names to their logos
+const teamLogos: { [key: string]: string } = {
+  'Alfa Romeo': alfaRomeoLogo,
+  'AlphaTauri': alphaTauriLogo,
+  'Alpine': alpineLogo,
+  'Aston Martin': astonMartinLogo,
+  'Ferrari': ferrariLogo,
+  'Haas F1 Team': haasLogo,
+  'McLaren': mcLarenLogo,
+  'Mercedes': mercedesLogo,
+  'Red Bull Racing': redBullLogo,
+  'Williams': williamsLogo
+};
+
 export default function Profile() {
   const navigate = useNavigate();
   const { user } = useUser();
-  const [favoriteDriver, setFavoriteDriver] = useState<Driver | null>(null);
-  const [favoriteTeam, setFavoriteTeam] = useState<Team | null>(null);
+  const [favoriteDrivers, setFavoriteDrivers] = useState<Driver[]>([]);
+  const [favoriteTeams, setFavoriteTeams] = useState<Team[]>([]);
   const [favoriteSpots, setFavoriteSpots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -31,26 +57,31 @@ export default function Profile() {
       if (!user?.id) return;
 
       try {
-        const [driversResponse, teamsResponse, spotsResponse] = await Promise.all([
+        const [driversResponse, teamsResponse, favoritesResponse] = await Promise.all([
           fetch('http://localhost:5066/api/Driver/fetch'),
           fetch('http://localhost:5066/api/Team'),
-          fetch(`http://localhost:5066/api/event/favorite/all/${user.id}`)
+          fetch(`http://localhost:5066/api/user/${user.id}/favorites`)
         ]);
 
-        if (!driversResponse.ok || !teamsResponse.ok || !spotsResponse.ok) {
+        if (!driversResponse.ok || !teamsResponse.ok || !favoritesResponse.ok) {
           throw new Error('Failed to fetch data');
         }
 
         const drivers = await driversResponse.json();
         const teams = await teamsResponse.json();
-        const spots = await spotsResponse.json();
+        const favorites = await favoritesResponse.json();
 
-        const selectedDriver = drivers.find((d: Driver) => d.id === parseInt(user.profile?.favoriteDriver ?? ''));
-        const selectedTeam = teams.find((t: Team) => t.id === parseInt(user.profile?.favoriteTeam ?? ''));
+        // Filter drivers and teams based on favorites
+        const selectedDrivers = drivers.filter((d: Driver) => 
+          favorites.driverIds.includes(d.id)
+        );
+        const selectedTeams = teams.filter((t: Team) => 
+          favorites.teamIds.includes(t.id)
+        );
 
-        setFavoriteDriver(selectedDriver || null);
-        setFavoriteTeam(selectedTeam || null);
-        setFavoriteSpots(spots);
+        setFavoriteDrivers(selectedDrivers);
+        setFavoriteTeams(selectedTeams);
+        setFavoriteSpots(favorites.racingSpots);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -59,11 +90,19 @@ export default function Profile() {
     };
 
     fetchData();
-  }, [user]);
+  }, [user?.id]);
 
   if (!user) {
     navigate('/login');
     return null;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      </div>
+    );
   }
 
   return (
@@ -128,39 +167,48 @@ export default function Profile() {
                       <p className="mt-1 text-gray-600">{user.profile?.favoriteAnimal || 'Not Set'}</p>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Favorite Driver</h3>
-                      {isLoading ? (
-                        <p className="mt-1 text-gray-600">Loading...</p>
-                      ) : favoriteDriver ? (
-                        <div className="mt-1 flex items-center space-x-3">
-                          <img
-                            src={favoriteDriver.photoURL}
-                            alt={favoriteDriver.name}
-                            className="h-12 w-12 rounded-full object-cover"
-                          />
-                          <div>
-                            <p className="text-gray-600">{favoriteDriver.name}</p>
-                            <p className="text-sm text-gray-500">{favoriteDriver.teamName}</p>
-                          </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Favorite Drivers</h3>
+                      {favoriteDrivers.length > 0 ? (
+                        <div className="mt-1 space-y-4">
+                          {favoriteDrivers.map((driver) => (
+                            <div key={driver.id} className="flex items-center space-x-4">
+                              <img
+                                src={driver.photoURL}
+                                alt={driver.name}
+                                className="h-12 w-12 rounded-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = 'https://media.formula1.com/d_driver_fallback_image.png';
+                                }}
+                              />
+                              <div>
+                                <p className="font-semibold text-gray-900">{driver.name}</p>
+                                <p className="text-sm text-gray-600">{driver.teamName}</p>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       ) : (
-                        <p className="mt-1 text-gray-600">Not Set</p>
+                        <p className="mt-1 text-gray-600">No favorite drivers selected</p>
                       )}
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Favorite Team</h3>
-                      {isLoading ? (
-                        <p className="mt-1 text-gray-600">Loading...</p>
-                      ) : favoriteTeam ? (
-                        <div className="mt-1 flex items-center space-x-3">
-                          <div
-                            className="h-12 w-12 rounded-full"
-                            style={{ backgroundColor: favoriteTeam.color }}
-                          />
-                          <p className="text-gray-600">{favoriteTeam.name}</p>
+                      <h3 className="text-lg font-semibold text-gray-900">Favorite Teams</h3>
+                      {favoriteTeams.length > 0 ? (
+                        <div className="mt-1 space-y-4">
+                          {favoriteTeams.map((team) => (
+                            <div key={team.id} className="flex items-center space-x-4">
+                              <img
+                                src={teamLogos[team.name]}
+                                alt={team.name}
+                                className="h-12 w-12 object-contain"
+                              />
+                              <p className="font-semibold text-gray-900">{team.name}</p>
+                            </div>
+                          ))}
                         </div>
                       ) : (
-                        <p className="mt-1 text-gray-600">Not Set</p>
+                        <p className="mt-1 text-gray-600">No favorite teams selected</p>
                       )}
                     </div>
                   </div>
@@ -170,9 +218,7 @@ export default function Profile() {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Favorite Racing Spots</h3>
-                      {isLoading ? (
-                        <p className="mt-1 text-gray-600">Loading...</p>
-                      ) : favoriteSpots.length > 0 ? (
+                      {favoriteSpots.length > 0 ? (
                         <ul className="mt-2 space-y-2">
                           {favoriteSpots.map((spot, index) => (
                             <li key={index} className="flex items-center space-x-2">
@@ -193,7 +239,7 @@ export default function Profile() {
                           ))}
                         </ul>
                       ) : (
-                        <p className="mt-1 text-gray-600">No favorite racing spots set</p>
+                        <p className="mt-1 text-gray-600">No favorite racing spots selected</p>
                       )}
                     </div>
                   </div>

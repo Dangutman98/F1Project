@@ -458,6 +458,138 @@ namespace server.DAL
             }
         }
 
+        // Method to get favorite drivers for a user
+        public async Task<List<int>> GetFavoriteDrivers(int userId)
+        {
+            var favoriteDrivers = new List<int>();
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("GetFavoriteDrivers", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            command.Parameters.AddWithValue("@UserId", userId);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                favoriteDrivers.Add(reader.GetInt32(0));
+            }
+
+            return favoriteDrivers;
+        }
+
+        // Method to get favorite teams for a user
+        public async Task<List<int>> GetFavoriteTeams(int userId)
+        {
+            var favoriteTeams = new List<int>();
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("GetFavoriteTeams", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            command.Parameters.AddWithValue("@UserId", userId);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                favoriteTeams.Add(reader.GetInt32(0));
+            }
+
+            return favoriteTeams;
+        }
+
+        // Method to set favorite driver
+        public async Task<bool> SetFavoriteDriver(int userId, int driverId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("SetFavoriteDriver", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            command.Parameters.AddWithValue("@UserId", userId);
+            command.Parameters.AddWithValue("@DriverId", driverId);
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting favorite driver: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Method to set favorite team
+        public async Task<bool> SetFavoriteTeam(int userId, int teamId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("SetFavoriteTeam", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            command.Parameters.AddWithValue("@UserId", userId);
+            command.Parameters.AddWithValue("@TeamId", teamId);
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting favorite team: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Method to get all user favorites
+        public async Task<UserFavorites> GetUserFavorites(int userId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new SqlCommand("GetUserFavorites", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            command.Parameters.AddWithValue("@UserId", userId);
+
+            var favorites = new UserFavorites();
+            using var reader = await command.ExecuteReaderAsync();
+            
+            // Read favorite drivers
+            while (await reader.ReadAsync())
+            {
+                favorites.DriverIds.Add(reader.GetInt32(0));
+            }
+
+            // Move to next result set (teams)
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                favorites.TeamIds.Add(reader.GetInt32(0));
+            }
+
+            // Move to next result set (racing spots)
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                favorites.RacingSpots.Add(reader.GetString(0));
+            }
+
+            return favorites;
+        }
+
         // Implement the connection logic, now using the connection string from IConfiguration
         private SqlConnection connect()
         {

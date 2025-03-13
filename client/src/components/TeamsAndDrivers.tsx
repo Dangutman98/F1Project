@@ -59,14 +59,15 @@ const LoadingSkeleton = () => (
 
 export default function TeamsAndDrivers() {
   const navigate = useNavigate();
-  const { user, updateProfile } = useUser();
+  const { user } = useUser();
   const [teams, setTeams] = useState<Team[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [favoriteDriver, setFavoriteDriver] = useState<number | null>(null);
+  const [favoriteDrivers, setFavoriteDrivers] = useState<number[]>([]);
   const [favoriteTeam, setFavoriteTeam] = useState<number | null>(null);
+  const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
     const fetchWithRetry = async (url: string, retries = 3): Promise<any> => {
@@ -83,26 +84,21 @@ export default function TeamsAndDrivers() {
     };
 
     const fetchData = async () => {
+      if (!user?.id) return;
+      
       try {
         setLoading(true);
-        // Fetch teams and drivers in parallel
-        const [teamsData, driversData] = await Promise.all([
+        // Fetch teams, drivers, and favorites in parallel
+        const [teamsData, driversData, favoritesData] = await Promise.all([
           fetchWithRetry('http://localhost:5066/api/Team'),
-          fetchWithRetry('http://localhost:5066/api/Driver/fetch')
+          fetchWithRetry('http://localhost:5066/api/Driver/fetch'),
+          fetchWithRetry(`http://localhost:5066/api/user/${user.id}/favorites`)
         ]);
 
         setTeams(teamsData);
         setDrivers(driversData);
-
-        // Set initial favorites if user has them
-        if (user?.profile) {
-          if (user.profile.favoriteDriver) {
-            setFavoriteDriver(parseInt(user.profile.favoriteDriver));
-          }
-          if (user.profile.favoriteTeam) {
-            setFavoriteTeam(parseInt(user.profile.favoriteTeam));
-          }
-        }
+        setFavoriteDrivers(favoritesData.driverIds || []);
+        setFavoriteTeam(favoritesData.teamIds[0] || null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
         console.error('Error fetching data:', err);
@@ -112,7 +108,7 @@ export default function TeamsAndDrivers() {
     };
 
     fetchData();
-  }, [user]);
+  }, [user?.id]);
 
   const toggleFavoriteDriver = async (driverId: number) => {
     if (!user?.id) {
@@ -121,31 +117,35 @@ export default function TeamsAndDrivers() {
     }
 
     try {
-      const newFavoriteDriver = favoriteDriver === driverId ? null : driverId;
-      const requestBody = {
-        favoriteDriverId: newFavoriteDriver,
-        favoriteTeamId: favoriteTeam,
-        favoriteRacingSpotId: null
-      };
-
-      const response = await fetch(`http://localhost:5066/api/user/${user.id}/preferences`, {
-        method: 'PUT',
+      const response = await fetch(`http://localhost:5066/api/user/${user.id}/favorite/driver/${driverId}`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
+        }
       });
 
       if (response.ok) {
-        setFavoriteDriver(newFavoriteDriver);
-        // Update the user context
-        updateProfile({
-          ...user.profile,
-          favoriteDriver: newFavoriteDriver?.toString()
-        });
+        const data = await response.json();
+        setFavoriteDrivers(data.favoriteDrivers || []);
+        
+        // Set appropriate message based on the action
+        const isAdding = data.favoriteDrivers.includes(driverId);
+        if (isAdding) {
+          if (data.favoriteDrivers.length === 2) {
+            setMessage('Maximum of two favorite drivers selected!');
+          } else {
+            setMessage('Driver added to favorites!');
+          }
+        } else {
+          setMessage('Driver removed from favorites!');
+        }
+        
+        setTimeout(() => setMessage(''), 3000);
       }
     } catch (error) {
       console.error('Error toggling favorite driver:', error);
+      setMessage('Error updating favorite driver');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
@@ -156,31 +156,26 @@ export default function TeamsAndDrivers() {
     }
 
     try {
-      const newFavoriteTeam = favoriteTeam === teamId ? null : teamId;
-      const requestBody = {
-        favoriteDriverId: favoriteDriver,
-        favoriteTeamId: newFavoriteTeam,
-        favoriteRacingSpotId: null
-      };
-
-      const response = await fetch(`http://localhost:5066/api/user/${user.id}/preferences`, {
-        method: 'PUT',
+      const response = await fetch(`http://localhost:5066/api/user/${user.id}/favorite/team/${teamId}`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
+        }
       });
 
       if (response.ok) {
+        const data = await response.json();
+        const newFavoriteTeam = data.favoriteTeams[0] || null;
         setFavoriteTeam(newFavoriteTeam);
-        // Update the user context
-        updateProfile({
-          ...user.profile,
-          favoriteTeam: newFavoriteTeam?.toString()
-        });
+        
+        // Set message based on whether team was added or removed
+        setMessage(newFavoriteTeam === teamId ? 'Team added to favorites!' : 'Team removed from favorites!');
+        setTimeout(() => setMessage(''), 3000);
       }
     } catch (error) {
       console.error('Error toggling favorite team:', error);
+      setMessage('Error updating favorite team');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
@@ -246,6 +241,18 @@ export default function TeamsAndDrivers() {
         <div className="px-4 py-6 sm:px-0">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">F1 Teams & Drivers</h1>
           
+          {message && (
+            <div className={`mb-4 p-4 rounded-md ${
+              message.includes('Error') 
+                ? 'bg-red-100 text-red-700'
+                : message.includes('Maximum') 
+                  ? 'bg-yellow-100 text-yellow-700'
+                  : 'bg-green-100 text-green-700'
+            }`}>
+              {message}
+            </div>
+          )}
+
           {loading ? (
             <LoadingSkeleton />
           ) : (
@@ -272,6 +279,7 @@ export default function TeamsAndDrivers() {
                             toggleFavoriteTeam(team.id);
                           }}
                           className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                          title={favoriteTeam === team.id ? "Remove from favorites" : "Add to favorites"}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -311,7 +319,7 @@ export default function TeamsAndDrivers() {
                   </div>
                   
                   {expandedTeam === team.id && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-50">
+                    <div className="mt-4 space-y-4">
                       {drivers
                         .filter(driver => driver.teamId === team.name)
                         .map(driver => (
@@ -335,11 +343,12 @@ export default function TeamsAndDrivers() {
                             <button
                               onClick={() => toggleFavoriteDriver(driver.id)}
                               className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                              title={favoriteDrivers.includes(driver.id) ? "Remove from favorites" : "Add to favorites"}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className={`h-6 w-6 ${
-                                  favoriteDriver === driver.id
+                                  favoriteDrivers.includes(driver.id)
                                     ? 'text-red-500 fill-current'
                                     : 'text-gray-400 stroke-current'
                                 }`}
