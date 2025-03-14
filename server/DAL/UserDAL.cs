@@ -556,38 +556,126 @@ namespace server.DAL
         public async Task<UserFavorites> GetUserFavorites(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            using var command = new SqlCommand("GetUserFavorites", connection)
+            try
             {
-                CommandType = CommandType.StoredProcedure
-            };
-            command.Parameters.AddWithValue("@UserId", userId);
+                await connection.OpenAsync();
+                Console.WriteLine($"Database connection opened for user {userId}");
 
-            var favorites = new UserFavorites();
-            using var reader = await command.ExecuteReaderAsync();
-            
-            // Read favorite drivers
-            while (await reader.ReadAsync())
-            {
-                favorites.DriverIds.Add(reader.GetInt32(0));
+                using var command = new SqlCommand("GetUserFavorites", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                var favorites = new UserFavorites
+                {
+                    Drivers = new List<FavoriteDriver>(),
+                    Teams = new List<FavoriteTeam>(),
+                    RacingSpots = new List<string>()
+                };
+
+                Console.WriteLine("Executing stored procedure...");
+                using var reader = await command.ExecuteReaderAsync();
+                
+                Console.WriteLine("Reading favorite drivers...");
+                // Read favorite drivers with details
+                while (await reader.ReadAsync())
+                {
+                    try
+                    {
+                        var driver = new FavoriteDriver
+                        {
+                            DriverId = reader.GetInt32(reader.GetOrdinal("DriverId")),
+                            DriverName = reader.GetString(reader.GetOrdinal("DriverName")),
+                            PhotoURL = !reader.IsDBNull(reader.GetOrdinal("PhotoURL")) ? 
+                                      reader.GetString(reader.GetOrdinal("PhotoURL")) : string.Empty,
+                            TeamId = !reader.IsDBNull(reader.GetOrdinal("TeamId")) ? 
+                                    reader.GetInt32(reader.GetOrdinal("TeamId")) : 0,
+                            AcronymName = !reader.IsDBNull(reader.GetOrdinal("AcronymName")) ? 
+                                         reader.GetString(reader.GetOrdinal("AcronymName")) : string.Empty,
+                            TeamName = !reader.IsDBNull(reader.GetOrdinal("TeamName")) ? 
+                                      reader.GetString(reader.GetOrdinal("TeamName")) : string.Empty,
+                            TeamColor = !reader.IsDBNull(reader.GetOrdinal("TeamColor")) ? 
+                                       reader.GetString(reader.GetOrdinal("TeamColor")) : string.Empty
+                        };
+                        favorites.Drivers.Add(driver);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error reading driver data: {ex.Message}");
+                        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    }
+                }
+
+                Console.WriteLine($"Found {favorites.Drivers.Count} favorite drivers");
+
+                Console.WriteLine("Moving to teams result set...");
+                // Move to next result set (teams with details)
+                if (!await reader.NextResultAsync())
+                {
+                    Console.WriteLine("Failed to move to teams result set");
+                    throw new Exception("Failed to read teams data - could not move to next result set");
+                }
+
+                Console.WriteLine("Reading favorite teams...");
+                while (await reader.ReadAsync())
+                {
+                    try
+                    {
+                        var team = new FavoriteTeam
+                        {
+                            TeamId = reader.GetInt32(reader.GetOrdinal("TeamId")),
+                            TeamName = !reader.IsDBNull(reader.GetOrdinal("TeamName")) ? 
+                                      reader.GetString(reader.GetOrdinal("TeamName")) : string.Empty,
+                            Color = !reader.IsDBNull(reader.GetOrdinal("Color")) ? 
+                                   reader.GetString(reader.GetOrdinal("Color")) : string.Empty
+                        };
+                        favorites.Teams.Add(team);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error reading team data: {ex.Message}");
+                        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    }
+                }
+
+                Console.WriteLine($"Found {favorites.Teams.Count} favorite teams");
+
+                Console.WriteLine("Moving to racing spots result set...");
+                // Move to next result set (racing spots)
+                if (!await reader.NextResultAsync())
+                {
+                    Console.WriteLine("Failed to move to racing spots result set");
+                    throw new Exception("Failed to read racing spots data - could not move to next result set");
+                }
+
+                Console.WriteLine("Reading favorite racing spots...");
+                while (await reader.ReadAsync())
+                {
+                    try
+                    {
+                        if (!reader.IsDBNull(0))
+                        {
+                            favorites.RacingSpots.Add(reader.GetString(0));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error reading racing spot data: {ex.Message}");
+                        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    }
+                }
+
+                Console.WriteLine($"Found {favorites.RacingSpots.Count} favorite racing spots");
+                Console.WriteLine("Successfully retrieved all favorites");
+                return favorites;
             }
-
-            // Move to next result set (teams)
-            await reader.NextResultAsync();
-            while (await reader.ReadAsync())
+            catch (Exception ex)
             {
-                favorites.TeamIds.Add(reader.GetInt32(0));
+                Console.WriteLine($"Error in GetUserFavorites: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw;
             }
-
-            // Move to next result set (racing spots)
-            await reader.NextResultAsync();
-            while (await reader.ReadAsync())
-            {
-                favorites.RacingSpots.Add(reader.GetString(0));
-            }
-
-            return favorites;
         }
 
         // Implement the connection logic, now using the connection string from IConfiguration

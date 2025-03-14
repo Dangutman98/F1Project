@@ -2,21 +2,20 @@
 {
     public class FavoriteTeam
     {
-        private int userId;
-        private string teamName;
-
-        public int UserId { get => userId; set => userId = value; }
-        public string TeamName { get => teamName; set => teamName = value; }
+        public int TeamId { get; set; }
+        public string TeamName { get; set; }
+        public string Color { get; set; }
 
         // empty constructor
         public FavoriteTeam()
         {
         }
 
-        public FavoriteTeam(int userId, string teamName)
+        public FavoriteTeam(int teamId, string teamName, string color)
         {
-            UserId = userId;
+            TeamId = teamId;
             TeamName = teamName;
+            Color = color;
         }
     }
 }

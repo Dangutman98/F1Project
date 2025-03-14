@@ -16,18 +16,31 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Get favorite drivers
-    SELECT DriverId
-    FROM FavoriteDrivers
-    WHERE UserId = @UserId;
+    -- Get favorite drivers with details
+    SELECT 
+        CAST(d.Id as int) as DriverId,
+        ISNULL(d.Name, '') as DriverName,
+        ISNULL(d.PhotoURL, '') as PhotoURL,
+        CAST(ISNULL(d.TeamId, 0) as int) as TeamId,
+        ISNULL(d.AcronymName, '') as AcronymName,
+        ISNULL(t.Name, '') as TeamName,
+        ISNULL(t.Color, '') as TeamColor
+    FROM FavoriteDrivers fd
+    INNER JOIN Drivers d ON fd.DriverId = d.Id
+    LEFT JOIN Teams t ON d.TeamId = t.Id
+    WHERE fd.UserId = @UserId;
 
-    -- Get favorite teams
-    SELECT TeamId
-    FROM FavoriteTeams
-    WHERE UserId = @UserId;
+    -- Get favorite teams with details
+    SELECT 
+        CAST(t.Id as int) as TeamId,
+        ISNULL(t.Name, '') as TeamName,
+        ISNULL(t.Color, '') as Color
+    FROM FavoriteTeams ft
+    INNER JOIN Teams t ON ft.TeamId = t.Id
+    WHERE ft.UserId = @UserId;
 
     -- Get favorite racing spots
-    SELECT SpotName
+    SELECT ISNULL(SpotName, '')
     FROM FavoriteRacingSpots
     WHERE UserId = @UserId;
 END;

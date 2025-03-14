@@ -14,9 +14,9 @@ import mercedesLogo from '../assets/TeamsIcons/mercedes.avif';
 import redBullLogo from '../assets/TeamsIcons/red bull.avif';
 import williamsLogo from '../assets/TeamsIcons/williams.avif';
 
-interface Driver {
-  id: number;
-  name: string;
+interface FavoriteDriver {
+  driverId: number;
+  driverName: string;
   photoURL: string;
   teamId: number;
   acronymName: string;
@@ -24,10 +24,16 @@ interface Driver {
   teamColor: string;
 }
 
-interface Team {
-  id: number;
-  name: string;
+interface FavoriteTeam {
+  teamId: number;
+  teamName: string;
   color: string;
+}
+
+interface UserFavorites {
+  drivers: FavoriteDriver[];
+  teams: FavoriteTeam[];
+  racingSpots: string[];
 }
 
 // Map team names to their logos
@@ -47,8 +53,8 @@ const teamLogos: { [key: string]: string } = {
 export default function Profile() {
   const navigate = useNavigate();
   const { user } = useUser();
-  const [favoriteDrivers, setFavoriteDrivers] = useState<Driver[]>([]);
-  const [favoriteTeams, setFavoriteTeams] = useState<Team[]>([]);
+  const [favoriteDrivers, setFavoriteDrivers] = useState<FavoriteDriver[]>([]);
+  const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
   const [favoriteSpots, setFavoriteSpots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,31 +63,25 @@ export default function Profile() {
       if (!user?.id) return;
 
       try {
-        const [driversResponse, teamsResponse, favoritesResponse] = await Promise.all([
-          fetch('http://localhost:5066/api/Driver/fetch'),
-          fetch('http://localhost:5066/api/Team'),
-          fetch(`http://localhost:5066/api/user/${user.id}/favorites`)
-        ]);
+        console.log('Fetching favorites for user:', user.id);
+        const favoritesResponse = await fetch(`http://localhost:5066/api/user/${user.id}/favorites`);
 
-        if (!driversResponse.ok || !teamsResponse.ok || !favoritesResponse.ok) {
+        if (!favoritesResponse.ok) {
           throw new Error('Failed to fetch data');
         }
 
-        const drivers = await driversResponse.json();
-        const teams = await teamsResponse.json();
-        const favorites = await favoritesResponse.json();
+        const favorites: UserFavorites = await favoritesResponse.json();
+        console.log('Received favorites data:', favorites);
 
-        // Filter drivers and teams based on favorites
-        const selectedDrivers = drivers.filter((d: Driver) => 
-          favorites.driverIds.includes(d.id)
-        );
-        const selectedTeams = teams.filter((t: Team) => 
-          favorites.teamIds.includes(t.id)
-        );
+        setFavoriteDrivers(favorites.drivers || []);
+        setFavoriteTeams(favorites.teams || []);
+        setFavoriteSpots(favorites.racingSpots || []);
 
-        setFavoriteDrivers(selectedDrivers);
-        setFavoriteTeams(selectedTeams);
-        setFavoriteSpots(favorites.racingSpots);
+        console.log('Set state with:', {
+          drivers: favorites.drivers || [],
+          teams: favorites.teams || [],
+          spots: favorites.racingSpots || []
+        });
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -171,10 +171,10 @@ export default function Profile() {
                       {favoriteDrivers.length > 0 ? (
                         <div className="mt-1 space-y-4">
                           {favoriteDrivers.map((driver) => (
-                            <div key={driver.id} className="flex items-center space-x-4">
+                            <div key={driver.driverId} className="flex items-center space-x-4">
                               <img
                                 src={driver.photoURL}
-                                alt={driver.name}
+                                alt={driver.driverName}
                                 className="h-12 w-12 rounded-full object-cover"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
@@ -182,7 +182,7 @@ export default function Profile() {
                                 }}
                               />
                               <div>
-                                <p className="font-semibold text-gray-900">{driver.name}</p>
+                                <p className="font-semibold text-gray-900">{driver.driverName}</p>
                                 <p className="text-sm text-gray-600">{driver.teamName}</p>
                               </div>
                             </div>
@@ -197,13 +197,13 @@ export default function Profile() {
                       {favoriteTeams.length > 0 ? (
                         <div className="mt-1 space-y-4">
                           {favoriteTeams.map((team) => (
-                            <div key={team.id} className="flex items-center space-x-4">
+                            <div key={team.teamId} className="flex items-center space-x-4">
                               <img
-                                src={teamLogos[team.name]}
-                                alt={team.name}
+                                src={teamLogos[team.teamName]}
+                                alt={team.teamName}
                                 className="h-12 w-12 object-contain"
                               />
-                              <p className="font-semibold text-gray-900">{team.name}</p>
+                              <p className="font-semibold text-gray-900">{team.teamName}</p>
                             </div>
                           ))}
                         </div>
@@ -221,7 +221,7 @@ export default function Profile() {
                       {favoriteSpots.length > 0 ? (
                         <ul className="mt-2 space-y-2">
                           {favoriteSpots.map((spot, index) => (
-                            <li key={index} className="flex items-center space-x-2">
+                            <li key={`${spot}-${index}`} className="flex items-center space-x-2">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-5 w-5 text-red-500"
