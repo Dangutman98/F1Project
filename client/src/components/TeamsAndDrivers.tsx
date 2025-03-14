@@ -28,6 +28,28 @@ interface Driver {
   acronymName: string;
 }
 
+interface FavoriteDriver {
+  DriverId: number;
+  DriverName: string;
+  PhotoURL: string;
+  TeamId: number;
+  AcronymName: string;
+  TeamName: string;
+  TeamColor: string;
+}
+
+interface FavoriteTeam {
+  TeamId: number;
+  TeamName: string;
+  Color: string;
+}
+
+interface UserFavorites {
+  Drivers: FavoriteDriver[];
+  Teams: FavoriteTeam[];
+  RacingSpots: string[];
+}
+
 // Map team names to their logos
 const teamLogos: { [key: string]: string } = {
   'Alfa Romeo': alfaRomeoLogo,
@@ -97,8 +119,19 @@ export default function TeamsAndDrivers() {
 
         setTeams(teamsData);
         setDrivers(driversData);
-        setFavoriteDrivers(favoritesData.driverIds || []);
-        setFavoriteTeam(favoritesData.teamIds[0] || null);
+        
+        // Update favorite states from the API response
+        if (favoritesData && favoritesData.drivers) {
+          const favoriteDriverIds = favoritesData.drivers.map((d: { driverId: number }) => d.driverId);
+          setFavoriteDrivers(favoriteDriverIds);
+        }
+        
+        if (favoritesData && favoritesData.teams && favoritesData.teams.length > 0) {
+          const favoriteTeamId = favoritesData.teams[0].teamId;
+          setFavoriteTeam(favoriteTeamId);
+        } else {
+          setFavoriteTeam(null);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
         console.error('Error fetching data:', err);
