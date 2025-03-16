@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import TeamsAndDrivers from './components/TeamsAndDrivers';
 import Events from './components/Events';
 import RacingSpots from './components/RacingSpots';
+import Standing from './components/Standing';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/teams-and-drivers" element={<ProtectedRoute><TeamsAndDrivers /></ProtectedRoute>} />
           <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
           <Route path="/racing-spots" element={<ProtectedRoute><RacingSpots /></ProtectedRoute>} />
+          <Route path="/standings" element={<ProtectedRoute><Standing /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

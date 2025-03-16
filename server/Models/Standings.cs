@@ -28,5 +28,55 @@
             Points = points;
         }
     }
+
+    public class DriverStanding
+    {
+        public int DriverId { get; set; }
+        public int Position { get; set; }
+        public decimal Points { get; set; }
+        public int Wins { get; set; }
+        public string DriverName { get; set; }
+        public string AcronymName { get; set; }
+        public string TeamName { get; set; }
+        public string TeamColor { get; set; }
+    }
+
+    public class ConstructorStanding
+    {
+        public int TeamId { get; set; }
+        public int Position { get; set; }
+        public decimal Points { get; set; }
+        public int Wins { get; set; }
+        public string TeamName { get; set; }
+        public string TeamColor { get; set; }
+    }
+
+    // Models for OpenF1 API responses
+    public class OpenF1DriverStanding
+    {
+        public int DriverId { get; set; }
+        public int Position { get; set; }
+        public decimal Points { get; set; }
+        public int Wins { get; set; }
+        public string DriverNumber { get; set; }
+        public string DriverCode { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string TeamName { get; set; }
+        public string BroadcastName { get; set; }
+        public string FullName { get; set; }
+        public string Abbreviation { get; set; }
+        public string TeamColor { get; set; }
+    }
+
+    public class OpenF1ConstructorStanding
+    {
+        public int TeamId { get; set; }
+        public string TeamName { get; set; }
+        public string Color { get; set; }
+        public int Position { get; set; }
+        public decimal Points { get; set; }
+        public int Wins { get; set; }
+    }
 }
 

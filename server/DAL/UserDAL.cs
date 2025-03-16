@@ -180,7 +180,7 @@ namespace server.DAL
             {
                 con = connect();
                 con.Open();
-                cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Email, FavoriteAnimal, FavoriteDriverId, FavoriteTeamId, FavoriteRacingSpotId FROM Users WHERE Id = @Id", con);
+                cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Email, FavoriteAnimal, FavoriteDriverId, FavoriteTeamId, FavoriteRacingSpotId, ProfilePhoto FROM Users WHERE Id = @Id", con);
                 cmd.Parameters.AddWithValue("@Id", userId);
 
                 reader = cmd.ExecuteReader();
@@ -194,9 +194,10 @@ namespace server.DAL
                         PasswordHash = reader["PasswordHash"].ToString(),
                         Email = reader["Email"].ToString(),
                         FavoriteAnimal = reader["FavoriteAnimal"]?.ToString(),
-                        FavoriteDriverId = reader["FavoriteDriverId"] != DBNull.Value ? (int)reader["FavoriteDriverId"] : 0,
-                        FavoriteTeamId = reader["FavoriteTeamId"] != DBNull.Value ? (int)reader["FavoriteTeamId"] : 0,
-                        FavoriteRacingSpotId = reader["FavoriteRacingSpotId"] != DBNull.Value ? (int)reader["FavoriteRacingSpotId"] : 0
+                        FavoriteDriverId = reader["FavoriteDriverId"] != DBNull.Value ? (int)reader["FavoriteDriverId"] : null,
+                        FavoriteTeamId = reader["FavoriteTeamId"] != DBNull.Value ? (int)reader["FavoriteTeamId"] : null,
+                        FavoriteRacingSpotId = reader["FavoriteRacingSpotId"] != DBNull.Value ? (int)reader["FavoriteRacingSpotId"] : null,
+                        ProfilePhoto = reader["ProfilePhoto"] != DBNull.Value ? reader["ProfilePhoto"].ToString() : null
                     };
                 }
                 return null;
@@ -410,46 +411,40 @@ namespace server.DAL
 
             try
             {
-                // Console.WriteLine($"GetUserByUsername: Attempting to find user with username: {username}");
                 con = connect();
                 con.Open();
-                // Console.WriteLine("GetUserByUsername: Database connection opened successfully");
 
-                cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Email, FavoriteAnimal FROM Users WHERE Username = @Username", con);
+                cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Email, FavoriteAnimal, ProfilePhoto FROM Users WHERE Username = @Username", con);
                 cmd.Parameters.AddWithValue("@Username", username);
-                // Console.WriteLine($"GetUserByUsername: Executing query for username: {username}");
 
                 reader = cmd.ExecuteReader();
-                // Console.WriteLine("GetUserByUsername: Query executed successfully");
 
                 if (reader.Read())
                 {
-                    // Console.WriteLine("GetUserByUsername: User found in database");
                     var user = new User
                     {
                         Id = (int)reader["Id"],
                         Username = reader["Username"].ToString(),
                         PasswordHash = reader["PasswordHash"].ToString(),
                         Email = reader["Email"].ToString(),
-                        FavoriteAnimal = reader["FavoriteAnimal"]?.ToString()
+                        FavoriteAnimal = reader["FavoriteAnimal"]?.ToString(),
+                        ProfilePhoto = reader["ProfilePhoto"] != DBNull.Value ? reader["ProfilePhoto"].ToString() : null
                     };
-                    // Console.WriteLine($"GetUserByUsername: User details - ID: {user.Id}, Username: {user.Username}, Hash Length: {user.PasswordHash?.Length ?? 0}");
                     return user;
                 }
-                // Console.WriteLine("GetUserByUsername: No user found with the specified username");
                 return null;
             }
             catch (SqlException sqlEx)
             {
-                // Console.WriteLine($"SQL Exception in GetUserByUsername: {sqlEx.Message}");
-                // Console.WriteLine($"Error Number: {sqlEx.Number}");
-                // Console.WriteLine($"Error State: {sqlEx.State}");
+                Console.WriteLine($"SQL Exception in GetUserByUsername: {sqlEx.Message}");
+                Console.WriteLine($"Error Number: {sqlEx.Number}");
+                Console.WriteLine($"Error State: {sqlEx.State}");
                 throw;
             }
             catch (Exception ex)
             {
-                // Console.WriteLine($"Exception in GetUserByUsername: {ex.Message}");
-                // Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                Console.WriteLine($"Exception in GetUserByUsername: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 throw;
             }
             finally
@@ -682,6 +677,57 @@ namespace server.DAL
         private SqlConnection connect()
         {
             return new SqlConnection(_connectionString);
+        }
+
+        public bool UpdateProfilePhoto(int userId, string? profilePhoto)
+        {
+            SqlConnection con = null;
+            SqlCommand cmd;
+
+            try
+            {
+                Console.WriteLine($"Opening database connection for user {userId}");
+                con = connect();
+                con.Open();
+                Console.WriteLine("Database connection opened successfully");
+
+                Console.WriteLine("Creating SP_UpdateProfilePhoto command");
+                cmd = new SqlCommand("SP_UpdateProfilePhoto", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                Console.WriteLine("Setting up command parameters");
+                cmd.Parameters.AddWithValue("@UserId", userId);
+                cmd.Parameters.AddWithValue("@ProfilePhoto", (object?)profilePhoto ?? DBNull.Value);
+
+                Console.WriteLine("Executing stored procedure");
+                int result = cmd.ExecuteNonQuery();
+                Console.WriteLine($"UpdateProfilePhoto: {result} rows affected");
+
+                return result > 0;
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Exception in UpdateProfilePhoto: {sqlEx.Message}");
+                Console.WriteLine($"Error Number: {sqlEx.Number}");
+                Console.WriteLine($"Error State: {sqlEx.State}");
+                Console.WriteLine($"Procedure: {sqlEx.Procedure}");
+                Console.WriteLine($"Line Number: {sqlEx.LineNumber}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in UpdateProfilePhoto: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                throw;
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    Console.WriteLine("Closing database connection");
+                    con.Close();
+                }
+            }
         }
     }
 }
