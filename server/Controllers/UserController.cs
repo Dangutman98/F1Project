@@ -167,7 +167,8 @@ namespace server.Controllers
                         Email = user.Email,
                         FavoriteAnimal = user.FavoriteAnimal,
                         FavoriteDriverId = user.FavoriteDriverId,
-                        FavoriteTeamId = user.FavoriteTeamId
+                        FavoriteTeamId = user.FavoriteTeamId,
+                        ProfilePhoto = user.ProfilePhoto
                     };
                     return Ok(response);
                 }
@@ -313,5 +314,51 @@ namespace server.Controllers
                 return StatusCode(500, new { Message = $"Error setting favorite team: {ex.Message}" });
             }
         }
+
+        [HttpPost("{id}/profile-photo")]
+        public IActionResult UpdateProfilePhoto(int id, [FromBody] ProfilePhotoUpdate photoUpdate)
+        {
+            try
+            {
+                Console.WriteLine($"Attempting to update profile photo for user {id}");
+                
+                var existingUser = _userDAL.GetUserById(id);
+                if (existingUser == null)
+                {
+                    Console.WriteLine($"User with Id {id} not found");
+                    return NotFound(new { Message = $"User with Id {id} not found." });
+                }
+                Console.WriteLine($"Found user {existingUser.Username}");
+
+                // Log the photo data length to avoid logging the entire base64 string
+                var photoLength = photoUpdate?.ProfilePhoto?.Length ?? 0;
+                Console.WriteLine($"Received profile photo data of length: {photoLength}");
+
+                bool updateSuccess = _userDAL.UpdateProfilePhoto(id, photoUpdate?.ProfilePhoto);
+
+                if (!updateSuccess)
+                {
+                    Console.WriteLine("Failed to update profile photo in database");
+                    return StatusCode(500, new { Message = "Failed to update profile photo." });
+                }
+
+                Console.WriteLine("Successfully updated profile photo");
+                return Ok(new { 
+                    Message = "Profile photo updated successfully",
+                    ProfilePhoto = photoUpdate?.ProfilePhoto
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating profile photo: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return StatusCode(500, new { Message = $"Failed to update profile photo: {ex.Message}" });
+            }
+        }
+    }
+
+    public class ProfilePhotoUpdate
+    {
+        public string? ProfilePhoto { get; set; }
     }
 }

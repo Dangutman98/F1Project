@@ -48,6 +48,12 @@ export default function HomePage() {
                 Racing Spots
               </button>
               <button
+                onClick={() => navigate('/standings')}
+                className="text-black hover:text-gray-700"
+              >
+                Standings
+              </button>
+              <button
                 onClick={handleLogout}
                 className="bg-white text-red-600 px-4 py-2 rounded-md hover:bg-gray-100"
               >

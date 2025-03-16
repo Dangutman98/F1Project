@@ -11,6 +11,7 @@
         private int? favoriteDriverId;
         private int? favoriteTeamId;
         private int? favoriteRacingSpotId;
+        private string? profilePhoto;
 
         //get/set
         public int Id { get => id; set => id = value; }
@@ -21,13 +22,14 @@
         public int? FavoriteDriverId { get => favoriteDriverId; set => favoriteDriverId = value; }
         public int? FavoriteTeamId { get => favoriteTeamId; set => favoriteTeamId = value; }
         public int? FavoriteRacingSpotId { get => favoriteRacingSpotId; set => favoriteRacingSpotId = value; }
+        public string? ProfilePhoto { get => profilePhoto; set => profilePhoto = value; }
 
         // empty constructor
         public User()
         {
         }
         // constructor with parameters
-        public User(int id, string username, string passwordHash, string email, string favoriteAnimal, int? favoriteDriverId, int? favoriteTeamId, int? favoriteRacingSpotId)
+        public User(int id, string username, string passwordHash, string email, string favoriteAnimal, int? favoriteDriverId, int? favoriteTeamId, int? favoriteRacingSpotId, string? profilePhoto = null)
         {
             Id = id;
             Username = username;
@@ -37,6 +39,7 @@
             FavoriteDriverId = favoriteDriverId;
             FavoriteTeamId = favoriteTeamId;
             FavoriteRacingSpotId = favoriteRacingSpotId;
+            ProfilePhoto = profilePhoto;
         }
     }
     
