@@ -212,127 +212,6 @@
         }
       }
     },
-    "/api/Standings/drivers/{season}": {
-      "get": {
-        "tags": [
-          "Standings"
-        ],
-        "parameters": [
-          {
-            "name": "season",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DriverStanding"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DriverStanding"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DriverStanding"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Standings/constructors/{season}": {
-      "get": {
-        "tags": [
-          "Standings"
-        ],
-        "parameters": [
-          {
-            "name": "season",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ConstructorStanding"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ConstructorStanding"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ConstructorStanding"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Standings/update/{season}": {
-      "post": {
-        "tags": [
-          "Standings"
-        ],
-        "parameters": [
-          {
-            "name": "season",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Team": {
       "get": {
         "tags": [
@@ -784,36 +663,6 @@
   },
   "components": {
     "schemas": {
-      "ConstructorStanding": {
-        "type": "object",
-        "properties": {
-          "teamId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "position": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "points": {
-            "type": "number",
-            "format": "double"
-          },
-          "wins": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "teamName": {
-            "type": "string",
-            "nullable": true
-          },
-          "teamColor": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "Driver": {
         "type": "object",
         "properties": {
@@ -834,44 +683,6 @@
             "nullable": true
           },
           "acronymName": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "DriverStanding": {
-        "type": "object",
-        "properties": {
-          "driverId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "position": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "points": {
-            "type": "number",
-            "format": "double"
-          },
-          "wins": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "driverName": {
-            "type": "string",
-            "nullable": true
-          },
-          "acronymName": {
-            "type": "string",
-            "nullable": true
-          },
-          "teamName": {
-            "type": "string",
-            "nullable": true
-          },
-          "teamColor": {
             "type": "string",
             "nullable": true
           }
