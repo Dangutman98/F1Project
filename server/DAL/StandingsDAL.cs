@@ -1,202 +1,126 @@
-using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
 using server.Models;
+using Microsoft.Extensions.Logging;
 
 namespace server.DAL
 {
     public class StandingsDAL
     {
         private readonly string _connectionString;
+        private readonly ILogger<StandingsDAL> _logger;
 
-        public StandingsDAL(string connectionString)
+        public StandingsDAL(string connectionString, ILogger<StandingsDAL> logger)
         {
             _connectionString = connectionString;
+            _logger = logger;
         }
 
-        public async Task<List<DriverStanding>> GetDriverStandings(int season)
+        public async Task<List<DriverStanding>> GetDriverStandings()
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            var driverStandings = new List<DriverStanding>();
 
-            using var command = new SqlCommand("SP_GetDriverStandings", connection)
+            try
             {
-                CommandType = CommandType.StoredProcedure
-            };
-            command.Parameters.AddWithValue("@Season", season);
-
-            var standings = new List<DriverStanding>();
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                standings.Add(new DriverStanding
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    Position = reader.GetInt32(reader.GetOrdinal("Position")),
-                    Points = reader.GetDecimal(reader.GetOrdinal("Points")),
-                    Wins = reader.GetInt32(reader.GetOrdinal("Wins")),
-                    DriverName = reader.GetString(reader.GetOrdinal("DriverName")),
-                    AcronymName = reader.GetString(reader.GetOrdinal("AcronymName")),
-                    TeamName = reader.GetString(reader.GetOrdinal("TeamName")),
-                    TeamColor = reader.GetString(reader.GetOrdinal("TeamColor"))
-                });
-            }
+                    await connection.OpenAsync();
 
-            return standings;
-        }
-
-        public async Task<List<ConstructorStanding>> GetConstructorStandings(int season)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            using var command = new SqlCommand("SP_GetConstructorStandings", connection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-            command.Parameters.AddWithValue("@Season", season);
-
-            var standings = new List<ConstructorStanding>();
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                standings.Add(new ConstructorStanding
-                {
-                    Position = reader.GetInt32(reader.GetOrdinal("Position")),
-                    Points = reader.GetDecimal(reader.GetOrdinal("Points")),
-                    Wins = reader.GetInt32(reader.GetOrdinal("Wins")),
-                    TeamName = reader.GetString(reader.GetOrdinal("TeamName")),
-                    TeamColor = reader.GetString(reader.GetOrdinal("TeamColor"))
-                });
-            }
-
-            return standings;
-        }
-
-        public async Task UpdateDriverStanding(DriverStanding standing, int season)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            using var command = new SqlCommand("SP_UpdateDriverStandings", connection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-
-            command.Parameters.AddWithValue("@DriverId", standing.DriverId);
-            command.Parameters.AddWithValue("@Position", standing.Position);
-            command.Parameters.AddWithValue("@Points", standing.Points);
-            command.Parameters.AddWithValue("@Wins", standing.Wins);
-            command.Parameters.AddWithValue("@Season", season);
-
-            await command.ExecuteNonQueryAsync();
-        }
-
-        public async Task UpdateConstructorStanding(ConstructorStanding standing, int season)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            using var command = new SqlCommand("SP_UpdateConstructorStandings", connection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-
-            command.Parameters.AddWithValue("@TeamId", standing.TeamId);
-            command.Parameters.AddWithValue("@Position", standing.Position);
-            command.Parameters.AddWithValue("@Points", standing.Points);
-            command.Parameters.AddWithValue("@Wins", standing.Wins);
-            command.Parameters.AddWithValue("@Season", season);
-
-            await command.ExecuteNonQueryAsync();
-        }
-
-        public async Task UpdateStandingsFromOpenF1(int season)
-        {
-            using var httpClient = new HttpClient();
-            
-            // Get driver standings from OpenF1 API
-            var driverStandingsUrl = $"https://api.openf1.org/v1/drivers?session_key=latest";
-            var driverStandingsResponse = await httpClient.GetAsync(driverStandingsUrl);
-            
-            if (driverStandingsResponse.IsSuccessStatusCode)
-            {
-                var driverStandings = await driverStandingsResponse.Content.ReadFromJsonAsync<List<OpenF1DriverStanding>>();
-                if (driverStandings != null && driverStandings.Any())
-                {
-                    foreach (var standing in driverStandings)
+                    using (SqlCommand command = new SqlCommand("SP_GetDriverStandings", connection))
                     {
-                        // Get the driver from our database using name
-                        using var connection = new SqlConnection(_connectionString);
-                        await connection.OpenAsync();
-                        
-                        var driverCommand = new SqlCommand(
-                            "SELECT Id FROM Drivers WHERE Name LIKE @Name OR AcronymName LIKE @Code",
-                            connection);
-                        var driverName = $"{standing.FirstName} {standing.LastName}";
-                        driverCommand.Parameters.AddWithValue("@Name", $"%{driverName}%");
-                        driverCommand.Parameters.AddWithValue("@Code", $"%{standing.DriverCode}%");
-                        
-                        var driverId = await driverCommand.ExecuteScalarAsync() as int?;
-                        
-                        if (driverId.HasValue)
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            await UpdateDriverStanding(new DriverStanding
+                            while (await reader.ReadAsync())
                             {
-                                DriverId = driverId.Value,
-                                Position = standing.Position,
-                                Points = standing.Points,
-                                Wins = standing.Wins
-                            }, season);
+                                driverStandings.Add(new DriverStanding
+                                {
+                                    Position = reader.GetInt32(reader.GetOrdinal("Position")),
+                                    DriverName = reader.GetString(reader.GetOrdinal("DriverName")),
+                                    TeamName = reader.GetString(reader.GetOrdinal("TeamName")),
+                                    Points = reader.GetInt32(reader.GetOrdinal("Points")),
+                                    GapToLeader = reader.IsDBNull(reader.GetOrdinal("GapToLeader")) ? "—" : reader.GetString(reader.GetOrdinal("GapToLeader"))
+                                });
+                            }
                         }
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                var errorContent = await driverStandingsResponse.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to fetch driver standings. Status: {driverStandingsResponse.StatusCode}, Error: {errorContent}");
+                _logger.LogError(ex, "Error getting driver standings");
+                throw;
             }
 
-            // Get constructor standings from OpenF1 API
-            var constructorStandingsUrl = $"https://api.openf1.org/v1/constructors?session_key=latest";
-            var constructorStandingsResponse = await httpClient.GetAsync(constructorStandingsUrl);
-            
-            if (constructorStandingsResponse.IsSuccessStatusCode)
+            return driverStandings;
+        }
+
+        public async Task<List<ConstructorStandings>> GetConstructorStandings(int season)
+        {
+            var constructorStandings = new List<ConstructorStandings>();
+
+            try
             {
-                var constructorStandings = await constructorStandingsResponse.Content.ReadFromJsonAsync<List<OpenF1ConstructorStanding>>();
-                if (constructorStandings != null && constructorStandings.Any())
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    foreach (var standing in constructorStandings)
+                    await connection.OpenAsync();
+
+                    using (SqlCommand command = new SqlCommand("SP_GetConstructorStandings", connection))
                     {
-                        // Get the team from our database using name
-                        using var connection = new SqlConnection(_connectionString);
-                        await connection.OpenAsync();
-                        
-                        var teamCommand = new SqlCommand(
-                            "SELECT Id FROM Teams WHERE Name LIKE @Name",
-                            connection);
-                        teamCommand.Parameters.AddWithValue("@Name", $"%{standing.TeamName}%");
-                        
-                        var teamId = await teamCommand.ExecuteScalarAsync() as int?;
-                        
-                        if (teamId.HasValue)
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Season", season);
+
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            await UpdateConstructorStanding(new ConstructorStanding
+                            while (await reader.ReadAsync())
                             {
-                                TeamId = teamId.Value,
-                                Position = standing.Position,
-                                Points = standing.Points,
-                                Wins = standing.Wins
-                            }, season);
+                                constructorStandings.Add(new ConstructorStandings
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    TeamId = reader.GetInt32(reader.GetOrdinal("TeamId")),
+                                    Position = reader.GetInt32(reader.GetOrdinal("Position")),
+                                    Points = reader.GetDecimal(reader.GetOrdinal("Points")),
+                                    Wins = reader.GetInt32(reader.GetOrdinal("Wins")),
+                                    TeamName = reader.GetString(reader.GetOrdinal("TeamName")),
+                                    TeamColor = reader.GetString(reader.GetOrdinal("TeamColor")),
+                                    Season = season,
+                                    GapToLeader = reader.GetDecimal(reader.GetOrdinal("GapToLeader"))
+                                });
+                            }
                         }
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                var errorContent = await constructorStandingsResponse.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to fetch constructor standings. Status: {constructorStandingsResponse.StatusCode}, Error: {errorContent}");
+                _logger.LogError(ex, "Error getting constructor standings for season {Season}", season);
+                throw;
+            }
+
+            return constructorStandings;
+        }
+
+        public async Task UpdateStandings(int season)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    using (SqlCommand command = new SqlCommand("SP_UpdateStandings", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Season", season);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating standings for season {Season}", season);
+                throw;
             }
         }
     }

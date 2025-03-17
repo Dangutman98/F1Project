@@ -1,55 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
 using server.DAL;
 using server.Models;
+using Microsoft.Extensions.Logging;
 
 namespace server.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class StandingsController : ControllerBase
     {
         private readonly StandingsDAL _standingsDAL;
+        private readonly ILogger<StandingsController> _logger;
 
-        public StandingsController(IConfiguration configuration)
+        public StandingsController(StandingsDAL standingsDAL, ILogger<StandingsController> logger)
         {
-            _standingsDAL = new StandingsDAL(configuration.GetConnectionString("F1ProjectDb"));
+            _standingsDAL = standingsDAL;
+            _logger = logger;
         }
 
-        [HttpGet("drivers/{season}")]
-        public async Task<ActionResult<List<DriverStanding>>> GetDriverStandings(int season)
+        [HttpGet]
+        public async Task<ActionResult<List<DriverStanding>>> GetDriverStandings()
         {
             try
             {
-                var standings = await _standingsDAL.GetDriverStandings(season);
-                if (standings == null || !standings.Any())
+                var standings = await _standingsDAL.GetDriverStandings();
+                if (!standings.Any())
                 {
-                    return NotFound(new { Message = "No driver standings found for the specified season" });
+                    return NotFound("No driver standings found");
                 }
                 return Ok(standings);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error retrieving driver standings: {ex}");
-                return StatusCode(500, new { Message = $"Error retrieving driver standings: {ex.Message}" });
+                _logger.LogError(ex, "Error retrieving driver standings");
+                return StatusCode(500, "An error occurred while retrieving driver standings");
             }
         }
 
         [HttpGet("constructors/{season}")]
-        public async Task<ActionResult<List<ConstructorStanding>>> GetConstructorStandings(int season)
+        public async Task<ActionResult<List<ConstructorStandings>>> GetConstructorStandings(int season)
         {
             try
             {
                 var standings = await _standingsDAL.GetConstructorStandings(season);
-                if (standings == null || !standings.Any())
+                if (!standings.Any())
                 {
-                    return NotFound(new { Message = "No constructor standings found for the specified season" });
+                    return NotFound($"No constructor standings found for season {season}");
                 }
                 return Ok(standings);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error retrieving constructor standings: {ex}");
-                return StatusCode(500, new { Message = $"Error retrieving constructor standings: {ex.Message}" });
+                _logger.LogError(ex, "Error retrieving constructor standings for season {Season}", season);
+                return StatusCode(500, "An error occurred while retrieving constructor standings");
             }
         }
 
@@ -58,34 +61,43 @@ namespace server.Controllers
         {
             try
             {
-                if (season < 2023 || season > 2024)
+                if (season != 2023 && season != 2024)
                 {
-                    return BadRequest(new { Message = "Season must be 2023 or 2024" });
+                    return BadRequest("Only 2023 and 2024 seasons are supported");
                 }
 
-                await _standingsDAL.UpdateStandingsFromOpenF1(season);
-                
-                // Get updated standings
-                var driverStandings = await _standingsDAL.GetDriverStandings(season);
-                var constructorStandings = await _standingsDAL.GetConstructorStandings(season);
-
-                if ((driverStandings == null || !driverStandings.Any()) && 
-                    (constructorStandings == null || !constructorStandings.Any()))
-                {
-                    return NotFound(new { Message = "No standings data available after update" });
-                }
-
-                return Ok(new { 
-                    Message = "Standings updated successfully",
-                    DriverStandings = driverStandings,
-                    ConstructorStandings = constructorStandings
-                });
+                await _standingsDAL.UpdateStandings(season);
+                return Ok($"Standings updated successfully for season {season}");
             }
             catch (Exception ex)
             {
-                // Log the full exception details
-                Console.WriteLine($"Error updating standings: {ex}");
-                return StatusCode(500, new { Message = $"Error updating standings: {ex.Message}" });
+                _logger.LogError(ex, "Error updating standings for season {Season}", season);
+                return StatusCode(500, "An error occurred while updating standings");
+            }
+        }
+
+        [HttpGet("{season}")]
+        public async Task<ActionResult<StandingsResponse>> GetAllStandings(int season)
+        {
+            try
+            {
+                var response = new StandingsResponse
+                {
+                    DriverStandings = await _standingsDAL.GetDriverStandings(season),
+                    ConstructorStandings = await _standingsDAL.GetConstructorStandings(season)
+                };
+
+                if (!response.DriverStandings.Any() && !response.ConstructorStandings.Any())
+                {
+                    return NotFound($"No standings found for season {season}");
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all standings for season {Season}", season);
+                return StatusCode(500, "An error occurred while retrieving standings");
             }
         }
     }

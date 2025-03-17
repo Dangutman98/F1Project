@@ -56,16 +56,6 @@ builder.Services.AddScoped<EventDAL>(provider =>
     return new EventDAL(connectionString);
 });
 
-// Register StandingsDAL for Dependency Injection
-builder.Services.AddScoped<StandingsDAL>(provider =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb");
-    if (string.IsNullOrEmpty(connectionString))
-    {
-        throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
-    }
-    return new StandingsDAL(connectionString);
-});
 
 // Enable CORS (Cross-Origin Resource Sharing)
 builder.Services.AddCors(options =>
