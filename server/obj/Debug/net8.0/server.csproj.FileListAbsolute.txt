@@ -299,3 +299,11 @@ C:\Users\Dan\Desktop\F1Project\server\obj\Debug\net8.0\server.genruntimeconfig.c
 C:\Users\Dan\Desktop\F1Project\server\obj\Debug\net8.0\ref\server.dll
 C:\Users\Dan\Desktop\F1Project\server\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\System.Data.SqlClient.dll
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\runtimes\win-arm64\native\sni.dll
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\runtimes\win-x64\native\sni.dll
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\runtimes\win-x86\native\sni.dll
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\runtimes\unix\lib\net8.0\System.Data.SqlClient.dll
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Data.SqlClient.dll
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\Data\standings-2023.json
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\Data\standings-2024.json

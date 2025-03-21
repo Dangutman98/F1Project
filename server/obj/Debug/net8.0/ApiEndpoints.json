@@ -46,6 +46,66 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "server.Controllers.DriverStandingsController",
+    "Method": "Get2023Standings",
+    "RelativePath": "api/DriverStandings/2023",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[server.Models.DriverStanding, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "server.Controllers.DriverStandingsController",
+    "Method": "Get2024Standings",
+    "RelativePath": "api/DriverStandings/2024",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[server.Models.DriverStanding, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "server.Controllers.DriverStandingsController",
+    "Method": "Save2023StandingsToDatabase",
+    "RelativePath": "api/DriverStandings/save-to-db/2023",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.DriverStandingsController",
+    "Method": "Save2024StandingsToDatabase",
+    "RelativePath": "api/DriverStandings/save-to-db/2024",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "server.Controllers.EventController",
     "Method": "GetEvents",
     "RelativePath": "api/Event",
