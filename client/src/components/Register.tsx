@@ -134,14 +134,14 @@ export default function Register() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <span className="text-black text-2xl font-bold">
+              <span className="text-black text-xl sm:text-2xl font-bold">
                 F1 Fan Hub
               </span>
             </div>
-            <nav className="flex items-center space-x-4">
+            <nav className="flex items-center">
               <button
                 onClick={() => navigate('/login')}
-                className="text-black hover:text-gray-800"
+                className="text-black hover:text-gray-800 text-sm sm:text-base px-3 py-2"
               >
                 Login
               </button>
@@ -152,10 +152,10 @@ export default function Register() {
 
       {/* Main Content */}
       <main className="flex-1">
-        <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-            <div className="p-8">
-              <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">Create Account</h2>
+            <div className="p-6 sm:p-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-6 sm:mb-8">Create Account</h2>
               
               {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
@@ -296,18 +296,18 @@ export default function Register() {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                   <button
                     type="button"
                     onClick={() => navigate('/login')}
-                    className="text-sm text-gray-600 hover:text-gray-900"
+                    className="text-sm text-gray-600 hover:text-gray-900 px-3 py-2"
                   >
                     Already have an account? Login
                   </button>
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-red-600 text-black py-2 px-6 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    className="w-full sm:w-auto bg-red-600 text-black py-2 px-6 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm sm:text-base"
                   >
                     {isLoading ? 'Creating Account...' : 'Create Account'}
                   </button>
@@ -320,9 +320,9 @@ export default function Register() {
 
       {/* Footer */}
       <footer className="bg-gray-800">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="text-center text-gray-400">
-            <p>© 2024 F1 Fan Hub. All rights reserved.</p>
+            <p className="text-sm sm:text-base">© 2024 F1 Fan Hub. All rights reserved.</p>
           </div>
         </div>
       </footer>

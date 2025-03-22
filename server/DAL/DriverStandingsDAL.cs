@@ -267,9 +267,9 @@ namespace server.DAL
                 }
 
                 return standings;
-            }
-            catch (Exception ex)
-            {
+                        }
+                        catch (Exception ex)
+                        {
                 _logger.LogError(ex, "Error fetching 2024 standings from database");
                 throw;
             }
