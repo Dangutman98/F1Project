@@ -28,27 +28,7 @@ interface Driver {
   acronymName: string;
 }
 
-interface FavoriteDriver {
-  DriverId: number;
-  DriverName: string;
-  PhotoURL: string;
-  TeamId: number;
-  AcronymName: string;
-  TeamName: string;
-  TeamColor: string;
-}
 
-interface FavoriteTeam {
-  TeamId: number;
-  TeamName: string;
-  Color: string;
-}
-
-interface UserFavorites {
-  Drivers: FavoriteDriver[];
-  Teams: FavoriteTeam[];
-  RacingSpots: string[];
-}
 
 // Map team names to their logos
 const teamLogos: { [key: string]: string } = {

@@ -13,49 +13,49 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navigation Bar */}
-      <nav className="bg-red-600 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <span className="text-white text-2xl font-bold">F1 Fan Hub</span>
+      <nav className="bg-red-600 shadow-lg w-full">
+        <div className="w-full px-2 sm:px-4">
+          <div className="flex flex-wrap justify-between items-center h-auto py-2">
+            <div className="flex items-center shrink-0">
+              <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold whitespace-nowrap">F1 Fan Hub</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-black">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <span className="text-black text-sm sm:text-base whitespace-nowrap">
                 Welcome, {user?.username}
               </span>
               <button
                 onClick={() => navigate('/profile')}
-                className="text-black hover:text-gray-700"
+                className="text-black hover:text-gray-700 px-2 sm:px-3 py-2 text-sm sm:text-base min-w-[120px] sm:min-w-[140px]"
               >
                 My Profile
               </button>
               <button
                 onClick={() => navigate('/teams-and-drivers')}
-                className="text-black hover:text-gray-700"
+                className="text-black hover:text-gray-700 px-2 sm:px-3 py-2 text-sm sm:text-base min-w-[120px] sm:min-w-[140px]"
               >
                 Teams & Drivers
               </button>
               <button
                 onClick={() => navigate('/events')}
-                className="text-black hover:text-gray-700"
+                className="text-black hover:text-gray-700 px-2 sm:px-3 py-2 text-sm sm:text-base min-w-[120px] sm:min-w-[140px]"
               >
                 Events
               </button>
               <button
                 onClick={() => navigate('/racing-spots')}
-                className="text-black hover:text-gray-700"
+                className="text-black hover:text-gray-700 px-2 sm:px-3 py-2 text-sm sm:text-base min-w-[120px] sm:min-w-[140px]"
               >
                 Racing Spots
               </button>
               <button
                 onClick={() => navigate('/standings')}
-                className="text-black hover:text-gray-700"
+                className="text-black hover:text-gray-700 px-2 sm:px-3 py-2 text-sm sm:text-base min-w-[120px] sm:min-w-[140px]"
               >
                 Standings
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-white text-red-600 px-4 py-2 rounded-md hover:bg-gray-100"
+                className="bg-white text-red-600 px-2 sm:px-3 py-2 rounded-md hover:bg-gray-100 text-sm sm:text-base min-w-[120px] sm:min-w-[140px]"
               >
                 Logout
               </button>
