@@ -11,7 +11,7 @@ namespace server.DAL
 
         public DriverStandingsDAL(IConfiguration configuration, ILogger<DriverStandingsDAL> logger)
         {
-            _connectionString = configuration.GetConnectionString("F1ProjectDb") 
+            _connectionString = configuration.GetConnectionString("igroup179_prod") 
                 ?? throw new ArgumentNullException(nameof(configuration));
             _logger = logger;
         }
@@ -36,13 +36,13 @@ namespace server.DAL
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                // Clear 2023 standings
+                // Clear existing 2023 standings
                 using (var command = new SqlCommand("DELETE FROM [dbo].[DriverStandings2023]", connection))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
 
-                // Insert new standings using 2023 stored procedure
+                // Insert new standings using stored procedure
                 foreach (var standing in standings)
                 {
                     using var command = new SqlCommand("SP_InsertDriverStandings2023", connection);
@@ -76,13 +76,13 @@ namespace server.DAL
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                // Clear 2024 standings
+                // Clear existing 2024 standings
                 using (var command = new SqlCommand("DELETE FROM [dbo].[DriverStandings2024]", connection))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
 
-                // Insert new standings using 2024 stored procedure
+                // Insert new standings using stored procedure
                 foreach (var standing in standings)
                 {
                     using var command = new SqlCommand("SP_InsertDriverStandings2024", connection);
@@ -121,25 +121,27 @@ namespace server.DAL
             {
                 command.Parameters.AddWithValue("@DriverName", driverName);
                 var result = await command.ExecuteScalarAsync();
-                if (result != null)
-                    return (int)result;
+                if (result != null && result != DBNull.Value)
+                    return Convert.ToInt32(result);
             }
 
-            // If driver doesn't exist, insert new driver using stored procedure
-            using (var command = new SqlCommand("SP_InsertDriverDriverStandings", connection))
+            // If driver doesn't exist, insert new driver with direct INSERT
+            using (var command = new SqlCommand(@"
+                INSERT INTO Drivers (Name)
+                OUTPUT INSERTED.Id
+                VALUES (@Name)", connection))
             {
-                command.CommandType = System.Data.CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@Name", driverName);
 
-                using var reader = await command.ExecuteReaderAsync();
-                if (reader.Read())
+                var result = await command.ExecuteScalarAsync();
+                if (result == null || result == DBNull.Value)
                 {
-                    var newId = reader.GetInt32(0);  // Get the ID from the first column
-                    _logger.LogInformation($"Created new driver: {driverName} with ID: {newId}");
-                    return newId;
+                    throw new Exception($"Failed to create new driver: {driverName}");
                 }
-                
-                throw new Exception($"Failed to insert new driver: {driverName}");
+
+                var newId = Convert.ToInt32(result);
+                _logger.LogInformation($"Created new driver: {driverName} with ID: {newId}");
+                return newId;
             }
         }
 
@@ -183,10 +185,10 @@ namespace server.DAL
             command.Parameters.AddWithValue("@TeamName", dbTeamName);
 
             var result = command.ExecuteScalar();
-            if (result == null)
+            if (result == null || result == DBNull.Value)
                 throw new Exception($"Team not found: {teamName} (mapped to: {dbTeamName})");
 
-            return (int)result;
+            return Convert.ToInt32(result);
         }
 
         public async Task<List<DriverStanding>> Get2023StandingsAsync()
@@ -267,9 +269,9 @@ namespace server.DAL
                 }
 
                 return standings;
-                        }
-                        catch (Exception ex)
-                        {
+            }
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "Error fetching 2024 standings from database");
                 throw;
             }

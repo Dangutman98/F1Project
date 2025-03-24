@@ -34,46 +34,43 @@ const DriverStandings: React.FC = () => {
     const [showYear, setShowYear] = useState<2023 | 2024>(2023);
     const [showYearOptions, setShowYearOptions] = useState(false);
 
+    const fetchStandings = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            console.log('Fetching standings data...');
+            const [data2023, data2024] = await Promise.all([
+                fetchWithRetry('http://localhost:5066/api/DriverStandings/2023'),
+                fetchWithRetry('http://localhost:5066/api/DriverStandings/2024')
+            ]);
+
+            if (Array.isArray(data2023)) {
+                setStandings2023(data2023);
+            } else {
+                console.error('Invalid 2023 data format:', data2023);
+                throw new Error('Invalid data format for 2023 standings');
+            }
+
+            if (Array.isArray(data2024)) {
+                setStandings2024(data2024);
+            } else {
+                console.error('Invalid 2024 data format:', data2024);
+                throw new Error('Invalid data format for 2024 standings');
+            }
+        } catch (err) {
+            console.error('Error fetching standings:', err);
+            setError(err instanceof Error ? err.message : 'An error occurred while fetching standings');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!user) {
             navigate('/login');
             return;
         }
-
-        const fetchStandings = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                console.log('Fetching standings data...');
-                const [data2023, data2024] = await Promise.all([
-                    fetchWithRetry('http://localhost:5066/api/DriverStandings/2023'),
-                    fetchWithRetry('http://localhost:5066/api/DriverStandings/2024')
-                ]);
-
-                console.log('2023 Standings:', data2023);
-                console.log('2024 Standings:', data2024);
-
-                if (Array.isArray(data2023)) {
-                    setStandings2023(data2023);
-                } else {
-                    console.error('Invalid 2023 data format:', data2023);
-                    throw new Error('Invalid data format for 2023 standings');
-                }
-
-                if (Array.isArray(data2024)) {
-                    setStandings2024(data2024);
-                } else {
-                    console.error('Invalid 2024 data format:', data2024);
-                    throw new Error('Invalid data format for 2024 standings');
-                }
-            } catch (err) {
-                console.error('Error fetching standings:', err);
-                setError(err instanceof Error ? err.message : 'An error occurred while fetching standings');
-            } finally {
-                setLoading(false);
-            }
-        };
 
         fetchStandings();
     }, [user, navigate]);
@@ -145,11 +142,21 @@ const DriverStandings: React.FC = () => {
                             {standings && standings.length > 0 ? (
                                 standings.map((standing) => (
                                     <tr key={standing.position} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{standing.position}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{standing.driverName}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{standing.teamName}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">{standing.points}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{standing.gapToLeader || '—'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                                            {standing.position}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            {standing.driverName}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {standing.teamName}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                                            {standing.points}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                            {standing.gapToLeader || '—'}
+                                        </td>
                                     </tr>
                                 ))
                             ) : (

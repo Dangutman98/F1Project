@@ -15,6 +15,27 @@ namespace server.Controllers
             _eventDAL = eventDAL;
         }
 
+        // GET: api/Event/fetch - Fetch events from API
+        [HttpGet("fetch")]
+        public async Task<ActionResult<IEnumerable<Event>>> FetchEvents()
+        {
+            try
+            {
+                var events = await _eventDAL.FetchEventsFromApiAsync();
+                if (events != null && events.Count != 0)
+                {
+                    return Ok(events);
+                }
+                return NotFound("No events found from API");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in FetchEvents: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // GET: api/Event - Get events from database
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
         {
@@ -25,6 +46,37 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // POST: api/Event/save/clearAndSave - Clear existing events and save new ones from API
+        [HttpPost("save/clearAndSave")]
+        public async Task<ActionResult> ClearAndSaveEvents()
+        {
+            try
+            {
+                Console.WriteLine("Deleting all events...");
+                await _eventDAL.DeleteAllEventsAsync();
+
+                Console.WriteLine("Fetching new events from API...");
+                var events = await _eventDAL.FetchEventsFromApiAsync();
+
+                if (events == null || !events.Any())
+                {
+                    return BadRequest("No events fetched from API.");
+                }
+
+                Console.WriteLine($"Fetched {events.Count} events.");
+
+                Console.WriteLine("Saving events to database...");
+                await _eventDAL.SaveEventsToDatabaseAsync(events);
+
+                return Ok("All previous events were deleted, and new events were saved successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ClearAndSaveEvents: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

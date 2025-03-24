@@ -90,10 +90,10 @@ export default function TeamsAndDrivers() {
       
       try {
         setLoading(true);
-        // Fetch teams, drivers, and favorites in parallel
+        // Fetch teams and drivers from database endpoints, and favorites in parallel
         const [teamsData, driversData, favoritesData] = await Promise.all([
-          fetchWithRetry('http://localhost:5066/api/Team'),
-          fetchWithRetry('http://localhost:5066/api/Driver/fetch'),
+          fetchWithRetry('http://localhost:5066/api/Team'),  // Using database endpoint
+          fetchWithRetry('http://localhost:5066/api/Driver'), // Using database endpoint
           fetchWithRetry(`http://localhost:5066/api/user/${user.id}/favorites`)
         ]);
 
@@ -334,7 +334,7 @@ export default function TeamsAndDrivers() {
                   {expandedTeam === team.id && (
                     <div className="mt-4 space-y-4">
                       {drivers
-                        .filter(driver => driver.teamId === team.name)
+                        .filter(driver => driver.teamId === team.id.toString())
                         .map(driver => (
                           <div 
                             key={driver.id} 

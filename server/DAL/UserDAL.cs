@@ -13,7 +13,7 @@ namespace server.DAL
         public UserDAL(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("F1ProjectDb");
+            _connectionString = _configuration.GetConnectionString("igroup179_prod");
         }
 
 

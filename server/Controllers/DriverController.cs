@@ -1,80 +1,126 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using server.DAL;
 using server.Models;
-
 
 namespace server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DriverController(DriverDal driverDal) : ControllerBase
+    public class DriverController : ControllerBase
     {
-        private readonly DriverDal _driverDal = driverDal;
+        private readonly DriverDal _driverDal;
 
-  
-        // Fetch drivers from OpenF1 API
+        public DriverController(DriverDal driverDal)
+        {
+            _driverDal = driverDal;
+        }
+
+        // GET: api/Driver/fetch - Fetch drivers from OpenF1 API
         [HttpGet("fetch")]
         public async Task<ActionResult<List<Driver>>> FetchDrivers()
         {
-            var drivers = await _driverDal.FetchDriversAsync();
+            try
+            {
+                var drivers = await _driverDal.FetchDriversFromApiAsync();
 
-            // If the list is not empty, return it; otherwise, return a message
-            if (drivers != null && drivers.Count != 0)
-            {
-                return Ok(drivers); // This will automatically serialize the list of Driver objects to JSON
+                if (drivers != null && drivers.Count != 0)
+                {
+                    return Ok(drivers);
+                }
+                else
+                {
+                    return NotFound("No drivers found from OpenF1 API");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return NotFound("No drivers found");
+                Console.WriteLine($"Error in FetchDrivers: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
+        // GET: api/Driver - Get drivers from database
+        [HttpGet]
+        public async Task<ActionResult<List<Driver>>> GetDrivers()
+        {
+            try
+            {
+                var drivers = await _driverDal.FetchDriversFromDbAsync();
+
+                if (drivers != null && drivers.Count != 0)
+                {
+                    return Ok(drivers);
+                }
+                else
+                {
+                    return NotFound("No drivers found in database");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetDrivers: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // POST: api/Driver/save/clearAndSave - Clear existing drivers and save new ones from API
         [HttpPost("save/clearAndSave")]
         public async Task<ActionResult> ClearAndSaveDrivers()
         {
-            Console.WriteLine("Deleting all drivers...");
-            await _driverDal.DeleteAllDriversAsync();
-
-            Console.WriteLine("Fetching new drivers...");
-            var drivers = await _driverDal.FetchDriversAsync();
-
-            if (drivers == null || !drivers.Any())
+            try
             {
-                return BadRequest("No drivers fetched from API.");
+                Console.WriteLine("Deleting all drivers...");
+                await _driverDal.DeleteAllDriversAsync();
+
+                Console.WriteLine("Fetching new drivers from API...");
+                var drivers = await _driverDal.FetchDriversFromApiAsync();
+
+                if (drivers == null || !drivers.Any())
+                {
+                    return BadRequest("No drivers fetched from API.");
+                }
+
+                Console.WriteLine($"Fetched {drivers.Count} drivers.");
+
+                Console.WriteLine("Saving drivers to database...");
+                await _driverDal.SaveDriversToDatabaseAsync(drivers);
+
+                return Ok("All previous drivers were deleted, and new drivers were saved successfully.");
             }
-
-            Console.WriteLine($"Fetched {drivers.Count} drivers.");
-            
-
-            Console.WriteLine("Saving drivers to database...");
-            await _driverDal.SaveDriversToDatabaseAsync(drivers);
-
-            return Ok("All previous drivers were deleted, and new drivers were saved successfully.");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ClearAndSaveDrivers: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-
-
+        // PUT: api/Driver/update/{id} - Update a specific driver
         [HttpPut("update/{id}")]
         public async Task<ActionResult> UpdateDriver(int id)
         {
-            // Fetch the driver data from the API
-            var drivers = await _driverDal.FetchDriversAsync();
-
-            // Find the driver with the specified ID
-            var driverToUpdate = drivers.FirstOrDefault(d => d.Id == id);
-
-            if (driverToUpdate == null)
+            try
             {
-                return NotFound("Driver not found.");
+                // Fetch the driver data from the API
+                var drivers = await _driverDal.FetchDriversFromApiAsync();
+
+                // Find the driver with the specified ID
+                var driverToUpdate = drivers.FirstOrDefault(d => d.Id == id);
+
+                if (driverToUpdate == null)
+                {
+                    return NotFound("Driver not found.");
+                }
+
+                // Save the updated driver data to the database
+                await _driverDal.SaveDriversToDatabaseAsync([driverToUpdate]);
+
+                return Ok("Driver updated successfully.");
             }
-
-            // Save the updated driver data to the database
-            await _driverDal.SaveDriversToDatabaseAsync([driverToUpdate]);
-
-            return Ok("Driver updated successfully.");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateDriver: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
-
-    
     }
 }

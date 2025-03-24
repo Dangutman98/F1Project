@@ -20,7 +20,7 @@ builder.Services.AddControllers()
 
 // Configure DbContext for SQL Server
 builder.Services.AddDbContext<server.Data.F1ProjectDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("F1ProjectDb"))); // Ensure connection string is correctly set in appsettings.json
+    options.UseSqlServer(builder.Configuration.GetConnectionString("igroup179_prod"))); // Ensure connection string is correctly set in appsettings.json
 
 // Add services for Swagger (for API documentation)
 builder.Services.AddEndpointsApiExplorer();
@@ -33,10 +33,10 @@ builder.Services.AddHttpClient(); // Register HttpClient for Dependency Injectio
 // Register DriverDal for Dependency Injection
 builder.Services.AddScoped<DriverDal>(provider =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb"); // Get connection string from configuration
+    var connectionString = builder.Configuration.GetConnectionString("igroup179_prod"); // Get connection string from configuration
     if (string.IsNullOrEmpty(connectionString))
     {
-        throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
+        throw new InvalidOperationException("Connection string 'igroup179_prod' is not configured.");
     }
     return new DriverDal(connectionString); // Only pass connection string
 });
@@ -44,10 +44,10 @@ builder.Services.AddScoped<DriverDal>(provider =>
 // Register TeamDal for Dependency Injection
 builder.Services.AddScoped<TeamDal>(provider =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb"); // Get connection string from configuration
+    var connectionString = builder.Configuration.GetConnectionString("igroup179_prod"); // Get connection string from configuration
     if (string.IsNullOrEmpty(connectionString))
     {
-        throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
+        throw new InvalidOperationException("Connection string 'igroup179_prod' is not configured.");
     }
     return new TeamDal(connectionString); // Only pass connection string
 });
@@ -55,10 +55,10 @@ builder.Services.AddScoped<TeamDal>(provider =>
 // Register EventDAL for Dependency Injection
 builder.Services.AddScoped<EventDAL>(provider =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("F1ProjectDb");
+    var connectionString = builder.Configuration.GetConnectionString("igroup179_prod");
     if (string.IsNullOrEmpty(connectionString))
     {
-        throw new InvalidOperationException("Connection string 'F1ProjectDb' is not configured.");
+        throw new InvalidOperationException("Connection string 'igroup179_prod' is not configured.");
     }
     return new EventDAL(connectionString);
 });
