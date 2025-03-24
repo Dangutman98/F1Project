@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -31,19 +35,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-03-24T20:10:49.454Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
               "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\appsettings.json",
               "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-03-24T19:54:59.213Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "DriverController.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\DriverController.cs",
               "RelativeDocumentMoniker": "Controllers\\DriverController.cs",
@@ -55,7 +72,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "DriverDAL.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\DAL\\DriverDAL.cs",
               "RelativeDocumentMoniker": "DAL\\DriverDAL.cs",
@@ -63,12 +80,11 @@
               "RelativeToolTip": "DAL\\DriverDAL.cs",
               "ViewState": "AgIAAHgAAAAAAAAAAAAUwIQAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-20T14:37:24.714Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-20T14:37:24.714Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
