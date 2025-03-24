@@ -35,4 +35,8 @@ bld/
 
 # Visual Studio cache/options directory
 .vs/
-*.vsidx 
+*.vsidx
+
+# Visual Studio temporary files
+*.tmp
+*.temp 
