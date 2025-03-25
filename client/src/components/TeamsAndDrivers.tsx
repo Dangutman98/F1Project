@@ -86,36 +86,58 @@ export default function TeamsAndDrivers() {
     };
 
     const fetchData = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        console.log('No user ID available in TeamsAndDrivers');
+        return;
+      }
       
       try {
         setLoading(true);
+        console.log('Starting to fetch data in TeamsAndDrivers');
+        
         // Fetch teams, drivers, and favorites in parallel
-        const [teamsData, driversData, favoritesData] = await Promise.all([
-          fetchWithRetry('http://localhost:5066/api/Team'),
-          fetchWithRetry('http://localhost:5066/api/Driver/fetch'),
-          fetchWithRetry(`http://localhost:5066/api/user/${user.id}/favorites`)
-        ]);
+        console.log('Fetching teams...');
+        const teamsData = await fetchWithRetry('http://localhost:5066/api/Team');
+        console.log('Teams data received:', teamsData?.length || 0, 'teams');
+        
+        console.log('Fetching drivers...');
+        const driversData = await fetchWithRetry('http://localhost:5066/api/Driver/fetch');
+        console.log('Drivers data received:', driversData?.length || 0, 'drivers');
+        
+        console.log('Fetching favorites...');
+        const favoritesData = await fetchWithRetry(`http://localhost:5066/api/user/${user.id}/favorites`);
+        console.log('Favorites data received:', JSON.stringify(favoritesData, null, 2));
 
-        setTeams(teamsData);
-        setDrivers(driversData);
+        if (teamsData) {
+          console.log('Setting teams state');
+          setTeams(teamsData);
+        }
+        
+        if (driversData) {
+          console.log('Setting drivers state');
+          setDrivers(driversData);
+        }
         
         // Update favorite states from the API response
         if (favoritesData && favoritesData.drivers) {
+          console.log('Setting favorite drivers state');
           const favoriteDriverIds = favoritesData.drivers.map((d: { driverId: number }) => d.driverId);
           setFavoriteDrivers(favoriteDriverIds);
         }
         
         if (favoritesData && favoritesData.teams && favoritesData.teams.length > 0) {
+          console.log('Setting favorite team state');
           const favoriteTeamId = favoritesData.teams[0].teamId;
           setFavoriteTeam(favoriteTeamId);
         } else {
+          console.log('No favorite team found');
           setFavoriteTeam(null);
         }
       } catch (err) {
+        console.error('Error in TeamsAndDrivers fetchData:', err);
         setError(err instanceof Error ? err.message : 'An error occurred');
-        console.error('Error fetching data:', err);
       } finally {
+        console.log('Setting loading to false in TeamsAndDrivers');
         setLoading(false);
       }
     };

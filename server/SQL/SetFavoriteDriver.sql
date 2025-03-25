@@ -1,4 +1,4 @@
-USE [F1ProjectDb]
+USE [igroup179_prod]
 GO
 
 -- First, let's drop and recreate the FavoriteDrivers table to include a timestamp

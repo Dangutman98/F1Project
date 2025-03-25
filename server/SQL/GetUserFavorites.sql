@@ -1,4 +1,4 @@
-USE [F1ProjectDb]
+USE [igroup179_prod]
 GO
 
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'GetUserFavorites')

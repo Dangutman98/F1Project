@@ -1,4 +1,4 @@
-USE [F1ProjectDb]
+USE [igroup179_prod]
 GO
 
 -- First, create the FavoriteRacingSpots table if it doesn't exist

@@ -52,15 +52,22 @@ namespace server.Controllers
         {
             try
             {
+                Console.WriteLine($"GetFavoriteRacingSpots called for userId: {userId}");
                 var spots = await _eventDAL.GetFavoriteRacingSpotsAsync(userId);
+                Console.WriteLine($"Found {spots.Count} favorite spots for userId: {userId}");
+                
                 if (spots.Any())
                 {
+                    Console.WriteLine($"Returning spots: {string.Join(", ", spots)}");
                     return Ok(spots);
                 }
-                return NotFound("No favorite racing spots found for this user");
+                Console.WriteLine("No favorite racing spots found");
+                return Ok(new List<string>()); // Return empty list instead of 404
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error in GetFavoriteRacingSpots: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

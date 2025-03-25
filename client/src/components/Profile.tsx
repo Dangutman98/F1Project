@@ -60,31 +60,40 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        console.log('No user ID available');
+        return;
+      }
 
       try {
-        console.log('Fetching favorites for user:', user.id);
+        console.log('Starting to fetch favorites for user:', user.id);
         const favoritesResponse = await fetch(`http://localhost:5066/api/user/${user.id}/favorites`);
+        console.log('Favorites response status:', favoritesResponse.status);
 
         if (!favoritesResponse.ok) {
+          console.error('Failed to fetch favorites:', favoritesResponse.statusText);
           throw new Error('Failed to fetch data');
         }
 
         const favorites: UserFavorites = await favoritesResponse.json();
-        console.log('Received favorites data:', favorites);
+        console.log('Received favorites data:', JSON.stringify(favorites, null, 2));
 
-        setFavoriteDrivers(favorites.drivers || []);
-        setFavoriteTeams(favorites.teams || []);
-        setFavoriteSpots(favorites.racingSpots || []);
-
-        console.log('Set state with:', {
-          drivers: favorites.drivers || [],
-          teams: favorites.teams || [],
-          spots: favorites.racingSpots || []
-        });
+        if (favorites.drivers) {
+          console.log('Setting favorite drivers:', favorites.drivers.length);
+          setFavoriteDrivers(favorites.drivers || []);
+        }
+        if (favorites.teams) {
+          console.log('Setting favorite teams:', favorites.teams.length);
+          setFavoriteTeams(favorites.teams || []);
+        }
+        if (favorites.racingSpots) {
+          console.log('Setting favorite spots:', favorites.racingSpots.length);
+          setFavoriteSpots(favorites.racingSpots || []);
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error in fetchData:', error);
       } finally {
+        console.log('Setting loading to false');
         setIsLoading(false);
       }
     };
