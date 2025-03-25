@@ -11,7 +11,7 @@ namespace server.DAL
 
         public DriverStandingsDAL(IConfiguration configuration, ILogger<DriverStandingsDAL> logger)
         {
-            _connectionString = configuration.GetConnectionString("F1ProjectDb") 
+            _connectionString = configuration.GetConnectionString("igroup179_prod") 
                 ?? throw new ArgumentNullException(nameof(configuration));
             _logger = logger;
         }
@@ -267,9 +267,9 @@ namespace server.DAL
                 }
 
                 return standings;
-                        }
-                        catch (Exception ex)
-                        {
+            }
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "Error fetching 2024 standings from database");
                 throw;
             }

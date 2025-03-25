@@ -14,16 +14,28 @@ export default function RacingSpots() {
 
   useEffect(() => {
     const fetchFavoriteSpots = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        console.log('No user ID available');
+        setIsLoading(false);
+        return;
+      }
       
       try {
+        console.log('Fetching favorite spots for user:', user.id);
         const response = await fetch(`http://localhost:5066/api/event/favorite/all/${user.id}`);
+        console.log('Response status:', response.status);
+        
         if (response.ok) {
           const spots = await response.json();
+          console.log('Received favorite spots:', spots);
           setFavoriteSpots(spots);
+        } else {
+          console.error('Failed to fetch favorite spots:', response.statusText);
+          setFavoriteSpots([]);
         }
       } catch (error) {
         console.error('Error fetching favorite spots:', error);
+        setFavoriteSpots([]);
       } finally {
         setIsLoading(false);
       }

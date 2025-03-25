@@ -13,7 +13,7 @@ namespace server.DAL
         public UserDAL(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("F1ProjectDb");
+            _connectionString = _configuration.GetConnectionString("igroup179_prod");
         }
 
 
@@ -180,7 +180,17 @@ namespace server.DAL
             {
                 con = connect();
                 con.Open();
-                cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Email, FavoriteAnimal, FavoriteDriverId, FavoriteTeamId, FavoriteRacingSpotId, ProfilePhoto FROM Users WHERE Id = @Id", con);
+                cmd = new SqlCommand(@"
+                    SELECT 
+                        u.Id, 
+                        u.Username, 
+                        u.PasswordHash, 
+                        u.Email, 
+                        u.FavoriteAnimal,
+                        p.ProfilePhoto
+                    FROM Users u
+                    LEFT JOIN Profile p ON u.Id = p.UserId
+                    WHERE u.Id = @Id", con);
                 cmd.Parameters.AddWithValue("@Id", userId);
 
                 reader = cmd.ExecuteReader();
@@ -194,9 +204,6 @@ namespace server.DAL
                         PasswordHash = reader["PasswordHash"].ToString(),
                         Email = reader["Email"].ToString(),
                         FavoriteAnimal = reader["FavoriteAnimal"]?.ToString(),
-                        FavoriteDriverId = reader["FavoriteDriverId"] != DBNull.Value ? (int)reader["FavoriteDriverId"] : null,
-                        FavoriteTeamId = reader["FavoriteTeamId"] != DBNull.Value ? (int)reader["FavoriteTeamId"] : null,
-                        FavoriteRacingSpotId = reader["FavoriteRacingSpotId"] != DBNull.Value ? (int)reader["FavoriteRacingSpotId"] : null,
                         ProfilePhoto = reader["ProfilePhoto"] != DBNull.Value ? reader["ProfilePhoto"].ToString() : null
                     };
                 }
