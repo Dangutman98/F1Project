@@ -197,6 +197,14 @@ namespace server.DAL
 
                 if (reader.Read())
                 {
+                    string? profilePhoto = reader["ProfilePhoto"] != DBNull.Value ? reader["ProfilePhoto"].ToString() : null;
+                    
+                    // If profile photo exists but doesn't have the data:image prefix, add it
+                    if (!string.IsNullOrEmpty(profilePhoto) && !profilePhoto.StartsWith("data:image"))
+                    {
+                        profilePhoto = $"data:image/jpeg;base64,{profilePhoto}";
+                    }
+
                     return new User
                     {
                         Id = (int)reader["Id"],
@@ -204,7 +212,7 @@ namespace server.DAL
                         PasswordHash = reader["PasswordHash"].ToString(),
                         Email = reader["Email"].ToString(),
                         FavoriteAnimal = reader["FavoriteAnimal"]?.ToString(),
-                        ProfilePhoto = reader["ProfilePhoto"] != DBNull.Value ? reader["ProfilePhoto"].ToString() : null
+                        ProfilePhoto = profilePhoto
                     };
                 }
                 return null;
@@ -410,53 +418,49 @@ namespace server.DAL
         }
 
         // Method to get a user by username
-        public User GetUserByUsername(string username)
+        public User? GetUserByUsername(string username)
         {
             SqlConnection con = null;
-            SqlCommand cmd;
-            SqlDataReader reader;
-
             try
             {
                 con = connect();
                 con.Open();
-
-                cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Email, FavoriteAnimal, ProfilePhoto FROM Users WHERE Username = @Username", con);
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT 
+                        u.Id, 
+                        u.Username, 
+                        u.PasswordHash, 
+                        u.Email, 
+                        u.FavoriteAnimal,
+                        p.ProfilePhoto
+                    FROM Users u
+                    LEFT JOIN Profile p ON u.Id = p.UserId
+                    WHERE u.Username = @Username", con);
+                
                 cmd.Parameters.AddWithValue("@Username", username);
-
-                reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                
+                SqlDataReader dr = cmd.ExecuteReader();
+                
+                if (dr.Read())
                 {
-                    var user = new User
+                    return new User
                     {
-                        Id = (int)reader["Id"],
-                        Username = reader["Username"].ToString(),
-                        PasswordHash = reader["PasswordHash"].ToString(),
-                        Email = reader["Email"].ToString(),
-                        FavoriteAnimal = reader["FavoriteAnimal"]?.ToString(),
-                        ProfilePhoto = reader["ProfilePhoto"] != DBNull.Value ? reader["ProfilePhoto"].ToString() : null
+                        Id = dr.GetInt32(0),
+                        Username = dr.GetString(1),
+                        PasswordHash = dr.GetString(2),
+                        Email = dr.GetString(3),
+                        FavoriteAnimal = dr.GetString(4),
+                        ProfilePhoto = !dr.IsDBNull(5) ? dr.GetString(5) : null
                     };
-                    return user;
                 }
                 return null;
             }
-            catch (SqlException sqlEx)
-            {
-                Console.WriteLine($"SQL Exception in GetUserByUsername: {sqlEx.Message}");
-                Console.WriteLine($"Error Number: {sqlEx.Number}");
-                Console.WriteLine($"Error State: {sqlEx.State}");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception in GetUserByUsername: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                throw;
-            }
             finally
             {
-                con?.Close();
+                if (con != null)
+                {
+                    con.Close();
+                }
             }
         }
 
@@ -689,49 +693,86 @@ namespace server.DAL
         public bool UpdateProfilePhoto(int userId, string? profilePhoto)
         {
             SqlConnection con = null;
-            SqlCommand cmd;
-
             try
             {
-                Console.WriteLine($"Opening database connection for user {userId}");
                 con = connect();
                 con.Open();
-                Console.WriteLine("Database connection opened successfully");
+                Console.WriteLine($"Opening database connection for user {userId}");
 
-                Console.WriteLine("Creating SP_UpdateProfilePhoto command");
-                cmd = new SqlCommand("SP_UpdateProfilePhoto", con);
+                SqlCommand cmd = new SqlCommand("SP_UpdateProfilePhoto", con);
                 cmd.CommandType = CommandType.StoredProcedure;
-
-                Console.WriteLine("Setting up command parameters");
+                
                 cmd.Parameters.AddWithValue("@UserId", userId);
-                cmd.Parameters.AddWithValue("@ProfilePhoto", (object?)profilePhoto ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ProfilePhoto", profilePhoto != null ? (object)profilePhoto : DBNull.Value);
 
-                Console.WriteLine("Executing stored procedure");
-                int result = cmd.ExecuteNonQuery();
-                Console.WriteLine($"UpdateProfilePhoto: {result} rows affected");
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    var updatedPhoto = reader.IsDBNull(0) ? null : reader.GetString(0);
+                    Console.WriteLine($"Profile photo updated. New photo exists: {updatedPhoto != null}");
+                    return true;
+                }
 
-                return result > 0;
-            }
-            catch (SqlException sqlEx)
-            {
-                Console.WriteLine($"SQL Exception in UpdateProfilePhoto: {sqlEx.Message}");
-                Console.WriteLine($"Error Number: {sqlEx.Number}");
-                Console.WriteLine($"Error State: {sqlEx.State}");
-                Console.WriteLine($"Procedure: {sqlEx.Procedure}");
-                Console.WriteLine($"Line Number: {sqlEx.LineNumber}");
-                throw;
+                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception in UpdateProfilePhoto: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                Console.WriteLine($"Error updating profile photo: {ex.Message}");
                 throw;
             }
             finally
             {
                 if (con != null)
                 {
-                    Console.WriteLine("Closing database connection");
+                    con.Close();
+                }
+            }
+        }
+
+        public Profile GetUserProfile(int userId)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = connect();
+                con.Open();
+                Console.WriteLine($"Getting profile for user {userId}");
+                
+                SqlCommand cmd = new SqlCommand("SP_GetUserProfile", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@UserId", userId);
+                
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    var profile = new Profile
+                    {
+                        UserId = userId,
+                        ProfilePhoto = !reader.IsDBNull(4) ? reader.GetString(4) : null
+                    };
+                    
+                    // If profile photo exists but doesn't have prefix, add it
+                    if (!string.IsNullOrEmpty(profile.ProfilePhoto) && !profile.ProfilePhoto.StartsWith("data:image"))
+                    {
+                        profile.ProfilePhoto = $"data:image/jpeg;base64,{profile.ProfilePhoto}";
+                    }
+                    
+                    Console.WriteLine($"Found profile for user {userId}. Has photo: {profile.ProfilePhoto != null}");
+                    return profile;
+                }
+                
+                Console.WriteLine($"No profile found for user {userId}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting profile for user {userId}: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                if (con != null)
+                {
                     con.Close();
                 }
             }

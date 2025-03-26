@@ -135,46 +135,48 @@ namespace server.Controllers
 
             try
             {
-                // Console.WriteLine($"Attempting login for username: {userInput.Username}");
-                
-                // Get the user's stored hash
                 var user = _userDAL.GetUserByUsername(userInput.Username);
                 if (user == null)
                 {
-                    // Console.WriteLine($"User not found: {userInput.Username}");
                     return Unauthorized("Invalid username or password.");
                 }
 
-                // Console.WriteLine($"User found. Stored hash length: {user.PasswordHash?.Length ?? 0}");
-                // Console.WriteLine($"Attempting to verify password...");
-
-                // Verify the password
                 bool isValidPassword = BCrypt.Net.BCrypt.Verify(userInput.Password, user.PasswordHash);
-                // Console.WriteLine($"Password verification result: {isValidPassword}");
-
                 if (!isValidPassword)
                 {
-                    // Console.WriteLine("Password verification failed");
                     return Unauthorized("Invalid username or password.");
                 }
 
-                // Console.WriteLine("Login successful, preparing response");
                 try {
+                    // Get user profile including photo
+                    var userProfile = _userDAL.GetUserProfile(user.Id);
+                    Console.WriteLine($"Retrieved profile for user {user.Id}. Profile photo exists: {userProfile?.ProfilePhoto != null}");
+                    
+                    // If profile photo exists but doesn't have prefix, add it
+                    string? profilePhoto = userProfile?.ProfilePhoto;
+                    if (!string.IsNullOrEmpty(profilePhoto) && !profilePhoto.StartsWith("data:image"))
+                    {
+                        profilePhoto = $"data:image/jpeg;base64,{profilePhoto}";
+                    }
+
                     var response = new { 
                         Message = "Login successful.",
                         UserId = user.Id,
                         Username = user.Username,
                         Email = user.Email,
                         FavoriteAnimal = user.FavoriteAnimal,
-                        FavoriteDriverId = user.FavoriteDriverId,
-                        FavoriteTeamId = user.FavoriteTeamId,
-                        ProfilePhoto = user.ProfilePhoto
+                        Profile = new {
+                            FavoriteAnimal = user.FavoriteAnimal,
+                            ProfilePhoto = profilePhoto
+                        }
                     };
+
+                    Console.WriteLine($"Login response prepared. Profile photo included: {profilePhoto != null}");
                     return Ok(response);
                 }
-                catch (Exception) {
-                    // Console.WriteLine($"Error creating or serializing response: {ex.Message}");
-                    // Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                catch (Exception ex) {
+                    Console.WriteLine($"Error creating or serializing response: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
                     return StatusCode(500, "Internal server error during response creation");
                 }
             }
@@ -322,6 +324,12 @@ namespace server.Controllers
             {
                 Console.WriteLine($"Attempting to update profile photo for user {id}");
                 
+                if (photoUpdate == null || string.IsNullOrEmpty(photoUpdate.ProfilePhoto))
+                {
+                    Console.WriteLine("Photo data is null or empty");
+                    return BadRequest(new { Message = "Photo data is required." });
+                }
+
                 var existingUser = _userDAL.GetUserById(id);
                 if (existingUser == null)
                 {
@@ -330,22 +338,70 @@ namespace server.Controllers
                 }
                 Console.WriteLine($"Found user {existingUser.Username}");
 
-                // Log the photo data length to avoid logging the entire base64 string
-                var photoLength = photoUpdate?.ProfilePhoto?.Length ?? 0;
-                Console.WriteLine($"Received profile photo data of length: {photoLength}");
+                // Log the photo data details
+                var photoLength = photoUpdate.ProfilePhoto.Length;
+                var isBase64 = photoUpdate.ProfilePhoto.Contains("base64");
+                var hasPrefix = photoUpdate.ProfilePhoto.StartsWith("data:image");
+                Console.WriteLine($"Photo data length: {photoLength}");
+                Console.WriteLine($"Contains 'base64': {isBase64}");
+                Console.WriteLine($"Has image prefix: {hasPrefix}");
 
-                bool updateSuccess = _userDAL.UpdateProfilePhoto(id, photoUpdate?.ProfilePhoto);
-
-                if (!updateSuccess)
+                try
                 {
+                    // Store the raw base64 data (without prefix) in the database
+                    string photoData = photoUpdate.ProfilePhoto;
+                    if (photoData.Contains(","))
+                    {
+                        var parts = photoData.Split(',');
+                        Console.WriteLine($"Split parts count: {parts.Length}");
+                        Console.WriteLine($"Prefix part: {parts[0]}");
+                        photoData = parts[1];
+                    }
+
+                    Console.WriteLine($"Final photo data length: {photoData.Length}");
+                    bool updateSuccess = _userDAL.UpdateProfilePhoto(id, photoData);
+
+                    if (!updateSuccess)
+                    {
+                        Console.WriteLine("Failed to update profile photo in database");
+                        return StatusCode(500, new { Message = "Failed to update profile photo." });
+                    }
+
+                    Console.WriteLine("Successfully updated profile photo");
+                    
+                    return Ok(new { 
+                        Message = "Profile photo updated successfully",
+                        User = new {
+                            Id = existingUser.Id.ToString(),
+                            Username = existingUser.Username,
+                            Profile = new {
+                                ProfilePhoto = photoUpdate.ProfilePhoto,  // Return the original photo data with prefix
+                                FavoriteAnimal = existingUser.FavoriteAnimal
+                            }
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing photo data: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
                     Console.WriteLine("Failed to update profile photo in database");
                     return StatusCode(500, new { Message = "Failed to update profile photo." });
                 }
 
                 Console.WriteLine("Successfully updated profile photo");
+                
+                // Return the response in the format expected by the frontend
                 return Ok(new { 
                     Message = "Profile photo updated successfully",
-                    ProfilePhoto = photoUpdate?.ProfilePhoto
+                    User = new {
+                        Id = existingUser.Id.ToString(),
+                        Username = existingUser.Username,
+                        Profile = new {
+                            ProfilePhoto = photoUpdate?.ProfilePhoto,  // Return the original photo data with prefix
+                            FavoriteAnimal = existingUser.FavoriteAnimal
+                        }
+                    }
                 });
             }
             catch (Exception ex)
