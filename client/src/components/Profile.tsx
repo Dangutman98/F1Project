@@ -143,7 +143,9 @@ export default function Profile() {
               <div className="inline-block">
                 {user.profile?.profilePhoto ? (
                   <img
-                    src={user.profile.profilePhoto}
+                    src={user.profile.profilePhoto.startsWith('data:image') ? 
+                         user.profile.profilePhoto : 
+                         `data:image/jpeg;base64,${user.profile.profilePhoto}`}
                     alt="Profile"
                     className="h-32 w-32 rounded-full mx-auto mb-6 object-cover border-4 border-white"
                   />
