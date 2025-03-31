@@ -1,4 +1,8 @@
-﻿namespace server.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System;
+
+namespace server.Models
 {
     public class User
     {
@@ -12,6 +16,7 @@
         private int? favoriteTeamId;
         private int? favoriteRacingSpotId;
         private string? profilePhoto;
+        private string googleUid;
 
         //get/set
         public int Id { get => id; set => id = value; }
@@ -23,6 +28,7 @@
         public int? FavoriteTeamId { get => favoriteTeamId; set => favoriteTeamId = value; }
         public int? FavoriteRacingSpotId { get => favoriteRacingSpotId; set => favoriteRacingSpotId = value; }
         public string? ProfilePhoto { get => profilePhoto; set => profilePhoto = value; }
+        public string GoogleUid { get => googleUid; set => googleUid = value; }
 
         // empty constructor
         public User()

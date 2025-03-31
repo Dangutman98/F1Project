@@ -10,19 +10,19 @@ namespace server.DAL
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
 
+       //
         public UserDAL(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("igroup179_prod");
+            _connectionString = _configuration.GetConnectionString("igroup179_prod") ?? throw new InvalidOperationException("Connection string 'igroup179_prod' not found.");
         }
 
 
         // Method to check if a user exists based on username and password hash
         public bool CheckUserCredentials(string username, string passwordHash)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
-            SqlDataReader reader;
 
             try
             {
@@ -60,7 +60,7 @@ namespace server.DAL
         ////////////////// Method to create a new user using UserDto/////////////////
         public int AddNewUserToDB(UserDto userDto)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
 
             try
@@ -124,7 +124,7 @@ namespace server.DAL
         ////////////////// Method to get all users/////////////////
         public List<User> GetAllUsers()
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
             SqlDataReader reader;
 
@@ -142,10 +142,10 @@ namespace server.DAL
                     users.Add(new User
                     {
                         Id = (int)reader["Id"],
-                        Username = reader["Username"].ToString(),
-                        PasswordHash = reader["PasswordHash"].ToString(),
-                        Email = reader["Email"].ToString(),
-                        FavoriteAnimal = reader["FavoriteAnimal"]?.ToString(),
+                        Username = reader["Username"]?.ToString() ?? string.Empty,
+                        PasswordHash = reader["PasswordHash"]?.ToString() ?? string.Empty,
+                        Email = reader["Email"]?.ToString() ?? string.Empty,
+                        FavoriteAnimal = reader["FavoriteAnimal"]?.ToString() ?? string.Empty,
                         FavoriteDriverId = reader["FavoriteDriverId"] != DBNull.Value ? (int)reader["FavoriteDriverId"] : 0,
                         FavoriteTeamId = reader["FavoriteTeamId"] != DBNull.Value ? (int)reader["FavoriteTeamId"] : 0,
                         FavoriteRacingSpotId = reader["FavoriteRacingSpotId"] != DBNull.Value ? (int)reader["FavoriteRacingSpotId"] : 0
@@ -170,9 +170,9 @@ namespace server.DAL
         }
 
         // Method to get a user by Id
-        public User GetUserById(int userId)
+        public User? GetUserById(int userId)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
             SqlDataReader reader;
 
@@ -182,23 +182,22 @@ namespace server.DAL
                 con.Open();
                 cmd = new SqlCommand(@"
                     SELECT 
-                        u.Id, 
-                        u.Username, 
-                        u.PasswordHash, 
-                        u.Email, 
-                        u.FavoriteAnimal,
-                        p.ProfilePhoto
-                    FROM Users u
-                    LEFT JOIN Profile p ON u.Id = p.UserId
-                    WHERE u.Id = @Id", con);
+                        Id, 
+                        Username, 
+                        PasswordHash, 
+                        Email, 
+                        FavoriteAnimal,
+                        ProfilePhoto
+                    FROM Users
+                    WHERE Id = @Id", con);
                 cmd.Parameters.AddWithValue("@Id", userId);
 
                 reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    string? profilePhoto = reader["ProfilePhoto"] != DBNull.Value ? reader["ProfilePhoto"].ToString() : null;
-                    
+                    string? profilePhoto = reader.IsDBNull(5) ? null : reader.GetString(5);
+
                     // If profile photo exists but doesn't have the data:image prefix, add it
                     if (!string.IsNullOrEmpty(profilePhoto) && !profilePhoto.StartsWith("data:image"))
                     {
@@ -207,11 +206,11 @@ namespace server.DAL
 
                     return new User
                     {
-                        Id = (int)reader["Id"],
-                        Username = reader["Username"].ToString(),
-                        PasswordHash = reader["PasswordHash"].ToString(),
-                        Email = reader["Email"].ToString(),
-                        FavoriteAnimal = reader["FavoriteAnimal"]?.ToString(),
+                        Id = reader.GetInt32(0),
+                        Username = reader.GetString(1),
+                        PasswordHash = reader.GetString(2),
+                        Email = reader.GetString(3),
+                        FavoriteAnimal = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
                         ProfilePhoto = profilePhoto
                     };
                 }
@@ -239,7 +238,7 @@ namespace server.DAL
         ////////////////// Method to delete users/////////////////
         public bool DeleteUser(int id)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
 
             try
@@ -293,7 +292,7 @@ namespace server.DAL
         ///// Method to update a user in the database///////////
         public bool UpdateUser(int userId, UserDto userDto)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
 
             try
@@ -331,7 +330,7 @@ namespace server.DAL
         ///// Method to update user preferences///////////
         public bool UpdateUserPreferences(int userId, User user)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
 
             try
@@ -387,7 +386,7 @@ namespace server.DAL
         // Method to check if username exists
         public bool IsUsernameExists(string username)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             SqlCommand cmd;
 
             try
@@ -420,22 +419,21 @@ namespace server.DAL
         // Method to get a user by username
         public User? GetUserByUsername(string username)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             try
             {
                 con = connect();
                 con.Open();
                 SqlCommand cmd = new SqlCommand(@"
                     SELECT 
-                        u.Id, 
-                        u.Username, 
-                        u.PasswordHash, 
-                        u.Email, 
-                        u.FavoriteAnimal,
-                        p.ProfilePhoto
-                    FROM Users u
-                    LEFT JOIN Profile p ON u.Id = p.UserId
-                    WHERE u.Username = @Username", con);
+                        Id, 
+                        Username, 
+                        PasswordHash, 
+                        Email, 
+                        FavoriteAnimal,
+                        ProfilePhoto
+                    FROM Users
+                    WHERE Username = @Username", con);
                 
                 cmd.Parameters.AddWithValue("@Username", username);
                 
@@ -443,14 +441,16 @@ namespace server.DAL
                 
                 if (dr.Read())
                 {
+                    string? profilePhoto = dr.IsDBNull(5) ? null : dr.GetString(5);
+
                     return new User
                     {
                         Id = dr.GetInt32(0),
                         Username = dr.GetString(1),
                         PasswordHash = dr.GetString(2),
                         Email = dr.GetString(3),
-                        FavoriteAnimal = dr.GetString(4),
-                        ProfilePhoto = !dr.IsDBNull(5) ? dr.GetString(5) : null
+                        FavoriteAnimal = dr.IsDBNull(4) ? string.Empty : dr.GetString(4),
+                        ProfilePhoto = profilePhoto
                     };
                 }
                 return null;
@@ -692,7 +692,7 @@ namespace server.DAL
 
         public bool UpdateProfilePhoto(int userId, string? profilePhoto)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             try
             {
                 con = connect();
@@ -729,51 +729,77 @@ namespace server.DAL
             }
         }
 
-        public Profile GetUserProfile(int userId)
+        public bool saveProfilePhoto(int userId, string profilePhoto)
         {
-            SqlConnection con = null;
+            SqlConnection? con = null;
             try
             {
                 con = connect();
                 con.Open();
-                Console.WriteLine($"Getting profile for user {userId}");
-                
-                SqlCommand cmd = new SqlCommand("SP_GetUserProfile", con);
+
+                SqlCommand cmd = new SqlCommand("SP_UpdateProfilePhoto", con);
                 cmd.CommandType = CommandType.StoredProcedure;
+                
                 cmd.Parameters.AddWithValue("@UserId", userId);
-                
+                cmd.Parameters.AddWithValue("@ProfilePhoto", profilePhoto != null ? (object)profilePhoto : DBNull.Value);
+
                 using var reader = cmd.ExecuteReader();
-                if (reader.Read())
-                {
-                    var profile = new Profile
-                    {
-                        UserId = userId,
-                        ProfilePhoto = !reader.IsDBNull(4) ? reader.GetString(4) : null
-                    };
-                    
-                    // If profile photo exists but doesn't have prefix, add it
-                    if (!string.IsNullOrEmpty(profile.ProfilePhoto) && !profile.ProfilePhoto.StartsWith("data:image"))
-                    {
-                        profile.ProfilePhoto = $"data:image/jpeg;base64,{profile.ProfilePhoto}";
-                    }
-                    
-                    Console.WriteLine($"Found profile for user {userId}. Has photo: {profile.ProfilePhoto != null}");
-                    return profile;
-                }
-                
-                Console.WriteLine($"No profile found for user {userId}");
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error getting profile for user {userId}: {ex.Message}");
-                throw;
+                return reader.HasRows;
             }
             finally
             {
-                if (con != null)
+                con?.Close();
+            }
+        }
+
+        public User GetUserByGoogleUid(string googleUid)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand("SELECT * FROM Users WHERE GoogleUid = @GoogleUid", connection))
                 {
-                    con.Close();
+                    command.Parameters.AddWithValue("@GoogleUid", googleUid);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new User
+                            {
+                                Id = reader.GetInt32(0),
+                                Username = reader.GetString(1),
+                                PasswordHash = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                Email = reader.GetString(3),
+                                FavoriteAnimal = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                ProfilePhoto = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                FavoriteDriverId = reader.IsDBNull(6) ? null : (int?)reader.GetInt32(6),
+                                FavoriteTeamId = reader.IsDBNull(7) ? null : (int?)reader.GetInt32(7),
+                                GoogleUid = reader.IsDBNull(8) ? null : reader.GetString(8)
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public int CreateGoogleUser(User user)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(
+                    @"INSERT INTO Users (Username, Email, GoogleUid, ProfilePhoto) 
+                      VALUES (@Username, @Email, @GoogleUid, @ProfilePhoto);
+                      SELECT SCOPE_IDENTITY();", connection))
+                {
+                    command.Parameters.AddWithValue("@Username", user.Username);
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@GoogleUid", user.GoogleUid);
+                    command.Parameters.AddWithValue("@ProfilePhoto", (object)user.ProfilePhoto ?? DBNull.Value);
+
+                    return Convert.ToInt32(command.ExecuteScalar());
                 }
             }
         }

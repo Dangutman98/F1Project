@@ -22,47 +22,19 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[SP_UpdateProfilePhoto]
-    @UserId int,
-    @ProfilePhoto nvarchar(max)
+CREATE PROCEDURE SP_UpdateProfilePhoto
+    @UserId INT,
+    @ProfilePhoto NVARCHAR(MAX)
 AS
 BEGIN
     SET NOCOUNT ON;
-    
-    BEGIN TRY
-        BEGIN TRANSACTION;
-            -- Delete existing profile if exists
-            IF EXISTS (SELECT 1 FROM Profile WHERE UserId = @UserId)
-            BEGIN
-                DELETE FROM Profile WHERE UserId = @UserId;
-            END
 
-            -- Insert new profile
-            INSERT INTO Profile (UserId, ProfilePhoto)
-            VALUES (@UserId, @ProfilePhoto);
+    UPDATE Users
+    SET ProfilePhoto = @ProfilePhoto
+    WHERE Id = @UserId;
 
-            -- Return the updated profile photo with prefix
-            SELECT 
-                CASE 
-                    WHEN @ProfilePhoto IS NOT NULL 
-                    THEN 'data:image/jpeg;base64,' + @ProfilePhoto 
-                    ELSE NULL 
-                END as ProfilePhoto;
-
-        COMMIT TRANSACTION;
-        RETURN 0;
-    END TRY
-    BEGIN CATCH
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRANSACTION;
-        
-        -- Log the error
-        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
-        DECLARE @ErrorState INT = ERROR_STATE();
-
-        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
-        RETURN -1;
-    END CATCH;
+    SELECT ProfilePhoto
+    FROM Users
+    WHERE Id = @UserId;
 END
 GO 

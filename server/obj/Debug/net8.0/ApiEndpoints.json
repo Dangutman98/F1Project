@@ -362,6 +362,22 @@
   },
   {
     "ContainingType": "server.Controllers.UserController",
+    "Method": "GetProfilePhoto",
+    "RelativePath": "api/User/{id}/profile-photo",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.UserController",
     "Method": "SetFavoriteDriver",
     "RelativePath": "api/User/{userId}/favorite/driver/{driverId}",
     "HttpMethod": "POST",
@@ -397,6 +413,22 @@
       {
         "Name": "teamId",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.UserController",
+    "Method": "GoogleLogin",
+    "RelativePath": "api/User/google-login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "server.Controllers.UserController\u002BGoogleLoginRequest",
         "IsRequired": true
       }
     ],

@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@headlessui/react": "^2.2.0"
+    "@headlessui/react": "^2.2.0",
+    "firebase": "^11.5.0"
   }
 }

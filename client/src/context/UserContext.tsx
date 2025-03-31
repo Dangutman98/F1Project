@@ -40,19 +40,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const login = (userData: User) => {
-    console.log('Login data received:', userData);
-    // Handle profile photo from login response
-    const userWithProfile = {
-      ...userData,
-      profile: {
-        ...userData.profile,
-        profilePhoto: userData.profile?.profilePhoto || null
-      }
-    };
-    console.log('Processed user data for storage:', userWithProfile);
-    setUser(userWithProfile);
-    // Ensure the data is immediately saved to localStorage
-    localStorage.setItem('user', JSON.stringify(userWithProfile));
+    // Ensure profile photo is properly formatted when logging in
+    if (userData.profile?.profilePhoto && !userData.profile.profilePhoto.startsWith('data:image')) {
+      userData.profile.profilePhoto = `data:image/jpeg;base64,${userData.profile.profilePhoto}`;
+    }
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
@@ -60,26 +53,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  const updateProfile = (profile: UserProfile) => {
-    if (user) {
-      const updatedProfile = {
-        ...profile,
-        profilePhoto: profile.profilePhoto?.startsWith('data:image') ? 
-          profile.profilePhoto : 
-          profile.profilePhoto ? `data:image/jpeg;base64,${profile.profilePhoto}` : null
-      };
+  const updateProfile = (profileData: UserProfile) => {
+    if (!user) return;
 
-      const updatedUser = {
-        ...user,
-        profile: {
-          ...user.profile,
-          ...updatedProfile
-        }
-      };
-
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+    // Ensure profile photo is properly formatted when updating
+    if (profileData.profilePhoto && !profileData.profilePhoto.startsWith('data:image')) {
+      profileData.profilePhoto = `data:image/jpeg;base64,${profileData.profilePhoto}`;
     }
+
+    const updatedUser = {
+      ...user,
+      profile: profileData,
+    };
+
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   return (

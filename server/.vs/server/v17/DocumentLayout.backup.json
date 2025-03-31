@@ -3,28 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\controllers\\driverstandingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:controllers\\driverstandingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\dal\\userdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:dal\\userdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\models\\driverstandings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:models\\driverstandings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\dal\\f1projectdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:dal\\f1projectdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\dal\\driverdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:dal\\driverdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,35 +26,36 @@
       "DocumentGroups": [
         {
           "DockedWidth": 191,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
+              "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Controllers\\UserController.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAWwCAAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-29T18:09:49.3Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "UserDAL.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\DAL\\UserDAL.cs",
               "RelativeDocumentMoniker": "DAL\\UserDAL.cs",
               "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\DAL\\UserDAL.cs",
               "RelativeToolTip": "DAL\\UserDAL.cs",
-              "ViewState": "AgIAAIcAAAAAAAAAAAAEwIkAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAIwEQAAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-20T14:49:56.962Z"
+              "WhenOpened": "2025-03-20T14:49:56.962Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "DriverDAL.cs",
-              "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\DAL\\DriverDAL.cs",
-              "RelativeDocumentMoniker": "DAL\\DriverDAL.cs",
-              "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\DAL\\DriverDAL.cs",
-              "RelativeToolTip": "DAL\\DriverDAL.cs",
-              "ViewState": "AgIAAHYAAAAAAAAAAAAAwIcAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-20T14:37:24.714Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "F1ProjectDbContext.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\DAL\\F1ProjectDbContext.cs",
               "RelativeDocumentMoniker": "DAL\\F1ProjectDbContext.cs",
@@ -74,40 +67,15 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "DriverStandingsController.cs",
-              "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\DriverStandingsController.cs",
-              "RelativeDocumentMoniker": "Controllers\\DriverStandingsController.cs",
-              "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\DriverStandingsController.cs",
-              "RelativeToolTip": "Controllers\\DriverStandingsController.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAzwB0AAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-20T14:04:42.017Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "DriverStandings.cs",
-              "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Models\\DriverStandings.cs",
-              "RelativeDocumentMoniker": "Models\\DriverStandings.cs",
-              "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Models\\DriverStandings.cs",
-              "RelativeToolTip": "Models\\DriverStandings.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAAwAQAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-20T13:20:48.683Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAYwBYAAABXAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-04T15:34:36.38Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-04T15:34:36.38Z"
             }
           ]
         }

@@ -84,14 +84,10 @@ export default function EditProfile() {
 
       // Ensure the photo is properly formatted
       let photoData = formData.profilePhoto;
-      let fullPhotoData: string;
       
       // If it's already a complete data URL, extract just the base64 data
       if (photoData.startsWith('data:image')) {
-        fullPhotoData = photoData.split(',')[1];
-      } else {
-        // If it's already base64 data, use it as is
-        fullPhotoData = photoData;
+        photoData = photoData.split(',')[1];
       }
 
       console.log('Sending photo to server...');
@@ -102,7 +98,7 @@ export default function EditProfile() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          profilePhoto: fullPhotoData
+          profilePhoto: photoData
         })
       });
 
@@ -115,9 +111,14 @@ export default function EditProfile() {
       const data = await response.json();
       
       // Update the user context with the new photo
+      // Ensure we have the complete data URL format
+      const completePhotoData = photoData.startsWith('data:image') ? 
+        photoData : 
+        `data:image/jpeg;base64,${photoData}`;
+
       updateProfile({
         ...user.profile,
-        profilePhoto: data.profilePhoto || fullPhotoData
+        profilePhoto: completePhotoData
       });
       
       console.log('Profile photo updated successfully');

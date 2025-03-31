@@ -2,6 +2,7 @@
 using server.DAL;
 using server.Models;
 using BCrypt.Net;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,13 +12,13 @@ namespace server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-       
-
         private readonly UserDAL _userDAL;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IConfiguration configuration)
+        public UserController(IConfiguration configuration, ILogger<UserController> logger)
         {
             _userDAL = new UserDAL(configuration);
+            _logger = logger;
         }
 
         public class UserInput
@@ -147,42 +148,30 @@ namespace server.Controllers
                     return Unauthorized("Invalid username or password.");
                 }
 
-                try {
-                    // Get user profile including photo
-                    var userProfile = _userDAL.GetUserProfile(user.Id);
-                    Console.WriteLine($"Retrieved profile for user {user.Id}. Profile photo exists: {userProfile?.ProfilePhoto != null}");
-                    
-                    // If profile photo exists but doesn't have prefix, add it
-                    string? profilePhoto = userProfile?.ProfilePhoto;
-                    if (!string.IsNullOrEmpty(profilePhoto) && !profilePhoto.StartsWith("data:image"))
-                    {
-                        profilePhoto = $"data:image/jpeg;base64,{profilePhoto}";
-                    }
+                // Get the profile photo
+                string? profilePhoto = user.ProfilePhoto;
+                if (!string.IsNullOrEmpty(profilePhoto) && !profilePhoto.StartsWith("data:image"))
+                {
+                    profilePhoto = $"data:image/jpeg;base64,{profilePhoto}";
+                }
 
-                    var response = new { 
-                        Message = "Login successful.",
-                        UserId = user.Id,
-                        Username = user.Username,
-                        Email = user.Email,
+                var response = new { 
+                    Message = "Login successful.",
+                    UserId = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    FavoriteAnimal = user.FavoriteAnimal,
+                    Profile = new {
                         FavoriteAnimal = user.FavoriteAnimal,
-                        Profile = new {
-                            FavoriteAnimal = user.FavoriteAnimal,
-                            ProfilePhoto = profilePhoto
-                        }
-                    };
+                        ProfilePhoto = profilePhoto
+                    }
+                };
 
-                    Console.WriteLine($"Login response prepared. Profile photo included: {profilePhoto != null}");
-                    return Ok(response);
-                }
-                catch (Exception ex) {
-                    Console.WriteLine($"Error creating or serializing response: {ex.Message}");
-                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                    return StatusCode(500, "Internal server error during response creation");
-                }
+                return Ok(response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { Message = "Login failed. Please try again." });
+                return StatusCode(500, new { Message = $"Login failed: {ex.Message}" });
             }
         }
 
@@ -322,93 +311,139 @@ namespace server.Controllers
         {
             try
             {
-                Console.WriteLine($"Attempting to update profile photo for user {id}");
-                
                 if (photoUpdate == null || string.IsNullOrEmpty(photoUpdate.ProfilePhoto))
                 {
-                    Console.WriteLine("Photo data is null or empty");
                     return BadRequest(new { Message = "Photo data is required." });
                 }
 
                 var existingUser = _userDAL.GetUserById(id);
                 if (existingUser == null)
                 {
-                    Console.WriteLine($"User with Id {id} not found");
                     return NotFound(new { Message = $"User with Id {id} not found." });
                 }
-                Console.WriteLine($"Found user {existingUser.Username}");
 
-                // Log the photo data details
-                var photoLength = photoUpdate.ProfilePhoto.Length;
-                var isBase64 = photoUpdate.ProfilePhoto.Contains("base64");
-                var hasPrefix = photoUpdate.ProfilePhoto.StartsWith("data:image");
-                Console.WriteLine($"Photo data length: {photoLength}");
-                Console.WriteLine($"Contains 'base64': {isBase64}");
-                Console.WriteLine($"Has image prefix: {hasPrefix}");
-
-                try
+                // Extract base64 data if it has a prefix
+                string photoData = photoUpdate.ProfilePhoto;
+                if (photoData.Contains(","))
                 {
-                    // Store the raw base64 data (without prefix) in the database
-                    string photoData = photoUpdate.ProfilePhoto;
-                    if (photoData.Contains(","))
-                    {
-                        var parts = photoData.Split(',');
-                        Console.WriteLine($"Split parts count: {parts.Length}");
-                        Console.WriteLine($"Prefix part: {parts[0]}");
-                        photoData = parts[1];
-                    }
-
-                    Console.WriteLine($"Final photo data length: {photoData.Length}");
-                    bool updateSuccess = _userDAL.UpdateProfilePhoto(id, photoData);
-
-                    if (!updateSuccess)
-                    {
-                        Console.WriteLine("Failed to update profile photo in database");
-                        return StatusCode(500, new { Message = "Failed to update profile photo." });
-                    }
-
-                    Console.WriteLine("Successfully updated profile photo");
-                    
-                    return Ok(new { 
-                        Message = "Profile photo updated successfully",
-                        User = new {
-                            Id = existingUser.Id.ToString(),
-                            Username = existingUser.Username,
-                            Profile = new {
-                                ProfilePhoto = photoUpdate.ProfilePhoto,  // Return the original photo data with prefix
-                                FavoriteAnimal = existingUser.FavoriteAnimal
-                            }
-                        }
-                    });
+                    var parts = photoData.Split(',');
+                    photoData = parts[1];
                 }
-                catch (Exception ex)
+
+                bool updateSuccess = _userDAL.saveProfilePhoto(id, photoData);
+
+                if (!updateSuccess)
                 {
-                    Console.WriteLine($"Error processing photo data: {ex.Message}");
-                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                    Console.WriteLine("Failed to update profile photo in database");
                     return StatusCode(500, new { Message = "Failed to update profile photo." });
                 }
 
-                Console.WriteLine("Successfully updated profile photo");
+                // Get the updated user data
+                var updatedUser = _userDAL.GetUserById(id);
                 
-                // Return the response in the format expected by the frontend
                 return Ok(new { 
                     Message = "Profile photo updated successfully",
                     User = new {
-                        Id = existingUser.Id.ToString(),
-                        Username = existingUser.Username,
+                        Id = updatedUser.Id,
+                        Username = updatedUser.Username,
                         Profile = new {
-                            ProfilePhoto = photoUpdate?.ProfilePhoto,  // Return the original photo data with prefix
-                            FavoriteAnimal = existingUser.FavoriteAnimal
+                            ProfilePhoto = updatedUser.ProfilePhoto,
+                            FavoriteAnimal = updatedUser.FavoriteAnimal
                         }
                     }
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating profile photo: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return StatusCode(500, new { Message = $"Failed to update profile photo: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("{id}/profile-photo")]
+        public IActionResult GetProfilePhoto(int id)
+        {
+            try
+            {
+                var user = _userDAL.GetUserById(id);
+                if (user == null)
+                {
+                    return NotFound(new { Message = $"User with Id {id} not found." });
+                }
+
+                if (string.IsNullOrEmpty(user.ProfilePhoto))
+                {
+                    return NotFound(new { Message = "No profile photo found for this user." });
+                }
+
+                // Ensure the photo has the correct prefix
+                string photoData = user.ProfilePhoto;
+                if (!photoData.StartsWith("data:image"))
+                {
+                    photoData = $"data:image/jpeg;base64,{photoData}";
+                }
+
+                return Ok(new { 
+                    profilePhoto = photoData 
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Failed to retrieve profile photo: {ex.Message}" });
+            }
+        }
+
+        public class GoogleLoginRequest
+        {
+            public string Uid { get; set; }
+            public string Email { get; set; }
+            public string DisplayName { get; set; }
+            public string PhotoURL { get; set; }
+        }
+
+        [HttpPost("google-login")]
+        public IActionResult GoogleLogin([FromBody] GoogleLoginRequest request)
+        {
+            try
+            {
+                _logger.LogInformation($"Attempting Google login for user with email: {request.Email}");
+
+                // Try to get existing user by Google UID
+                var user = _userDAL.GetUserByGoogleUid(request.Uid);
+
+                if (user == null)
+                {
+                    // Create new user if doesn't exist
+                    var newUser = new User
+                    {
+                        Username = request.DisplayName ?? request.Email.Split('@')[0],
+                        Email = request.Email,
+                        GoogleUid = request.Uid,
+                        ProfilePhoto = request.PhotoURL
+                    };
+
+                    var userId = _userDAL.CreateGoogleUser(newUser);
+                    user = _userDAL.GetUserById(userId);
+                }
+
+                if (user == null)
+                {
+                    return BadRequest(new { message = "Failed to create or retrieve user" });
+                }
+
+                return Ok(new
+                {
+                    userId = user.Id,
+                    username = user.Username,
+                    email = user.Email,
+                    favoriteAnimal = user.FavoriteAnimal,
+                    favoriteDriverId = user.FavoriteDriverId,
+                    favoriteTeamId = user.FavoriteTeamId,
+                    profilePhoto = user.ProfilePhoto
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in Google login: {ex.Message}");
+                return StatusCode(500, new { message = "Internal server error during Google login" });
             }
         }
     }

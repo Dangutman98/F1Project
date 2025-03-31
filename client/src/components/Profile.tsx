@@ -52,7 +52,7 @@ const teamLogos: { [key: string]: string } = {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, updateProfile } = useUser();
   const [favoriteDrivers, setFavoriteDrivers] = useState<FavoriteDriver[]>([]);
   const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
   const [favoriteSpots, setFavoriteSpots] = useState<string[]>([]);
@@ -66,34 +66,39 @@ export default function Profile() {
       }
 
       try {
-        console.log('Starting to fetch favorites for user:', user.id);
-        const favoritesResponse = await fetch(`http://localhost:5066/api/user/${user.id}/favorites`);
-        console.log('Favorites response status:', favoritesResponse.status);
+        // Fetch user's profile photo
+        const photoResponse = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`);
+        if (photoResponse.ok) {
+          const photoData = await photoResponse.json();
+          if (photoData.profilePhoto) {
+            // Update the user context with the fetched photo
+            updateProfile({
+              ...user.profile,
+              profilePhoto: photoData.profilePhoto
+            });
+          }
+        }
 
+        const favoritesResponse = await fetch(`http://localhost:5066/api/user/${user.id}/favorites`);
         if (!favoritesResponse.ok) {
           console.error('Failed to fetch favorites:', favoritesResponse.statusText);
           throw new Error('Failed to fetch data');
         }
 
         const favorites: UserFavorites = await favoritesResponse.json();
-        console.log('Received favorites data:', JSON.stringify(favorites, null, 2));
 
         if (favorites.drivers) {
-          console.log('Setting favorite drivers:', favorites.drivers.length);
           setFavoriteDrivers(favorites.drivers || []);
         }
         if (favorites.teams) {
-          console.log('Setting favorite teams:', favorites.teams.length);
           setFavoriteTeams(favorites.teams || []);
         }
         if (favorites.racingSpots) {
-          console.log('Setting favorite spots:', favorites.racingSpots.length);
           setFavoriteSpots(favorites.racingSpots || []);
         }
       } catch (error) {
         console.error('Error in fetchData:', error);
       } finally {
-        console.log('Setting loading to false');
         setIsLoading(false);
       }
     };
