@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import AnimalEmojiSelector from './AnimalEmojiSelector';
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -8,7 +9,8 @@ export default function EditProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [formData, setFormData] = useState({
-    profilePhoto: ''
+    profilePhoto: '',
+    favoriteAnimal: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -18,11 +20,13 @@ export default function EditProfile() {
   useEffect(() => {
     if (user?.profile) {
       setFormData({
-        profilePhoto: user.profile.profilePhoto || ''
+        profilePhoto: user.profile.profilePhoto || '',
+        favoriteAnimal: user.profile.favoriteAnimal || ''
       });
     }
+
+    // Cleanup camera stream when component unmounts
     return () => {
-      // Cleanup camera stream when component unmounts
       if (stream) {
         stopCamera();
       }
@@ -76,52 +80,66 @@ export default function EditProfile() {
         throw new Error('User not found');
       }
 
-      // If no photo is selected, just return without making the API call
-      if (!formData.profilePhoto) {
-        navigate('/profile');
-        return;
+      // Update profile photo if one is selected
+      if (formData.profilePhoto) {
+        let photoData = formData.profilePhoto;
+        
+        // If it's already a complete data URL, extract just the base64 data
+        if (photoData.startsWith('data:image')) {
+          photoData = photoData.split(',')[1];
+        }
+
+        console.log('Sending photo to server...');
+
+        const photoResponse = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            profilePhoto: photoData
+          })
+        });
+
+        if (!photoResponse.ok) {
+          const errorData = await photoResponse.json().catch(() => ({ message: 'Unknown error occurred' }));
+          console.error('Server response:', errorData);
+          throw new Error(errorData?.message || 'Failed to update profile photo');
+        }
       }
 
-      // Ensure the photo is properly formatted
-      let photoData = formData.profilePhoto;
-      
-      // If it's already a complete data URL, extract just the base64 data
-      if (photoData.startsWith('data:image')) {
-        photoData = photoData.split(',')[1];
+      // Update favorite animal if changed
+      if (formData.favoriteAnimal !== user.profile?.favoriteAnimal) {
+        const response = await fetch(`http://localhost:5066/api/user/${user.id}/favorite-animal`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            favoriteAnimal: formData.favoriteAnimal
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
+          throw new Error(errorData?.message || 'Failed to update favorite animal');
+        }
       }
 
-      console.log('Sending photo to server...');
-
-      const response = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          profilePhoto: photoData
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
-        console.error('Server response:', errorData);
-        throw new Error(errorData?.message || 'Failed to update profile photo');
-      }
-
-      const data = await response.json();
-      
-      // Update the user context with the new photo
-      // Ensure we have the complete data URL format
-      const completePhotoData = photoData.startsWith('data:image') ? 
-        photoData : 
-        `data:image/jpeg;base64,${photoData}`;
+      // Update the user context with all changes
+      const completePhotoData = formData.profilePhoto ? (
+        formData.profilePhoto.startsWith('data:image') ? 
+          formData.profilePhoto : 
+          `data:image/jpeg;base64,${formData.profilePhoto}`
+      ) : user.profile?.profilePhoto;
 
       updateProfile({
         ...user.profile,
-        profilePhoto: completePhotoData
+        profilePhoto: completePhotoData,
+        favoriteAnimal: formData.favoriteAnimal || user.profile?.favoriteAnimal
       });
       
-      console.log('Profile photo updated successfully');
+      console.log('Profile updated successfully');
       navigate('/profile');
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -325,9 +343,15 @@ export default function EditProfile() {
                   >
                     {formData.profilePhoto ? (
                       <img
-                        src={formData.profilePhoto.startsWith('data:image') ? formData.profilePhoto : `data:image/jpeg;base64,${formData.profilePhoto}`}
+                        src={formData.profilePhoto.startsWith('http') ? formData.profilePhoto : 
+                            formData.profilePhoto.startsWith('data:image') ? formData.profilePhoto :
+                            `data:image/jpeg;base64,${formData.profilePhoto}`}
                         alt="Profile"
                         className="h-full w-full object-cover"
+                        onError={() => {
+                          console.error('Error loading profile photo');
+                          setFormData(prev => ({ ...prev, profilePhoto: '' }));
+                        }}
                       />
                     ) : (
                       <div className="h-full w-full flex flex-col items-center justify-center text-gray-400">
@@ -383,6 +407,13 @@ export default function EditProfile() {
                     </div>
                   </div>
                 )}
+              </div>
+
+              <div className="space-y-6">
+                <AnimalEmojiSelector
+                    selectedAnimal={formData.favoriteAnimal || ''}
+                    onSelect={(animal) => setFormData(prev => ({ ...prev, favoriteAnimal: animal }))}
+                />
               </div>
 
               <div className="flex justify-end space-x-4">

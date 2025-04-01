@@ -294,6 +294,27 @@
   },
   {
     "ContainingType": "server.Controllers.UserController",
+    "Method": "UpdateFavoriteAnimal",
+    "RelativePath": "api/User/{id}/favorite-animal",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "update",
+        "Type": "server.Controllers.UserController\u002BFavoriteAnimalUpdate",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.UserController",
     "Method": "GetUserFavorites",
     "RelativePath": "api/User/{id}/favorites",
     "HttpMethod": "GET",
@@ -428,7 +449,7 @@
     "Parameters": [
       {
         "Name": "request",
-        "Type": "server.Controllers.UserController\u002BGoogleLoginRequest",
+        "Type": "server.Models.GoogleLoginRequest",
         "IsRequired": true
       }
     ],

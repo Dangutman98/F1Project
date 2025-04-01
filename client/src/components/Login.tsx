@@ -13,8 +13,8 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
         setIsLoading(true);
+        setError('');
 
         try {
             const response = await fetch('http://localhost:5066/api/user/login', {
@@ -25,78 +25,89 @@ export default function Login() {
                 body: JSON.stringify({
                     username,
                     password
-                }),
+                })
             });
 
             const data = await response.json();
+            console.log('Raw server response:', data); // Debug log
 
             if (!response.ok) {
+                console.error('Login failed:', data);
+                if (response.status === 401) {
+                    throw new Error('Invalid username or password');
+                }
                 throw new Error(data.message || 'Login failed');
             }
 
-            login({
-                id: data.userId,
+            // Transform the data to match our User interface
+            const userData = {
+                id: data.id || data.userId,
                 username: data.username,
                 profile: {
-                    favoriteAnimal: data.favoriteAnimal,
-                    email: data.email,
-                    favoriteDriver: data.favoriteDriverId?.toString(),
-                    favoriteTeam: data.favoriteTeamId?.toString()
+                    favoriteAnimal: data.favoriteAnimal || data.profile?.favoriteAnimal || 'Not Set',
+                    email: data.email || data.profile?.email || '',
+                    favoriteDriver: data.favoriteDriver || data.profile?.favoriteDriver || '',
+                    favoriteTeam: data.favoriteTeam || data.profile?.favoriteTeam || '',
+                    favoriteRacingSpot: data.favoriteRacingSpot || data.profile?.favoriteRacingSpot || ''
                 }
-            });
+            };
+
+            console.log('Transformed user data:', userData);
+            login(userData);
             navigate('/home');
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Invalid username or password');
+        } catch (error) {
+            console.error('Login error:', error);
+            setError(error instanceof Error ? error.message : 'An error occurred during login');
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleGoogleLogin = async () => {
-        setIsLoading(true);
-        setError('');
-
         try {
+            setIsLoading(true);
             const result = await signInWithGoogle();
-            console.log('Logged in with Google:', result.user);
+            const user = result.user;
             
-            // Create or get user from backend
+            // Create user record in your database
             const response = await fetch('http://localhost:5066/api/user/google-login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    uid: result.user.uid,
-                    email: result.user.email,
-                    displayName: result.user.displayName,
-                    photoURL: result.user.photoURL
-                }),
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    uid: user.uid
+                })
             });
-
-            const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to create user');
+                throw new Error('Failed to create user record');
             }
 
-            // Login with the user data from your backend
-            login({
-                id: data.userId,
+            const data = await response.json();
+            
+            // Transform the data to match our User interface
+            const userData = {
+                id: data.id,
                 username: data.username,
                 profile: {
-                    favoriteAnimal: data.favoriteAnimal || '',
-                    email: data.email,
-                    favoriteDriver: data.favoriteDriverId?.toString() || '',
-                    favoriteTeam: data.favoriteTeamId?.toString() || '',
-                    profilePhoto: data.profilePhoto || result.user.photoURL || ''
+                    favoriteAnimal: data.favoriteAnimal || 'Not Set',
+                    email: data.email || '',
+                    favoriteDriver: '',
+                    favoriteTeam: '',
+                    favoriteRacingSpot: '',
+                    profilePhoto: data.profilePhoto
                 }
-            });
-            
+            };
+
+            login(userData);
             navigate('/home');
-        } catch (error: any) {
+        } catch (error) {
             console.error('Google login error:', error);
-            setError(error.message);
+            setError('Failed to sign in with Google');
         } finally {
             setIsLoading(false);
         }

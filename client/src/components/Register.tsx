@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import AnimalEmojiSelector from './AnimalEmojiSelector';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ export default function Register() {
         },
         body: JSON.stringify({
           username: formData.username,
-          passwordHash: formData.password, // Note: In a real app, you should hash the password before sending
+          passwordHash: formData.password,
           email: formData.email,
           favoriteAnimal: formData.favoriteAnimal
         }),
@@ -99,18 +100,26 @@ export default function Register() {
       }
 
       const userData = await response.json();
-      
-      // After successful registration, log the user in
-      login({
-        id: userData.id,
+      console.log('Registration response:', userData); // Debug log
+
+      // Transform the data to match our User interface
+      const transformedUserData = {
+        id: userData.id || userData.userId,
         username: userData.username,
         profile: {
-          favoriteAnimal: userData.favoriteAnimal // Use the value from the server
+          favoriteAnimal: formData.favoriteAnimal,
+          email: formData.email,
+          favoriteDriver: '',
+          favoriteTeam: '',
+          favoriteRacingSpot: ''
         }
-      });
-      
+      };
+
+      console.log('Transformed user data for login:', transformedUserData); // Debug log
+      login(transformedUserData);
       navigate('/home');
     } catch (err) {
+      console.error('Registration error:', err);
       setError('Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -225,22 +234,11 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label htmlFor="favoriteAnimal" className="block text-sm font-medium text-gray-700">
-                    Favorite Animal <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="favoriteAnimal"
-                    required
-                    value={formData.favoriteAnimal}
-                    onChange={(e) => setFormData(prev => ({ ...prev, favoriteAnimal: e.target.value }))}
-                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 ${
-                      validationErrors.favoriteAnimal ? 'border-red-500' : ''
-                    }`}
+                  <AnimalEmojiSelector
+                    selectedAnimal={formData.favoriteAnimal}
+                    onSelect={(animal) => setFormData(prev => ({ ...prev, favoriteAnimal: animal }))}
+                    error={validationErrors.favoriteAnimal}
                   />
-                  {validationErrors.favoriteAnimal && (
-                    <p className="mt-1 text-sm text-red-600">{validationErrors.favoriteAnimal}</p>
-                  )}
                 </div>
 
                 <div>

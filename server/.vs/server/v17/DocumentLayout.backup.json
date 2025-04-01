@@ -36,9 +36,10 @@
               "RelativeDocumentMoniker": "Controllers\\UserController.cs",
               "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\UserController.cs",
               "RelativeToolTip": "Controllers\\UserController.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAWwCAAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAJoBAAAAAAAAAAAcwKYBAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T18:09:49.3Z"
+              "WhenOpened": "2025-03-29T18:09:49.3Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -48,7 +49,7 @@
               "RelativeDocumentMoniker": "DAL\\UserDAL.cs",
               "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\DAL\\UserDAL.cs",
               "RelativeToolTip": "DAL\\UserDAL.cs",
-              "ViewState": "AgIAADMAAAAAAAAAAAAIwEQAAAA6AAAAAAAAAA==",
+              "ViewState": "AgIAAPYAAAAAAAAAAADwv/0AAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-20T14:49:56.962Z",
               "EditorCaption": ""

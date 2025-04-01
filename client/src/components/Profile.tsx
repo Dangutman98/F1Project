@@ -14,6 +14,30 @@ import mercedesLogo from '../assets/TeamsIcons/mercedes.avif';
 import redBullLogo from '../assets/TeamsIcons/red bull.avif';
 import williamsLogo from '../assets/TeamsIcons/williams.avif';
 
+// Animal emoji mapping
+const animalEmojis: { [key: string]: string } = {
+  Dog: '🐶',
+  Cat: '🐱',
+  Lion: '🦁',
+  Tiger: '🐯',
+  Horse: '🐎',
+  Fox: '🦊',
+  Raccoon: '🦝',
+  Panda: '🐼',
+  Koala: '🐨',
+  Cow: '🐮',
+  Pig: '🐷',
+  Frog: '🐸',
+  Rabbit: '🐰',
+  Giraffe: '🦒',
+  Kangaroo: '🦘',
+  Eagle: '🦅',
+  Penguin: '🐧',
+  Parrot: '🦜',
+  Turtle: '🐢',
+  Shark: '🦈'
+};
+
 interface FavoriteDriver {
   driverId: number;
   driverName: string;
@@ -52,52 +76,57 @@ const teamLogos: { [key: string]: string } = {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, updateProfile } = useUser();
+  const { user, logout } = useUser();
   const [favoriteDrivers, setFavoriteDrivers] = useState<FavoriteDriver[]>([]);
   const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
   const [favoriteSpots, setFavoriteSpots] = useState<string[]>([]);
+  const [profilePhoto, setProfilePhoto] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Check for user immediately
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!user?.id) {
-        console.log('No user ID available');
+        console.log('No user ID available, user:', user);
+        setIsLoading(false);
         return;
       }
 
       try {
-        // Fetch user's profile photo
+        console.log('Fetching data for user ID:', user.id); // Add this for debugging
+        
+        // Always fetch photo from our endpoint
         const photoResponse = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`);
         if (photoResponse.ok) {
           const photoData = await photoResponse.json();
-          if (photoData.profilePhoto) {
-            // Update the user context with the fetched photo
-            updateProfile({
-              ...user.profile,
-              profilePhoto: photoData.profilePhoto
-            });
-          }
+          setProfilePhoto(photoData.profilePhoto || '');
+        } else {
+          console.error('Failed to fetch profile photo:', await photoResponse.text());
+          setProfilePhoto('');
         }
 
+        // Fetch favorites
         const favoritesResponse = await fetch(`http://localhost:5066/api/user/${user.id}/favorites`);
         if (!favoritesResponse.ok) {
-          console.error('Failed to fetch favorites:', favoritesResponse.statusText);
+          console.error('Failed to fetch favorites:', await favoritesResponse.text());
           throw new Error('Failed to fetch data');
         }
 
         const favorites: UserFavorites = await favoritesResponse.json();
-
-        if (favorites.drivers) {
-          setFavoriteDrivers(favorites.drivers || []);
-        }
-        if (favorites.teams) {
-          setFavoriteTeams(favorites.teams || []);
-        }
-        if (favorites.racingSpots) {
-          setFavoriteSpots(favorites.racingSpots || []);
-        }
+        setFavoriteDrivers(favorites.drivers || []);
+        setFavoriteTeams(favorites.teams || []);
+        setFavoriteSpots(favorites.racingSpots || []);
       } catch (error) {
         console.error('Error in fetchData:', error);
+        setProfilePhoto('');
       } finally {
         setIsLoading(false);
       }
@@ -106,8 +135,34 @@ export default function Profile() {
     fetchData();
   }, [user?.id]);
 
+  const handleDeleteAccount = async () => {
+    if (!user?.id) return;
+    
+    const confirmDelete = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
+    if (!confirmDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`http://localhost:5066/api/user/${user.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        logout();
+        navigate('/login');
+      } else {
+        throw new Error('Failed to delete account');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Early return if no user
   if (!user) {
-    navigate('/login');
     return null;
   }
 
@@ -145,23 +200,27 @@ export default function Profile() {
         <div className="bg-red-600">
           <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div className="inline-block">
-                {user.profile?.profilePhoto ? (
-                  <img
-                    src={user.profile.profilePhoto.startsWith('data:image') ? 
-                         user.profile.profilePhoto : 
-                         `data:image/jpeg;base64,${user.profile.profilePhoto}`}
-                    alt="Profile"
-                    className="h-32 w-32 rounded-full mx-auto mb-6 object-cover border-4 border-white"
-                  />
-                ) : (
-                  <div className="h-32 w-32 rounded-full bg-white text-gray-400 flex items-center justify-center mx-auto mb-6 border-4 border-white">
-                    <span className="text-2xl">No Photo</span>
-                  </div>
-                )}
+              <div className="flex flex-col items-center mb-8">
+                <div className="relative w-32 h-32 rounded-full overflow-hidden mb-4">
+                  {isLoading ? (
+                    <div className="w-full h-full bg-gray-200 animate-pulse"></div>
+                  ) : profilePhoto ? (
+                    <img
+                      src={profilePhoto.startsWith('http') ? profilePhoto : profilePhoto}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                      onError={() => {
+                        setProfilePhoto('');
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-500 text-lg font-medium">No Photo</span>
+                    </div>
+                  )}
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{user?.username.toUpperCase()}</h2>
               </div>
-              <h1 className="text-4xl font-bold text-black mb-2">{user.username}</h1>
-              <p className="text-xl text-black">F1 Fan</p>
             </div>
           </div>
         </div>
@@ -176,11 +235,18 @@ export default function Profile() {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Username</h3>
-                      <p className="mt-1 text-gray-600">{user.username}</p>
+                      <p className="mt-1 text-gray-600">{user?.username.toUpperCase()}</p>
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Favorite Animal</h3>
-                      <p className="mt-1 text-gray-600">{user.profile?.favoriteAnimal || 'Not Set'}</p>
+                      <p className="mt-1 text-gray-600">
+                        {user?.profile?.favoriteAnimal && (
+                          <span className="inline-flex items-center">
+                            <span className="text-2xl mr-2">{animalEmojis[user.profile.favoriteAnimal]}</span>
+                            {user.profile.favoriteAnimal}
+                          </span>
+                        )}
+                      </p>
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">Favorite Drivers</h3>
@@ -262,7 +328,14 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="mt-8 flex justify-end">
+              <div className="mt-8 flex justify-between">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  className="bg-red-500 text-black py-3 px-8 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg font-semibold"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Account'}
+                </button>
                 <button
                   onClick={() => navigate('/edit-profile')}
                   className="bg-red-600 text-black py-3 px-8 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg font-semibold"

@@ -21,7 +21,7 @@ export default function HomePage() {
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
               <span className="text-black text-sm sm:text-base whitespace-nowrap">
-                Welcome, {user?.username}
+                Welcome, {user?.username?.toUpperCase()}
               </span>
               <button
                 onClick={() => navigate('/profile')}

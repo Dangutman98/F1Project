@@ -5,14 +5,14 @@ interface UserProfile {
   favoriteTeam?: string;
   favoriteRacingSpot?: string;
   favoriteAnimal?: string;
+  email?: string;
   profilePhoto?: string;
 }
 
 interface User {
-  id: string;
+  id: number;
   username: string;
   profile?: UserProfile;
-  profilePhoto?: string;
 }
 
 interface UserContextType {
@@ -25,7 +25,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export function UserProvider({ children }: { children: ReactNode }) {
+export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
@@ -39,27 +39,50 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  const login = (userData: User) => {
-    // Ensure profile photo is properly formatted when logging in
-    if (userData.profile?.profilePhoto && !userData.profile.profilePhoto.startsWith('data:image')) {
-      userData.profile.profilePhoto = `data:image/jpeg;base64,${userData.profile.profilePhoto}`;
+  const login = (userData: any) => {
+    console.log('Raw login data received:', userData);
+
+    // Handle registration response which might be nested in a 'user' property
+    const userDataToProcess = userData.user || userData;
+    
+    // For registration response, check both direct and nested locations for id
+    const userId = userDataToProcess.id || userDataToProcess.userId;
+    const username = userDataToProcess.username;
+    
+    console.log('Processing user data:', { userId, username, userData: userDataToProcess });
+
+    // Check if we have the required fields
+    if (!userId || !username) {
+        console.error('Missing required user data:', { userId, username, originalData: userData });
+        return;
     }
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+
+    // Create user object with required structure
+    const user: User = {
+        id: Number(userId),
+        username: username,
+        profile: {
+            favoriteAnimal: userDataToProcess.favoriteAnimal || userDataToProcess.profile?.favoriteAnimal || 'Not Set',
+            email: userDataToProcess.email || userDataToProcess.profile?.email || '',
+            favoriteDriver: userDataToProcess.favoriteDriver || userDataToProcess.profile?.favoriteDriver || '',
+            favoriteTeam: userDataToProcess.favoriteTeam || userDataToProcess.profile?.favoriteTeam || '',
+            favoriteRacingSpot: userDataToProcess.favoriteRacingSpot || userDataToProcess.profile?.favoriteRacingSpot || '',
+            profilePhoto: userDataToProcess.profilePhoto || userDataToProcess.profile?.profilePhoto || ''
+        }
+    };
+
+    console.log('Final processed user data:', user);
+    setUser(user);
+    localStorage.setItem('user', JSON.stringify(user));
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
     setUser(null);
+    localStorage.removeItem('user');
   };
 
   const updateProfile = (profileData: UserProfile) => {
     if (!user) return;
-
-    // Ensure profile photo is properly formatted when updating
-    if (profileData.profilePhoto && !profileData.profilePhoto.startsWith('data:image')) {
-      profileData.profilePhoto = `data:image/jpeg;base64,${profileData.profilePhoto}`;
-    }
 
     const updatedUser = {
       ...user,
@@ -83,7 +106,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       {children}
     </UserContext.Provider>
   );
-}
+};
 
 export function useUser() {
   const context = useContext(UserContext);

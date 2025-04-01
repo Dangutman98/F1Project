@@ -816,6 +816,53 @@
           }
         }
       }
+    },
+    "/api/User/{id}/favorite-animal": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoriteAnimalUpdate"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoriteAnimalUpdate"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoriteAnimalUpdate"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoriteAnimalUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -898,6 +945,16 @@
         },
         "additionalProperties": false
       },
+      "FavoriteAnimalUpdate": {
+        "type": "object",
+        "properties": {
+          "favoriteAnimal": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "FavoriteDriver": {
         "type": "object",
         "properties": {
@@ -953,10 +1010,6 @@
       "GoogleLoginRequest": {
         "type": "object",
         "properties": {
-          "uid": {
-            "type": "string",
-            "nullable": true
-          },
           "email": {
             "type": "string",
             "nullable": true
@@ -966,6 +1019,10 @@
             "nullable": true
           },
           "photoURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "uid": {
             "type": "string",
             "nullable": true
           }

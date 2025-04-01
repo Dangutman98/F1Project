@@ -369,82 +369,144 @@ namespace server.Controllers
                     return NotFound(new { Message = $"User with Id {id} not found." });
                 }
 
+                // If no photo, return empty string without error
                 if (string.IsNullOrEmpty(user.ProfilePhoto))
                 {
-                    return NotFound(new { Message = "No profile photo found for this user." });
+                    return Ok(new { 
+                        profilePhoto = "",
+                        message = "No profile photo set"
+                    });
                 }
 
-                // Ensure the photo has the correct prefix
-                string photoData = user.ProfilePhoto;
-                if (!photoData.StartsWith("data:image"))
+                // If it's already a valid URL (http/https) or has data:image prefix, return as is
+                if (user.ProfilePhoto.StartsWith("http") || user.ProfilePhoto.StartsWith("data:image"))
                 {
-                    photoData = $"data:image/jpeg;base64,{photoData}";
+                    return Ok(new { 
+                        profilePhoto = user.ProfilePhoto 
+                    });
                 }
 
+                // For base64 data without prefix, add the prefix
                 return Ok(new { 
-                    profilePhoto = photoData 
+                    profilePhoto = $"data:image/jpeg;base64,{user.ProfilePhoto}" 
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error retrieving profile photo for user {UserId}", id);
                 return StatusCode(500, new { Message = $"Failed to retrieve profile photo: {ex.Message}" });
             }
         }
 
-        public class GoogleLoginRequest
-        {
-            public string Uid { get; set; }
-            public string Email { get; set; }
-            public string DisplayName { get; set; }
-            public string PhotoURL { get; set; }
-        }
-
         [HttpPost("google-login")]
-        public IActionResult GoogleLogin([FromBody] GoogleLoginRequest request)
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
         {
             try
             {
-                _logger.LogInformation($"Attempting Google login for user with email: {request.Email}");
-
-                // Try to get existing user by Google UID
-                var user = _userDAL.GetUserByGoogleUid(request.Uid);
-
-                if (user == null)
+                _logger.LogInformation("Attempting Google login for user: {Email}", request.Email);
+                
+                // Check if user exists
+                var existingUser = await _userDAL.GetUserByEmail(request.Email);
+                
+                if (existingUser == null)
                 {
-                    // Create new user if doesn't exist
+                    // Create new user
                     var newUser = new User
                     {
                         Username = request.DisplayName ?? request.Email.Split('@')[0],
                         Email = request.Email,
-                        GoogleUid = request.Uid,
-                        ProfilePhoto = request.PhotoURL
+                        ProfilePhoto = null, // Don't store Google photo URL in database
+                        FavoriteAnimal = "Not Set",
+                        PasswordHash = "GOOGLE_AUTH"
                     };
 
-                    var userId = _userDAL.CreateGoogleUser(newUser);
-                    user = _userDAL.GetUserById(userId);
+                    var createdUser = await _userDAL.CreateUser(newUser);
+                    _logger.LogInformation("Created new user for Google login: {UserId}", createdUser.Id);
+                    
+                    return Ok(new
+                    {
+                        id = createdUser.Id,
+                        username = createdUser.Username,
+                        email = createdUser.Email,
+                        favoriteAnimal = createdUser.FavoriteAnimal,
+                        profilePhoto = request.PhotoURL // Return the Google photo URL but don't store it
+                    });
+                }
+                else
+                {
+                    // Get the stored profile photo from database
+                    string? storedProfilePhoto = existingUser.ProfilePhoto;
+                    string? finalPhotoUrl = storedProfilePhoto;
+
+                    // If there's a stored photo and it's base64, add the prefix
+                    if (!string.IsNullOrEmpty(storedProfilePhoto) && !storedProfilePhoto.StartsWith("http") && !storedProfilePhoto.StartsWith("data:image"))
+                    {
+                        finalPhotoUrl = $"data:image/jpeg;base64,{storedProfilePhoto}";
+                    }
+
+                    // Only update Google photo if no stored photo exists
+                    if (string.IsNullOrEmpty(storedProfilePhoto) && !string.IsNullOrEmpty(request.PhotoURL))
+                    {
+                        existingUser.ProfilePhoto = null; // Don't store Google photo URL in database
+                        await _userDAL.UpdateUser(existingUser);
+                        finalPhotoUrl = request.PhotoURL; // Use Google photo URL in response
+                    }
+
+                    return Ok(new
+                    {
+                        id = existingUser.Id,
+                        username = existingUser.Username,
+                        email = existingUser.Email,
+                        favoriteAnimal = existingUser.FavoriteAnimal,
+                        profilePhoto = finalPhotoUrl // Return stored photo or Google photo URL
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during Google login for user: {Email}", request.Email);
+                return StatusCode(500, new { message = "An error occurred during Google login" });
+            }
+        }
+
+        [HttpPut("{id}/favorite-animal")]
+        public async Task<IActionResult> UpdateFavoriteAnimal(int id, [FromBody] FavoriteAnimalUpdate update)
+        {
+            try
+            {
+                if (update == null || string.IsNullOrEmpty(update.FavoriteAnimal))
+                {
+                    return BadRequest(new { Message = "Favorite animal is required." });
                 }
 
-                if (user == null)
+                var existingUser = _userDAL.GetUserById(id);
+                if (existingUser == null)
                 {
-                    return BadRequest(new { message = "Failed to create or retrieve user" });
+                    return NotFound(new { Message = $"User with Id {id} not found." });
                 }
 
-                return Ok(new
+                existingUser.FavoriteAnimal = update.FavoriteAnimal;
+                bool updateSuccess = await _userDAL.UpdateUser(existingUser);
+
+                if (!updateSuccess)
                 {
-                    userId = user.Id,
-                    username = user.Username,
-                    email = user.Email,
-                    favoriteAnimal = user.FavoriteAnimal,
-                    favoriteDriverId = user.FavoriteDriverId,
-                    favoriteTeamId = user.FavoriteTeamId,
-                    profilePhoto = user.ProfilePhoto
+                    return StatusCode(500, new { Message = "Failed to update favorite animal." });
+                }
+
+                return Ok(new { 
+                    Message = "Favorite animal updated successfully",
+                    FavoriteAnimal = update.FavoriteAnimal
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error in Google login: {ex.Message}");
-                return StatusCode(500, new { message = "Internal server error during Google login" });
+                return StatusCode(500, new { Message = $"Failed to update favorite animal: {ex.Message}" });
             }
+        }
+
+        public class FavoriteAnimalUpdate
+        {
+            public string? FavoriteAnimal { get; set; }
         }
     }
 

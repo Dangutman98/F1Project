@@ -245,41 +245,22 @@ namespace server.DAL
             {
                 con = connect();
                 con.Open();
-                Console.WriteLine("Database connection opened successfully");
 
-                // First check if user exists
-                cmd = new SqlCommand("SELECT COUNT(1) FROM Users WHERE Id = @UserID", con);
-                cmd.Parameters.AddWithValue("@UserID", id);
-                int count = (int)cmd.ExecuteScalar();
-
-                if (count == 0)
-                {
-                    Console.WriteLine($"User with ID {id} not found");
-                    return false;
-                }
-
-                // If user exists, proceed with deletion and reordering
+                // Call SP_DeleteUser stored procedure
                 cmd = new SqlCommand("SP_DeleteUser", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@UserID", id);
 
                 cmd.ExecuteNonQuery();
-                Console.WriteLine($"User with ID {id} deleted and IDs reordered successfully");
                 return true;
             }
             catch (SqlException sqlEx)
             {
-                Console.WriteLine($"SQL Exception in DeleteUser: {sqlEx.Message}");
-                Console.WriteLine($"Error Number: {sqlEx.Number}");
-                Console.WriteLine($"Error State: {sqlEx.State}");
-                Console.WriteLine($"Procedure: {sqlEx.Procedure}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception in DeleteUser: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                return false;
+                if (sqlEx.Number == 51000) // Our custom error number for "User not found"
+                {
+                    return false;
+                }
+                throw;
             }
             finally
             {
@@ -752,30 +733,36 @@ namespace server.DAL
             }
         }
 
-        public User GetUserByGoogleUid(string googleUid)
+        public async Task<User?> GetUserByEmail(string email)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand("SELECT * FROM Users WHERE GoogleUid = @GoogleUid", connection))
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(@"
+                    SELECT 
+                        Username,
+                        PasswordHash,
+                        Email,
+                        FavoriteAnimal,
+                        ProfilePhoto,
+                        GoogleUid,
+                        Id
+                    FROM Users 
+                    WHERE Email = @Email", connection))
                 {
-                    command.Parameters.AddWithValue("@GoogleUid", googleUid);
-
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    command.Parameters.AddWithValue("@Email", email);
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             return new User
                             {
-                                Id = reader.GetInt32(0),
-                                Username = reader.GetString(1),
-                                PasswordHash = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                Email = reader.GetString(3),
-                                FavoriteAnimal = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                ProfilePhoto = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                FavoriteDriverId = reader.IsDBNull(6) ? null : (int?)reader.GetInt32(6),
-                                FavoriteTeamId = reader.IsDBNull(7) ? null : (int?)reader.GetInt32(7),
-                                GoogleUid = reader.IsDBNull(8) ? null : reader.GetString(8)
+                                Username = reader.GetString(0),
+                                PasswordHash = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                FavoriteAnimal = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                                ProfilePhoto = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                Id = reader.GetInt32(6)
                             };
                         }
                     }
@@ -784,22 +771,50 @@ namespace server.DAL
             return null;
         }
 
-        public int CreateGoogleUser(User user)
+        public async Task<User> CreateUser(User user)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand(
-                    @"INSERT INTO Users (Username, Email, GoogleUid, ProfilePhoto) 
-                      VALUES (@Username, @Email, @GoogleUid, @ProfilePhoto);
-                      SELECT SCOPE_IDENTITY();", connection))
+                await connection.OpenAsync();
+                using (var command = new SqlCommand("SP_AddNewUser", connection))
                 {
+                    command.CommandType = CommandType.StoredProcedure;
+                    
+                    command.Parameters.AddWithValue("@Username", user.Username);
+                    command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@FavoriteAnimal", user.FavoriteAnimal ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@ProfilePhoto", user.ProfilePhoto ?? (object)DBNull.Value);
+
+                    // Output parameter for the new user ID
+                    var outputParam = new SqlParameter("@NewUserID", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(outputParam);
+
+                    await command.ExecuteNonQueryAsync();
+                    user.Id = Convert.ToInt32(outputParam.Value);
+                }
+            }
+            return user;
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand("UPDATE Users SET Username = @Username, Email = @Email, FavoriteAnimal = @FavoriteAnimal, ProfilePhoto = @ProfilePhoto WHERE Id = @Id", connection))
+                {
+                    command.Parameters.AddWithValue("@Id", user.Id);
                     command.Parameters.AddWithValue("@Username", user.Username);
                     command.Parameters.AddWithValue("@Email", user.Email);
-                    command.Parameters.AddWithValue("@GoogleUid", user.GoogleUid);
-                    command.Parameters.AddWithValue("@ProfilePhoto", (object)user.ProfilePhoto ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@FavoriteAnimal", user.FavoriteAnimal ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@ProfilePhoto", user.ProfilePhoto ?? (object)DBNull.Value);
 
-                    return Convert.ToInt32(command.ExecuteScalar());
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                    return rowsAffected > 0;
                 }
             }
         }
