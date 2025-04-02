@@ -92,11 +92,11 @@ export default function EditProfile() {
         console.log('Sending photo to server...');
 
         const photoResponse = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
             profilePhoto: photoData
           })
         });
@@ -117,10 +117,10 @@ export default function EditProfile() {
           },
           body: JSON.stringify({
             favoriteAnimal: formData.favoriteAnimal
-          })
-        });
+        })
+      });
 
-        if (!response.ok) {
+      if (!response.ok) {
           const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
           throw new Error(errorData?.message || 'Failed to update favorite animal');
         }
@@ -166,21 +166,21 @@ export default function EditProfile() {
       }
 
       try {
-        const reader = new FileReader();
+      const reader = new FileReader();
         reader.onloadend = async () => {
-          const base64String = reader.result as string;
+        const base64String = reader.result as string;
           const compressedBase64 = await compressImage(base64String);
           const base64Data = compressedBase64.split(',')[1];
-          
-          setFormData(prev => ({
-            ...prev,
-            profilePhoto: base64Data
-          }));
-        };
-        reader.onerror = () => {
-          setError('Error reading file. Please try again.');
-        };
-        reader.readAsDataURL(file);
+        
+        setFormData(prev => ({
+          ...prev,
+          profilePhoto: base64Data
+        }));
+      };
+      reader.onerror = () => {
+        setError('Error reading file. Please try again.');
+      };
+      reader.readAsDataURL(file);
       } catch (err) {
         setError('Error processing image. Please try again.');
         console.error('Image processing error:', err);

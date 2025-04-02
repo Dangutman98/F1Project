@@ -10,12 +10,14 @@ import TeamsAndDrivers from './components/TeamsAndDrivers';
 import Events from './components/Events';
 import RacingSpots from './components/RacingSpots';
 import DriverStandings from './components/DriverStandings';
+import DarkModeToggle from './components/DarkModeToggle';
 import './App.css';
 
 function App() {
   return (
     <UserProvider>
       <Router>
+        <DarkModeToggle />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

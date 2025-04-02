@@ -246,7 +246,7 @@ export default function TeamsAndDrivers() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 teams-drivers-section">
       {/* Header */}
       <header className="bg-red-600 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
