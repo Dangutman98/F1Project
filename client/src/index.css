@@ -1,12 +1,52 @@
 @import "tailwindcss";
 
-/* Light mode (default) */
+/* Base styles */
 :root {
+  --navbar-light: #ef4444;
+  --navbar-dark: #450a0a;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #213547;
   background-color: #ffffff;
+}
+
+/* Light mode styles */
+.bg-red-600 {
+  background-color: var(--navbar-light);
+}
+
+/* Dark mode base styles */
+body.dark-mode {
+  background-color: #0a0f1a;
+  color: #e5e7eb;
+}
+
+/* Dark mode navbar override */
+html body.dark-mode header.bg-red-600,
+html body.dark-mode nav.bg-red-600,
+html body.dark-mode div[class*="bg-red-600"]:where(header),
+html body.dark-mode div[class*="bg-red-600"]:where(nav) {
+  background-color: var(--navbar-dark) !important;
+}
+
+/* Dark mode components except navbar */
+body.dark-mode .bg-white,
+body.dark-mode .bg-gray-50,
+body.dark-mode .bg-gray-100,
+body.dark-mode main .bg-red-600:not(nav):not(header),
+body.dark-mode div.bg-red-600:not(nav):not(header) {
+  background-color: #1e2837 !important;
+}
+
+/* Profile text colors in dark mode */
+body.dark-mode .text-gray-900,
+body.dark-mode .text-black {
+  color: #e5e7eb !important;
+}
+
+body.dark-mode .text-gray-600 {
+  color: #9ca3af !important;
 }
 
 /* Base button styles - Light Mode */
@@ -21,69 +61,100 @@ button {
   transition: border-color 0.25s, background-color 0.25s, color 0.25s;
 }
 
-/* Dark mode styles */
-body.dark-mode {
+/* Login section - Dark Mode */
+body.dark-mode .login-section {
   background-color: #0a0f1a;
+}
+
+body.dark-mode .login-section input {
+  background-color: #1f2937;
+  color: #e5e7eb;
+  border-color: #374151;
+}
+
+body.dark-mode .login-section input::placeholder {
+  color: #9ca3af;
+}
+
+/* Welcome message - Dark Mode */
+body.dark-mode .welcome-message {
   color: #e5e7eb;
 }
 
-/* Navbar styles - Dark Mode */
-body.dark-mode nav.bg-red-600 {
-  background-color: #7f1d1d;
+/* Profile section - Dark Mode */
+body.dark-mode .profile-section {
+  background-color: #0a0f1a !important;
 }
 
-/* Profile section styles */
-.bg-red-600 {
-  background-color: #ef4444;
+/* Profile components in dark mode */
+body.dark-mode .profile-section .bg-red-600,
+body.dark-mode .profile-section div[class*="bg-red-600"],
+body.dark-mode .profile-section .profile-header,
+body.dark-mode .profile-section > div:first-child {
+  background-color: #1e2837 !important;
 }
 
-body.dark-mode .bg-red-600,
-body.dark-mode div[class*="bg-red-600"] {
-  background-color: #1f2937 !important;
-}
-
-body.dark-mode nav button {
-  background-color: #1f2937 !important;
+/* Profile information containers */
+body.dark-mode .profile-section .bg-white,
+body.dark-mode .profile-section .shadow-xl,
+body.dark-mode .profile-section .shadow-lg {
+  background-color: #1e2837 !important;
   color: #e5e7eb !important;
 }
 
-body.dark-mode nav button:hover {
-  background-color: #374151 !important;
+/* Profile text colors in dark mode */
+body.dark-mode .profile-section h1,
+body.dark-mode .profile-section h2,
+body.dark-mode .profile-section h3,
+body.dark-mode .profile-section p,
+body.dark-mode .profile-section span,
+body.dark-mode .profile-section label {
+  color: #e5e7eb !important;
 }
 
-body.dark-mode nav button.bg-white {
-  background-color: #1f2937 !important;
-  color: #ef4444 !important;
+/* Teams & Drivers section - Dark Mode */
+body.dark-mode .teams-drivers-section {
+  background-color: #0a0f1a !important;
 }
 
-/* Card styles - Dark Mode */
-body.dark-mode .bg-white {
+/* Make team containers darker in dark mode */
+body.dark-mode .teams-drivers-section [style*="background-color"] {
+  filter: brightness(0.7);
+}
+
+/* Teams & Drivers heading in dark mode */
+body.dark-mode .teams-drivers-section h1.text-gray-900 {
+  color: #ffffff !important;
+}
+
+/* Ensure text is white in dark mode for team containers */
+body.dark-mode .teams-drivers-section [style*="background-color"] h2,
+body.dark-mode .teams-drivers-section [style*="background-color"] span,
+body.dark-mode .teams-drivers-section [style*="background-color"] p {
+  color: #ffffff !important;
+}
+
+/* Driver cards in dark mode */
+body.dark-mode .teams-drivers-section .bg-white {
   background-color: #1f2937;
+}
+
+body.dark-mode .teams-drivers-section .text-gray-900 {
   color: #e5e7eb;
 }
 
-/* Button styles - Dark Mode */
-body.dark-mode button {
-  background-color: #1f2937;
+body.dark-mode .teams-drivers-section .text-gray-600 {
+  color: #d1d5db;
+}
+
+/* General text colors in dark mode */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label {
   color: #e5e7eb;
-}
-
-body.dark-mode button:hover {
-  background-color: #374151;
-}
-
-/* Save/Cancel/Action buttons - Dark Mode */
-body.dark-mode button[type="submit"],
-body.dark-mode button[type="button"],
-body.dark-mode .action-button {
-  background-color: #1f2937;
-  color: #e5e7eb;
-}
-
-body.dark-mode button[type="submit"]:hover,
-body.dark-mode button[type="button"]:hover,
-body.dark-mode .action-button:hover {
-  background-color: #374151;
 }
 
 body.dark-mode .text-gray-900 {
@@ -91,8 +162,15 @@ body.dark-mode .text-gray-900 {
 }
 
 body.dark-mode .text-gray-600,
-body.dark-mode .text-gray-500 {
-  color: #9ca3af;
+body.dark-mode .text-gray-700,
+body.dark-mode .text-gray-800 {
+  color: #d1d5db;
+}
+
+/* Card styles - Dark Mode */
+body.dark-mode .bg-white {
+  background-color: #1f2937;
+  color: #e5e7eb;
 }
 
 /* Table styles - Dark Mode */
@@ -104,13 +182,144 @@ body.dark-mode .divide-gray-200 > * + * {
   border-color: #374151;
 }
 
+/* Link colors - Dark Mode */
+body.dark-mode a {
+  color: #ef4444;
+}
+
+body.dark-mode a:hover {
+  color: #991b1b;
+}
+
+/* Focus styles */
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Dark mode toggle button styles */
+button[aria-label*="mode"] {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 50;
+  background-color: #1f2937;
+  color: #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+button[aria-label*="mode"]:hover {
+  background-color: #374151;
+}
+
+/* Light mode specific overrides */
+body:not(.dark-mode) {
+  background-color: #ffffff;
+}
+
+body:not(.dark-mode) .bg-white {
+  background-color: #ffffff;
+}
+
+body:not(.dark-mode) button {
+  background-color: #ffffff;
+}
+
+/* Profile page specific styles */
+.profile-header {
+  background-color: #ef4444;
+}
+
+body.dark-mode .profile-header {
+  background-color: #7f1d1d;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+  body.dark-mode {
+    background-color: #121212;
+    color: white;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+}
+
+/* Navbar styles - Dark Mode */
+body.dark-mode nav.bg-red-600,
+body.dark-mode header.bg-red-600 {
+  background-color: #7f1d1d !important;
+}
+
+body.dark-mode nav button,
+body.dark-mode header button {
+  color: #000000 !important;
+}
+
+body.dark-mode nav button:hover,
+body.dark-mode header button:hover {
+  color: #1f2937 !important;
+}
+
+/* Button styles - Dark Mode */
+body.dark-mode button {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+body.dark-mode button:hover {
+  background-color: #374151 !important;
+}
+
 /* Input styles - Dark Mode */
 body.dark-mode input,
 body.dark-mode select,
 body.dark-mode textarea {
-  background-color: #1f2937;
-  color: #e5e7eb;
-  border-color: #374151;
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+  border-color: #374151 !important;
 }
 
 body.dark-mode input:focus,
@@ -119,15 +328,40 @@ body.dark-mode textarea:focus {
   border-color: #991b1b;
 }
 
-/* Shadow modifications for dark mode */
-body.dark-mode .shadow-md,
-body.dark-mode .shadow-lg {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+/* Events section - Dark Mode */
+body.dark-mode .events-section {
+  background-color: #0a0f1a !important;
 }
 
-/* Border colors - Dark Mode */
-body.dark-mode .border-gray-200 {
-  border-color: #374151;
+body.dark-mode .events-section .bg-white {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+/* Racing spots section - Dark Mode */
+body.dark-mode .racing-spots-section {
+  background-color: #0a0f1a !important;
+}
+
+body.dark-mode .racing-spots-section .bg-white {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+/* Current/Upcoming/Former component - Dark Mode */
+body.dark-mode .racing-status-component {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+/* Standings section - Dark Mode */
+body.dark-mode .standings-section {
+  background-color: #0a0f1a !important;
+}
+
+body.dark-mode .standings-section .bg-white {
+  background-color: #1f2937;
+  color: #e5e7eb;
 }
 
 /* Link colors - Dark Mode */
@@ -258,5 +492,198 @@ body.dark-mode .teams-drivers-section .bg-white {
 /* Preserve black text in Teams & Drivers buttons */
 body.dark-mode .teams-drivers-section button {
   color: #000000 !important;
+}
+
+/* Fix white backgrounds in all components - Dark Mode */
+body.dark-mode .min-h-screen,
+body.dark-mode .bg-gray-50,
+body.dark-mode .bg-gray-100,
+body.dark-mode .bg-white {
+  background-color: #0a0f1a !important;
+}
+
+body.dark-mode .bg-red-600,
+body.dark-mode div[class*="bg-red-600"],
+body.dark-mode header.bg-red-600,
+body.dark-mode nav.bg-red-600 {
+  background-color: #1f1f1f !important;
+}
+
+/* Card and container styles - Dark Mode */
+body.dark-mode .shadow-xl,
+body.dark-mode .shadow-lg,
+body.dark-mode .shadow-md,
+body.dark-mode .bg-white {
+  background-color: #1f2937 !important;
+}
+
+/* Text colors in dark mode */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label,
+body.dark-mode .text-gray-900,
+body.dark-mode .text-gray-800,
+body.dark-mode .text-gray-700 {
+  color: #e5e7eb !important;
+}
+
+body.dark-mode .text-gray-600,
+body.dark-mode .text-gray-500 {
+  color: #d1d5db !important;
+}
+
+/* Input fields - Dark Mode */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+  border-color: #374151 !important;
+}
+
+/* Button styles - Dark Mode */
+body.dark-mode button {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+body.dark-mode button:hover {
+  background-color: #374151 !important;
+}
+
+/* Dark mode base styles */
+body.dark-mode {
+  background-color: #0a0f1a;
+  color: #e5e7eb;
+}
+
+/* Navbar styles */
+.bg-red-600 {
+  background-color: #ef4444;
+}
+
+/* Dark mode specific styles */
+body.dark-mode .bg-white,
+body.dark-mode .bg-gray-50,
+body.dark-mode .bg-gray-100,
+body.dark-mode main .bg-red-600:not(nav):not(header),
+body.dark-mode div.bg-red-600:not(nav):not(header) {
+  background-color: #1e2837 !important;
+}
+
+/* Profile text colors in dark mode */
+body.dark-mode .text-gray-900,
+body.dark-mode .text-black {
+  color: #e5e7eb !important;
+}
+
+body.dark-mode .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+/* Profile hero section in dark mode */
+body.dark-mode .profile-hero,
+body.dark-mode .profile-hero.bg-red-600,
+body.dark-mode div.profile-hero {
+  background-color: #1e2837 !important;
+}
+
+/* Make sure no other styles override our dark mode */
+body.dark-mode [class*="bg-red-600"],
+body.dark-mode div[class*="bg-red-600"],
+body.dark-mode header[class*="bg-red-600"],
+body.dark-mode nav[class*="bg-red-600"] {
+  background-color: #1e2837 !important;
+}
+
+/* Keep navbar red in dark mode */
+body.dark-mode nav.bg-red-600,
+body.dark-mode header.bg-red-600 {
+  background-color: #ef4444 !important;
+}
+
+/* Profile hero section in dark mode */
+body.dark-mode .profile-hero,
+body.dark-mode main .bg-red-600,
+body.dark-mode div.bg-red-600:not(nav):not(header) {
+  background-color: #1e2837 !important;
+}
+
+/* Profile containers in dark mode */
+body.dark-mode .min-h-screen .bg-white,
+body.dark-mode .shadow-xl,
+body.dark-mode .rounded-lg {
+  background-color: #1e2837 !important;
+  color: #e5e7eb !important;
+}
+
+/* Profile text colors in dark mode */
+body.dark-mode .text-gray-900,
+body.dark-mode .text-black,
+body.dark-mode h2.text-gray-900,
+body.dark-mode h3.text-gray-900,
+body.dark-mode .font-semibold.text-gray-900 {
+  color: #e5e7eb !important;
+}
+
+body.dark-mode .text-gray-600,
+body.dark-mode p.text-gray-600,
+body.dark-mode span.text-gray-600 {
+  color: #9ca3af !important;
+}
+
+/* Make sure navbar buttons are visible */
+body.dark-mode nav button,
+body.dark-mode header button {
+  color: #000000 !important;
+}
+
+body.dark-mode nav button:hover,
+body.dark-mode header button:hover {
+  color: #1f2937 !important;
+}
+
+/* Racing spots status badges */
+.racing-spots-section span[class*="rounded-full"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+/* Status badge colors - Light Mode */
+.racing-spots-section .bg-green-100,
+.racing-spots-section .bg-blue-100,
+.racing-spots-section .bg-gray-100 {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Status badge colors - Dark Mode */
+body.dark-mode .racing-spots-section .bg-green-100,
+body.dark-mode .racing-spots-section .bg-blue-100,
+body.dark-mode .racing-spots-section .bg-gray-100 {
+  background-color: #172554 !important;
+  color: #ffffff;
+}
+
+/* Ensure dark mode overrides for each status type */
+body.dark-mode .racing-spots-section span[class*="rounded-full"] {
+  background-color: #172554 !important;
+}
+
+/* Position status badge and heart icon */
+.racing-spots-section .absolute.top-0.right-0.m-2 {
+  display: flex;
+  justify-content: space-between;
+  width: calc(100% - 1rem);
+  margin: 0.5rem;
+}
+
+.racing-spots-section .absolute.top-0.right-0.m-2 button {
+  order: -1; /* Move heart to the left */
 }
 

@@ -377,6 +377,7 @@ export default function EditProfile() {
                       Take Photo
                     </button>
                   </div>
+                  <p className="text-xs font-medium text-gray-700">*Click on photo to add from device</p>
                 </div>
 
                 {showCamera && (

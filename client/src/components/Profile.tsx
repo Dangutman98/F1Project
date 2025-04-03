@@ -197,7 +197,7 @@ export default function Profile() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Hero Section */}
-        <div className="bg-red-600">
+        <div className="bg-red-600 profile-hero">
           <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <div className="flex flex-col items-center mb-8">

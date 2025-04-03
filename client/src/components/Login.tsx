@@ -114,7 +114,7 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 login-section">
             <div className="w-full max-w-md space-y-6 p-6 sm:p-8 bg-white rounded-lg shadow">
                 <div>
                     <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900">Login</h2>

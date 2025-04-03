@@ -17,10 +17,10 @@ export default function HomePage() {
         <div className="w-full px-2 sm:px-4">
           <div className="flex flex-wrap justify-between items-center h-auto py-2">
             <div className="flex items-center shrink-0">
-              <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold whitespace-nowrap">F1 Fan Hub</span>
+              <span className="text-black text-base sm:text-lg md:text-xl lg:text-2xl font-bold whitespace-nowrap">F1 </span>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
-              <span className="text-black text-sm sm:text-base whitespace-nowrap">
+              <span className="text-black text-sm sm:text-base whitespace-nowrap welcome-message">
                 Welcome, {user?.username?.toUpperCase()}
               </span>
               <button
