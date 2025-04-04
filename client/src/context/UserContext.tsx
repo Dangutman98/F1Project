@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 interface UserProfile {
   favoriteDriver?: string;
@@ -40,7 +40,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user]);
 
   const login = (userData: any) => {
-    console.log('Raw login data received:', userData);
 
     // Handle registration response which might be nested in a 'user' property
     const userDataToProcess = userData.user || userData;
@@ -49,7 +48,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userId = userDataToProcess.id || userDataToProcess.userId;
     const username = userDataToProcess.username;
     
-    console.log('Processing user data:', { userId, username, userData: userDataToProcess });
 
     // Check if we have the required fields
     if (!userId || !username) {
@@ -71,7 +69,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    console.log('Final processed user data:', user);
     setUser(user);
     localStorage.setItem('user', JSON.stringify(user));
   };

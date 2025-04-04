@@ -101,7 +101,6 @@ export default function Profile() {
       }
 
       try {
-        console.log('Fetching data for user ID:', user.id); // Add this for debugging
         
         // Always fetch photo from our endpoint
         const photoResponse = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`);

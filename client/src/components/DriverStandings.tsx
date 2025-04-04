@@ -45,14 +45,12 @@ const DriverStandings: React.FC = () => {
                 setLoading(true);
                 setError(null);
 
-                console.log('Fetching standings data...');
+                
                 const [data2023, data2024] = await Promise.all([
                     fetchWithRetry('http://localhost:5066/api/DriverStandings/2023'),
                     fetchWithRetry('http://localhost:5066/api/DriverStandings/2024')
                 ]);
 
-                console.log('2023 Standings:', data2023);
-                console.log('2024 Standings:', data2024);
 
                 if (Array.isArray(data2023)) {
                     setStandings2023(data2023);

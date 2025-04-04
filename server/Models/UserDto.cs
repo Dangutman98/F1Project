@@ -1,4 +1,7 @@
-﻿namespace server.Models
+﻿
+// This is the DataTransferObject for the User model. 
+//Helping with the transfer of data between the client and the server.
+namespace server.Models
 {
     public class UserDto
     {

@@ -687,3 +687,19 @@ body.dark-mode .racing-spots-section span[class*="rounded-full"] {
   order: -1; /* Move heart to the left */
 }
 
+/* Dark mode overrides for status badges */
+.dark-mode .status-badge-development {
+  background-color: #1a2c4d !important;
+  color: #bfdbfe !important;
+}
+
+.dark-mode .status-badge-confirmed {
+  background-color: #0f3d2c !important;
+  color: #bbf7d0 !important;
+}
+
+.dark-mode .status-badge-testing {
+  background-color: #3f2c0f !important;
+  color: #fef08a !important;
+}
+

@@ -109,7 +109,7 @@ export default function Events() {
     try {
       // Extract the base name without "Grand Prix" for matching
       const baseName = raceName.replace(' Grand Prix', '');
-      console.log('Looking for image for:', baseName); // Debug log
+      
       const image = eventImages[baseName];
       if (!image) {
         console.log('No direct match, trying alternative names...'); // Debug log

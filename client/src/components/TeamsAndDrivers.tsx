@@ -106,27 +106,26 @@ export default function TeamsAndDrivers() {
         
         console.log('Fetching favorites...');
         const favoritesData = await fetchWithRetry(`http://localhost:5066/api/user/${user.id}/favorites`);
-        console.log('Favorites data received:', JSON.stringify(favoritesData, null, 2));
 
         if (teamsData) {
-          console.log('Setting teams state');
+          
           setTeams(teamsData);
         }
         
         if (driversData) {
-          console.log('Setting drivers state');
+          
           setDrivers(driversData);
         }
         
         // Update favorite states from the API response
         if (favoritesData && favoritesData.drivers) {
-          console.log('Setting favorite drivers state');
+          
           const favoriteDriverIds = favoritesData.drivers.map((d: { driverId: number }) => d.driverId);
           setFavoriteDrivers(favoriteDriverIds);
         }
         
         if (favoritesData && favoritesData.teams && favoritesData.teams.length > 0) {
-          console.log('Setting favorite team state');
+          
           const favoriteTeamId = favoritesData.teams[0].teamId;
           setFavoriteTeam(favoriteTeamId);
         } else {
@@ -137,7 +136,7 @@ export default function TeamsAndDrivers() {
         console.error('Error in TeamsAndDrivers fetchData:', err);
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
-        console.log('Setting loading to false in TeamsAndDrivers');
+        
         setLoading(false);
       }
     };
