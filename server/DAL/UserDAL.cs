@@ -243,28 +243,39 @@ namespace server.DAL
 
             try
             {
+                Console.WriteLine($"Attempting to delete user with ID: {id}");
                 con = connect();
                 con.Open();
+                Console.WriteLine("Database connection opened");
 
                 // Call SP_DeleteUser stored procedure
                 cmd = new SqlCommand("SP_DeleteUser", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@UserID", id);
 
-                cmd.ExecuteNonQuery();
-                return true;
+                var result = cmd.ExecuteNonQuery();
+                Console.WriteLine($"Delete operation affected {result} rows");
+                return result > 0;
             }
             catch (SqlException sqlEx)
             {
+                Console.WriteLine($"SQL Exception in DeleteUser: {sqlEx.Message}");
+                Console.WriteLine($"SQL Error Number: {sqlEx.Number}");
                 if (sqlEx.Number == 51000) // Our custom error number for "User not found"
                 {
                     return false;
                 }
                 throw;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"General Exception in DeleteUser: {ex.Message}");
+                throw;
+            }
             finally
             {
                 con?.Close();
+                Console.WriteLine("Database connection closed");
             }
         }
         ////////////////// Method to delete users/////////////////

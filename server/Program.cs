@@ -71,26 +71,34 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins", builder =>
     {
-        builder.AllowAnyOrigin() // Allows any origin
-               .AllowAnyMethod() // Allows any HTTP method
-               .AllowAnyHeader(); // Allows any header
+        builder
+            .WithOrigins(
+                "http://localhost:5173",   // Development frontend URL
+                "https://localhost:5173"   // HTTPS frontend URL
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .SetIsOriginAllowed(origin => true); // Allow any origin temporarily for debugging
     });
 });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline for Swagger and routing
-if (app.Environment.IsDevelopment())
+if (true)
 {
     app.UseSwagger();
     app.UseSwaggerUI(); // Automatically serves Swagger UI in development environment
 }
 
+// Enable CORS before any other middleware
+app.UseCors("AllowAllOrigins"); // Use the CORS policy
+
+// Configure HTTPS after CORS
+app.UseHsts(); // Enable HTTP Strict Transport Security (HSTS)
 app.UseHttpsRedirection(); // Ensures HTTP requests are redirected to HTTPS
 app.UseAuthorization(); // Enable authorization middleware
-
-// Enable CORS in the HTTP request pipeline
-app.UseCors("AllowAllOrigins"); // Use the CORS policy
 
 app.MapControllers(); // Map controllers to routes
 

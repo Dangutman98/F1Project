@@ -47,8 +47,8 @@ const DriverStandings: React.FC = () => {
 
                 
                 const [data2023, data2024] = await Promise.all([
-                    fetchWithRetry('http://localhost:5066/api/DriverStandings/2023'),
-                    fetchWithRetry('http://localhost:5066/api/DriverStandings/2024')
+                    fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/DriverStandings/2023`),
+                    fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/DriverStandings/2024`)
                 ]);
 
 

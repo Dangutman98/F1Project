@@ -88,7 +88,7 @@ export default function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5066/api/Event');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Event`);
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }

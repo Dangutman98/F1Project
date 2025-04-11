@@ -103,7 +103,7 @@ export default function Profile() {
       try {
         
         // Always fetch photo from our endpoint
-        const photoResponse = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`);
+        const photoResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/profile-photo`);
         if (photoResponse.ok) {
           const photoData = await photoResponse.json();
           setProfilePhoto(photoData.profilePhoto || '');
@@ -113,7 +113,7 @@ export default function Profile() {
         }
 
         // Fetch favorites
-        const favoritesResponse = await fetch(`http://localhost:5066/api/user/${user.id}/favorites`);
+        const favoritesResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorites`);
         if (!favoritesResponse.ok) {
           console.error('Failed to fetch favorites:', await favoritesResponse.text());
           throw new Error('Failed to fetch data');
@@ -142,8 +142,12 @@ export default function Profile() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`http://localhost:5066/api/user/${user.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
 
       if (response.ok) {

@@ -97,15 +97,15 @@ export default function TeamsAndDrivers() {
         
         // Fetch teams, drivers, and favorites in parallel
         console.log('Fetching teams...');
-        const teamsData = await fetchWithRetry('http://localhost:5066/api/Team');
+        const teamsData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/Team`);
         console.log('Teams data received:', teamsData?.length || 0, 'teams');
         
         console.log('Fetching drivers...');
-        const driversData = await fetchWithRetry('http://localhost:5066/api/Driver/fetch');
+        const driversData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/Driver/fetch`);
         console.log('Drivers data received:', driversData?.length || 0, 'drivers');
         
         console.log('Fetching favorites...');
-        const favoritesData = await fetchWithRetry(`http://localhost:5066/api/user/${user.id}/favorites`);
+        const favoritesData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorites`);
 
         if (teamsData) {
           
@@ -151,7 +151,7 @@ export default function TeamsAndDrivers() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5066/api/user/${user.id}/favorite/driver/${driverId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorite/driver/${driverId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -190,7 +190,7 @@ export default function TeamsAndDrivers() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5066/api/user/${user.id}/favorite/team/${teamId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorite/team/${teamId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

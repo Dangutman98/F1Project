@@ -76,7 +76,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch('http://localhost:5066/api/user', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

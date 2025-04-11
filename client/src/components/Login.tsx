@@ -17,7 +17,7 @@ export default function Login() {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5066/api/user/login', {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export default function Login() {
             const user = result.user;
             
             // Create user record in your database
-            const response = await fetch('http://localhost:5066/api/user/google-login', {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/google-login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

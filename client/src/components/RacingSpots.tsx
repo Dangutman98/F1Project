@@ -21,7 +21,7 @@ export default function RacingSpots() {
       }
       
       try {
-        const response = await fetch(`http://localhost:5066/api/event/favorite/all/${user.id}`);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/event/favorite/all/${user.id}`);
         
         
         if (response.ok) {
@@ -50,7 +50,7 @@ export default function RacingSpots() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5066/api/event/favorite/${user.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/event/favorite/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -258,13 +258,17 @@ namespace server.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
+            _logger.LogInformation("Attempting to delete user with ID: {UserId}", id);
+            
             bool isDeleted = _userDAL.DeleteUser(id);
 
             if (!isDeleted)
             {
+                _logger.LogWarning("User with ID {UserId} not found or could not be deleted", id);
                 return NotFound($"User with Id {id} not found.");
             }
 
+            _logger.LogInformation("User with ID {UserId} deleted successfully", id);
             return Ok(new { Message = "User deleted successfully" });
         }
 

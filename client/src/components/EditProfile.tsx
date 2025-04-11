@@ -91,7 +91,7 @@ export default function EditProfile() {
 
         console.log('Sending photo to server...');
 
-        const photoResponse = await fetch(`http://localhost:5066/api/user/${user.id}/profile-photo`, {
+        const photoResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/profile-photo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ export default function EditProfile() {
 
       // Update favorite animal if changed
       if (formData.favoriteAnimal !== user.profile?.favoriteAnimal) {
-        const response = await fetch(`http://localhost:5066/api/user/${user.id}/favorite-animal`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorite-animal`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
