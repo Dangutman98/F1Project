@@ -11,6 +11,7 @@ import Events from './components/Events';
 import RacingSpots from './components/RacingSpots';
 import DriverStandings from './components/DriverStandings';
 import DarkModeToggle from './components/DarkModeToggle';
+import RaceWeather from './components/RaceWeather';
 import './App.css';
 
 function App() {
@@ -28,8 +29,10 @@ function App() {
           <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
           <Route path="/racing-spots" element={<ProtectedRoute><RacingSpots /></ProtectedRoute>} />
           <Route path="/standings" element={<ProtectedRoute><DriverStandings /></ProtectedRoute>} />
+          <Route path="/race-weather" element={<ProtectedRoute><RaceWeather /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
+        
         </Routes>
       </Router>
     </UserProvider>
