@@ -85,4 +85,11 @@ firebase-service-account.json
 # Environment variables
 .env
 .env.*
-!.env.example 
+!.env.example
+
+# App settings files
+server/appsettings.json
+server/bin/Debug/net8.0/appsettings.json
+server/bin/Release/net8.0/appsettings.json
+server/obj/Debug/net8.0/appsettings.json
+server/obj/Release/net8.0/appsettings.json 
