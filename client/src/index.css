@@ -49,11 +49,20 @@ body.dark-mode .text-gray-600 {
   color: #9ca3af !important;
 }
 
+/* Navbar button colors in dark mode */
+body.dark-mode nav button.bg-white {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+body.dark-mode nav button.bg-white:hover {
+  background-color: #374151 !important;
+}
+
 /* Base button styles - Light Mode */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;

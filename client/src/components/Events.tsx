@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // Import event images
 import bahrainImg from '../assets/events-pics/Bahrain.avif';
@@ -80,7 +79,6 @@ const LoadingSkeleton = () => (
 );
 
 export default function Events() {
-  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -131,28 +129,6 @@ export default function Events() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-100 events-section">
-        <header className="bg-red-600 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <button
-                  onClick={() => navigate('/home')}
-                  className="text-black text-2xl font-bold hover:text-gray-800"
-                >
-                  Return to Home Page
-                </button>
-              </div>
-              <nav className="flex items-center space-x-4">
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="text-black text-xl font-bold hover:text-gray-800"
-                >
-                  Profile
-                </button>
-              </nav>
-            </div>
-          </div>
-        </header>
         <div className="py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-8">F1 Race Events</h1>
@@ -182,30 +158,6 @@ export default function Events() {
 
   return (
     <div className="min-h-screen bg-gray-100 events-section">
-      {/* Header */}
-      <header className="bg-red-600 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => navigate('/home')}
-                className="text-black text-2xl font-bold hover:text-gray-800"
-              >
-                Return to Home Page
-              </button>
-            </div>
-            <nav className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/profile')}
-                className="text-black text-xl font-bold hover:text-gray-800"
-              >
-                Profile
-              </button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
