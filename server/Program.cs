@@ -4,6 +4,7 @@ using server.Models;
 using server.Data;
 using server.DAL;
 using System.Text;
+using Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +28,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register HttpClient for Dependency Injection
-builder.Services.AddHttpClient(); // Register HttpClient for Dependency Injection
-
+builder.Services.AddHttpClient();
 
 // Register DriverDal for Dependency Injection
 builder.Services.AddScoped<DriverDal>(provider =>
@@ -65,6 +65,9 @@ builder.Services.AddScoped<EventDAL>(provider =>
 
 // Add DAL services
 builder.Services.AddScoped<DriverStandingsDAL>();
+
+// Register NotificationService for Dependency Injection
+builder.Services.AddScoped<NotificationService>();
 
 // Enable CORS (Cross-Origin Resource Sharing)
 builder.Services.AddCors(options =>

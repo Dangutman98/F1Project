@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {RacingSpot, racingSpots as initialRacingSpots} from '../data/racingSpots';
 
 // Circuit to city mapping for weather data
@@ -105,9 +104,6 @@ interface RaceWithWeather {
 //components
 
 const RaceWeather= () => {
-  //navigation hook for routing
-  const navigate = useNavigate();
-
   //state for racing data from my existing data
   const [racingSpots] = useState<RacingSpot[]>(initialRacingSpots);
 
@@ -193,22 +189,6 @@ const RaceWeather= () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-red-600 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => navigate('/home')}
-                className="text-black dark:text-white text-2xl font-bold hover:text-gray-700 dark:hover:text-gray-300"
-              >
-                Return to Home Page
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Race Weather Forecast</h1>
