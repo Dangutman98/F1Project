@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -21,10 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\models\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:models\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{953A9E57-F524-4BC1-B845-6A416208D083}|server.csproj|c:\\users\\dan\\desktop\\f1project\\server\\dal\\f1projectdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,11 +46,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 191,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "NotificationService.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Services\\NotificationService.cs",
               "RelativeDocumentMoniker": "Services\\NotificationService.cs",
@@ -58,12 +58,11 @@
               "RelativeToolTip": "Services\\NotificationService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-18T13:50:22.099Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-18T13:50:22.099Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "DriverController.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Controllers\\DriverController.cs",
               "RelativeDocumentMoniker": "Controllers\\DriverController.cs",
@@ -71,12 +70,11 @@
               "RelativeToolTip": "Controllers\\DriverController.cs",
               "ViewState": "AgIAAB8AAAAAAAAAAAAMwCkAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-12T14:02:24.251Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-12T14:02:24.251Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Driver.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Models\\Driver.cs",
               "RelativeDocumentMoniker": "Models\\Driver.cs",
@@ -88,7 +86,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "UserDto.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Models\\UserDto.cs",
               "RelativeDocumentMoniker": "Models\\UserDto.cs",
@@ -100,15 +98,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Models\\User.cs",
               "RelativeDocumentMoniker": "Models\\User.cs",
               "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Models\\User.cs",
               "RelativeToolTip": "Models\\User.cs",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAxwDEAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABgAAAAAAAAAAIA3wB4AAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-02T08:39:10.799Z"
+              "WhenOpened": "2025-04-02T08:39:10.799Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -148,7 +147,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",

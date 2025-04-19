@@ -756,7 +756,6 @@ namespace server.DAL
                         Email,
                         FavoriteAnimal,
                         ProfilePhoto,
-                        GoogleUid,
                         Id
                     FROM Users 
                     WHERE Email = @Email", connection))
@@ -773,7 +772,7 @@ namespace server.DAL
                                 Email = reader.GetString(2),
                                 FavoriteAnimal = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                                 ProfilePhoto = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                Id = reader.GetInt32(6)
+                                Id = reader.GetInt32(5)
                             };
                         }
                     }
@@ -804,8 +803,21 @@ namespace server.DAL
                     };
                     command.Parameters.Add(outputParam);
 
-                    await command.ExecuteNonQueryAsync();
-                    user.Id = Convert.ToInt32(outputParam.Value);
+                    // Execute and read the result
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            // Skip SequentialID (index 0)
+                            user.Id = reader.GetInt32(1); // Id is now at index 1
+                            user.Username = reader.GetString(2);
+                            user.PasswordHash = reader.GetString(3);
+                            user.Email = reader.GetString(4);
+                            user.FavoriteAnimal = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
+                            user.ProfilePhoto = reader.IsDBNull(6) ? null : reader.GetString(6);
+                            // GoogleUid at index 7 is not used in the User model
+                        }
+                    }
                 }
             }
             return user;

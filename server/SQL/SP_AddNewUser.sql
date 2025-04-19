@@ -37,18 +37,17 @@ BEGIN
         @ProfilePhoto
     );
 
-    -- Get the new user's ID
+    -- Get the newly inserted user's actual ID
     SET @NewUserID = SCOPE_IDENTITY();
 
-    -- Return the new user's data in the same order as the table
+    -- Return the user
     SELECT 
+        Id,
         Username,
         PasswordHash,
         Email,
         FavoriteAnimal,
-        ProfilePhoto,
-        NULL as GoogleUid,
-        Id
+        ProfilePhoto
     FROM Users
     WHERE Id = @NewUserID;
 END
