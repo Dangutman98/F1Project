@@ -93,18 +93,12 @@ export default function TeamsAndDrivers() {
       
       try {
         setLoading(true);
-        console.log('Starting to fetch data in TeamsAndDrivers');
         
         // Fetch teams, drivers, and favorites in parallel
-        console.log('Fetching teams...');
         const teamsData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/Team`);
-        console.log('Teams data received:', teamsData?.length || 0, 'teams');
         
-        console.log('Fetching drivers...');
         const driversData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/Driver/fetch`);
-        console.log('Drivers data received:', driversData?.length || 0, 'drivers');
         
-        console.log('Fetching favorites...');
         const favoritesData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorites`);
 
         if (teamsData) {
@@ -201,6 +195,7 @@ export default function TeamsAndDrivers() {
         const data = await response.json();
         const newFavoriteTeam = data.favoriteTeams[0] || null;
         setFavoriteTeam(newFavoriteTeam);
+        
         
         // Set message based on whether team was added or removed
         setMessage(newFavoriteTeam === teamId ? 'Team added to favorites!' : 'Team removed from favorites!');

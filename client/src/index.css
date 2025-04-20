@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 
 /* Base styles */
 :root {
@@ -300,6 +302,7 @@ h1 {
 body.dark-mode nav.bg-red-600,
 body.dark-mode header.bg-red-600 {
   background-color: #7f1d1d !important;
+  
 }
 
 body.dark-mode nav button,
@@ -572,6 +575,7 @@ body.dark-mode {
 /* Navbar styles */
 .bg-red-600 {
   background-color: #ef4444;
+  border-radius: 4px;
 }
 
 /* Dark mode specific styles */
@@ -710,5 +714,131 @@ body.dark-mode .racing-spots-section span[class*="rounded-full"] {
 .dark-mode .status-badge-testing {
   background-color: #3f2c0f !important;
   color: #fef08a !important;
+}
+
+/* News indicator buttons - Light Mode */
+.news-indicators button {
+  min-width: 0.5rem !important;
+  min-height: 0.5rem !important;
+  border-radius: 9999px !important;
+  background-color: #9ca3af !important;
+}
+
+.news-indicators button.active {
+  min-width: 1rem !important;
+  background-color: #dc2626 !important;
+}
+
+.news-indicators button:hover {
+  background-color: #ef4444 !important;
+}
+
+/* News indicator buttons - Dark Mode */
+body.dark-mode .news-indicators button {
+  background-color: #4b5563 !important;
+}
+
+body.dark-mode .news-indicators button.active {
+  background-color: #dc2626 !important;
+}
+
+body.dark-mode .news-indicators button:hover {
+  background-color: #ef4444 !important;
+}
+
+/* Status badges - Light Mode */
+.status-badge {
+  font-weight: 500 !important;
+}
+
+.status-badge-development {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+.status-badge-confirmed {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+}
+
+.status-badge-testing {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+/* Status badges - Dark Mode */
+body.dark-mode .status-badge-development {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+body.dark-mode .status-badge-confirmed {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+}
+
+body.dark-mode .status-badge-testing {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+/* Carousel styles */
+.carousel-container {
+  margin: 2rem 0;
+  padding: 0 1rem;
+}
+
+.carousel-slide {
+  padding: 0 0.5rem;
+}
+
+.carousel-card {
+  position: relative;
+  height: 400px;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease;
+}
+
+.carousel-card:hover {
+  transform: scale(1.02);
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  color: white;
+}
+
+.carousel-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.carousel-description {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Dark mode carousel styles */
+body.dark-mode .carousel-card {
+  background-color: #1f2937;
+}
+
+body.dark-mode .slick-prev:before,
+body.dark-mode .slick-next:before {
+  color: #ef4444;
 }
 

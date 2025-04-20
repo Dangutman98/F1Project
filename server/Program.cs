@@ -4,7 +4,7 @@ using server.Models;
 using server.Data;
 using server.DAL;
 using System.Text;
-using Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,24 +66,37 @@ builder.Services.AddScoped<EventDAL>(provider =>
 // Add DAL services
 builder.Services.AddScoped<DriverStandingsDAL>();
 
-// Register NotificationService for Dependency Injection
-builder.Services.AddScoped<NotificationService>();
+
 
 // Enable CORS (Cross-Origin Resource Sharing)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", builder =>
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
+// Add Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        builder
-            .WithOrigins(
-                "http://localhost:5173",   // Development frontend URL
-                "https://localhost:5173"   // HTTPS frontend URL
-            )
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials()
-            .SetIsOriginAllowed(origin => true); // Allow any origin temporarily for debugging
-    });
+        ValidateIssuerSigningKey = false,
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
 });
 
 var app = builder.Build();
@@ -96,12 +109,15 @@ if (true)
 }
 
 // Enable CORS before any other middleware
-app.UseCors("AllowAllOrigins"); // Use the CORS policy
+app.UseCors("AllowAll"); // Use the CORS policy
 
 // Configure HTTPS after CORS
 app.UseHsts(); // Enable HTTP Strict Transport Security (HSTS)
 app.UseHttpsRedirection(); // Ensures HTTP requests are redirected to HTTPS
-app.UseAuthorization(); // Enable authorization middleware
+
+// Add authentication middleware
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers(); // Map controllers to routes
 

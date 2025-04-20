@@ -173,54 +173,6 @@
     ]
   },
   {
-    "ContainingType": "Server.Controllers.NotificationController",
-    "Method": "SendNotification",
-    "RelativePath": "api/Notification/send",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "request",
-        "Type": "Server.Controllers.NotificationRequest",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Server.Controllers.NotificationController",
-    "Method": "SendMulticastNotification",
-    "RelativePath": "api/Notification/send-multicast",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "request",
-        "Type": "Server.Controllers.MulticastNotificationRequest",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Server.Controllers.NotificationController",
-    "Method": "TestNotification",
-    "RelativePath": "api/Notification/test",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "token",
-        "Type": "System.String",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "server.Controllers.TeamController",
     "Method": "GetTeams",
     "RelativePath": "api/Team",

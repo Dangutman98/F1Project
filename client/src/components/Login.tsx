@@ -29,7 +29,6 @@ export default function Login() {
             });
 
             const data = await response.json();
-            console.log('Raw server response:', data); // Debug log
 
             if (!response.ok) {
                 console.error('Login failed:', data);
@@ -52,7 +51,6 @@ export default function Login() {
                 }
             };
 
-            console.log('Transformed user data:', userData);
             login(userData);
             navigate('/home');
         } catch (error) {

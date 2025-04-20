@@ -89,8 +89,6 @@ export default function EditProfile() {
           photoData = photoData.split(',')[1];
         }
 
-        console.log('Sending photo to server...');
-
         const photoResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/profile-photo`, {
         method: 'POST',
         headers: {
@@ -139,7 +137,6 @@ export default function EditProfile() {
         favoriteAnimal: formData.favoriteAnimal || user.profile?.favoriteAnimal
       });
       
-      console.log('Profile updated successfully');
       navigate('/profile');
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -189,13 +186,11 @@ export default function EditProfile() {
   };
 
   const stopCamera = () => {
-    console.log('Stopping camera...');
     try {
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
         tracks.forEach(track => {
           if (track.readyState === 'live') {
-            console.log('Stopping track:', track.kind);
             track.stop();
           }
         });
@@ -212,14 +207,12 @@ export default function EditProfile() {
     try {
       // If camera is already running, don't start it again
       if (stream && stream.active) {
-        console.log('Camera is already running');
         return;
       }
 
       // First ensure any existing streams are stopped
       stopCamera();
 
-      console.log('Requesting camera access...');
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           facingMode: 'user',
@@ -228,7 +221,6 @@ export default function EditProfile() {
         },
         audio: false 
       });
-      console.log('Camera access granted');
 
       // Set the stream first
       setStream(mediaStream);
@@ -246,7 +238,6 @@ export default function EditProfile() {
       videoRef.current.onloadedmetadata = async () => {
         try {
           await videoRef.current?.play();
-          console.log('Video element playing');
         } catch (err) {
           console.error('Error playing video:', err);
           stopCamera();
@@ -278,7 +269,6 @@ export default function EditProfile() {
     }
 
     try {
-      console.log('Starting photo capture...');
       const canvas = document.createElement('canvas');
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
@@ -289,11 +279,9 @@ export default function EditProfile() {
       }
       
       context.drawImage(videoRef.current, 0, 0);
-      console.log('Photo captured, dimensions:', canvas.width, 'x', canvas.height);
       
       // Get the complete data URL
       const base64String = canvas.toDataURL('image/jpeg', 0.8);
-      console.log('Converting to base64...');
       
       // Compress the image
       const compressedBase64 = await compressImage(base64String);
@@ -302,9 +290,7 @@ export default function EditProfile() {
         ...prev,
         profilePhoto: compressedBase64
       }));
-      
-      console.log('Photo processed and set in form data');
-      
+            
       // Stop the camera after successful capture
       stopCamera();
     } catch (err) {

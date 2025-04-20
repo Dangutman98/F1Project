@@ -100,7 +100,6 @@ export default function Register() {
       }
 
       const userData = await response.json();
-      console.log('Registration response:', userData); // Debug log
 
       // Transform the data to match our User interface
       const transformedUserData = {
@@ -115,7 +114,6 @@ export default function Register() {
         }
       };
 
-      console.log('Transformed user data for login:', transformedUserData); // Debug log
       login(transformedUserData);
       navigate('/home');
     } catch (err) {

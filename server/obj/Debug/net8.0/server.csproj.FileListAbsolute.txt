@@ -307,12 +307,5 @@ C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\runtimes\win\lib\net8.0\S
 C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\Data\standings-2023.json
 C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\Data\standings-2024.json
 C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\appsettings.example.json
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\FirebaseAdmin.dll
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\Google.Api.Gax.dll
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\Google.Api.Gax.Rest.dll
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\Google.Apis.dll
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\Google.Apis.Auth.dll
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\Google.Apis.Core.dll
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\System.Management.dll
-C:\Users\Dan\Desktop\F1Project\Server\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Management.dll
 C:\Users\Dan\Desktop\F1Project\server\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\Dan\Desktop\F1Project\server\bin\Debug\net8.0\secrets\f1project-736d3-firebase-adminsdk-fbsvc-4b088b1ea7.json
