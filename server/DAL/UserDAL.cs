@@ -67,17 +67,13 @@ namespace server.DAL
             {
                 con = connect(); // Create the connection
                 con.Open(); // Ensure the connection is open
-                Console.WriteLine("Database connection opened successfully");
 
                 cmd = BuildAddNewUserToDBCommand(con, userDto); // Create the command
-                Console.WriteLine("Command built successfully");
 
                 cmd.ExecuteNonQuery(); // Execute stored procedure
-                Console.WriteLine("Stored procedure executed successfully");
 
                 // Retrieve the new user ID from the output parameter
                 int userID = Convert.ToInt32(cmd.Parameters["@NewUserID"].Value);
-                Console.WriteLine($"New user created with ID: {userID}");
                 return userID;
             }
             catch (SqlException sqlEx)
@@ -246,7 +242,6 @@ namespace server.DAL
                 Console.WriteLine($"Attempting to delete user with ID: {id}");
                 con = connect();
                 con.Open();
-                Console.WriteLine("Database connection opened");
 
                 // Call SP_DeleteUser stored procedure
                 cmd = new SqlCommand("SP_DeleteUser", con);
@@ -275,7 +270,6 @@ namespace server.DAL
             finally
             {
                 con?.Close();
-                Console.WriteLine("Database connection closed");
             }
         }
         ////////////////// Method to delete users/////////////////
@@ -557,7 +551,6 @@ namespace server.DAL
             try
             {
                 await connection.OpenAsync();
-                Console.WriteLine($"Database connection opened for user {userId}");
 
                 using var command = new SqlCommand("GetUserFavorites", connection)
                 {
@@ -575,8 +568,6 @@ namespace server.DAL
                 Console.WriteLine("Executing stored procedure...");
                 using var reader = await command.ExecuteReaderAsync();
                 
-                Console.WriteLine("Reading favorite drivers...");
-                // Read favorite drivers with details
                 while (await reader.ReadAsync())
                 {
                     try
@@ -607,7 +598,6 @@ namespace server.DAL
 
                 Console.WriteLine($"Found {favorites.Drivers.Count} favorite drivers");
 
-                Console.WriteLine("Moving to teams result set...");
                 // Move to next result set (teams with details)
                 if (!await reader.NextResultAsync())
                 {
@@ -615,7 +605,6 @@ namespace server.DAL
                     throw new Exception("Failed to read teams data - could not move to next result set");
                 }
 
-                Console.WriteLine("Reading favorite teams...");
                 while (await reader.ReadAsync())
                 {
                     try
@@ -639,7 +628,6 @@ namespace server.DAL
 
                 Console.WriteLine($"Found {favorites.Teams.Count} favorite teams");
 
-                Console.WriteLine("Moving to racing spots result set...");
                 // Move to next result set (racing spots)
                 if (!await reader.NextResultAsync())
                 {
@@ -647,7 +635,6 @@ namespace server.DAL
                     throw new Exception("Failed to read racing spots data - could not move to next result set");
                 }
 
-                Console.WriteLine("Reading favorite racing spots...");
                 while (await reader.ReadAsync())
                 {
                     try
@@ -665,7 +652,6 @@ namespace server.DAL
                 }
 
                 Console.WriteLine($"Found {favorites.RacingSpots.Count} favorite racing spots");
-                Console.WriteLine("Successfully retrieved all favorites");
                 return favorites;
             }
             catch (Exception ex)
@@ -689,7 +675,6 @@ namespace server.DAL
             {
                 con = connect();
                 con.Open();
-                Console.WriteLine($"Opening database connection for user {userId}");
 
                 SqlCommand cmd = new SqlCommand("SP_UpdateProfilePhoto", con);
                 cmd.CommandType = CommandType.StoredProcedure;

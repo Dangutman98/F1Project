@@ -130,7 +130,7 @@ export default function HomePage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-900 overflow-hidden mb-8">
           <div className="p-8">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Welcome to Formula 1 Fan Hub
+              Formula 1 Fan Hub
             </h1>
             <p className="text-gray-600 dark:text-gray-300 text-lg mb-8">
               Your ultimate destination for F1 news, stats, and community.
@@ -234,25 +234,43 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                  <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">Key Features</h3>
+                  <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">F1 Fan Hub Features</h3>
                   <ul className="space-y-4">
                     <li className="flex items-center space-x-3 text-gray-700 dark:text-gray-200">
                       <svg className="h-6 w-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-lg">Complete Teams & Drivers information</span>
+                      <span className="text-lg">Real-time Race Weather Updates</span>
                     </li>
                     <li className="flex items-center space-x-3 text-gray-700 dark:text-gray-200">
                       <svg className="h-6 w-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-lg">Up-to-date F1 Event Calendar</span>
+                      <span className="text-lg">Historical Championship Standings (2023-2024)</span>
                     </li>
                     <li className="flex items-center space-x-3 text-gray-700 dark:text-gray-200">
                       <svg className="h-6 w-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-lg">Detailed Racing Circuit Guides</span>
+                      <span className="text-lg">Circuit Information</span>
+                    </li>
+                    <li className="flex items-center space-x-3 text-gray-700 dark:text-gray-200">
+                      <svg className="h-6 w-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-lg">Personalized Team & Driver Tracking</span>
+                    </li>
+                    <li className="flex items-center space-x-3 text-gray-700 dark:text-gray-200">
+                      <svg className="h-6 w-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-lg">Latest F1 News & Updates</span>
+                    </li>
+                    <li className="flex items-center space-x-3 text-gray-700 dark:text-gray-200">
+                      <svg className="h-6 w-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-lg">Dark Mode Support</span>
                     </li>
                   </ul>
                 </div>

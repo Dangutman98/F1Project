@@ -46,9 +46,7 @@ namespace server.Controllers
         {
             try
             {
-                Console.WriteLine($"Getting favorites for user {id}");
                 var favorites = await _userDAL.GetUserFavorites(id);
-                Console.WriteLine($"Successfully retrieved favorites for user {id}");
                 return Ok(favorites);
             }
             catch (Exception ex)

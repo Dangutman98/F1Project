@@ -90,8 +90,7 @@
               "RelativeToolTip": "Models\\User.cs",
               "ViewState": "AgIAABkAAAAAAAAAAIA1wB4AAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-02T08:39:10.799Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-02T08:39:10.799Z"
             },
             {
               "$type": "Document",
@@ -115,8 +114,7 @@
               "RelativeToolTip": "DAL\\UserDAL.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAIAwwBAAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-20T14:49:56.962Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-20T14:49:56.962Z"
             },
             {
               "$type": "Document",
@@ -136,8 +134,8 @@
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs*",
-              "RelativeToolTip": "Program.cs*",
+              "ToolTip": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\Program.cs",
+              "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAADsAAAAAAAAAAIAwwEQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-04T15:34:36.38Z",
