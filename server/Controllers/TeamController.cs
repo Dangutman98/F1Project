@@ -62,12 +62,7 @@ namespace server.Controllers
             await _teamDal.UpdateTeamAsync(team);
             return Ok($"Team with ID {id} updated successfully.");
         }
-
-
-
-
     }
-
 }
 
 

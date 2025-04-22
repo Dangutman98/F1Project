@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import DarkModeToggle from './DarkModeToggle';
@@ -7,6 +7,7 @@ import { darkModeService } from '../services/darkModeService';
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useUser();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     // Reset dark mode to light mode
@@ -18,81 +19,88 @@ const Navbar: React.FC = () => {
     navigate('/login');
   };
 
+  const navItems = [
+    { label: 'Home', path: '/home' },
+    { label: 'Teams & Drivers', path: '/teams-and-drivers' },
+    { label: 'Events', path: '/events' },
+    { label: 'Racing Spots', path: '/racing-spots' },
+    { label: 'Race Weather', path: '/race-weather' },
+    { label: 'Standings', path: '/standings' },
+    { label: 'My Profile', path: '/profile' },
+  ];
+
   return (
-    <nav className=" bg-red-600 shadow-lg w-full">
-      <div className="max-w-7xl mx-auto px-3">
-        <div className="flex flex-col py-1">
-          {/* Top row with logo and welcome message */}
-          <div className="pl-1 pt-2 flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-4">
-              <span className="text-black text-2xl sm:text-3xl font-black tracking-tighter transform bg-white px-3 py-1 rounded-md shadow-sm">
-                F1
+    <nav className="bg-red-600 shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto relative">
+        {/* Top row with logo, welcome message, and hamburger */}
+        <div className="flex items-center justify-between px-4 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-black text-xl font-black bg-white px-2 py-1 rounded-md shadow-sm">
+              F1
+            </span>
+            <span className="text-white text-sm font-medium hidden sm:inline">
+              Welcome,{' '}
+              <span className="font-bold">
+                {user?.username?.toUpperCase()}
               </span>
-              <span className="text-white text-sm sm:text-base font-medium tracking-wide">
-                Welcome,{' '}
-                <span className="font-bold">
-                  {user?.username?.toUpperCase()}
-                </span>
-              </span>
-            </div>
-            <div className="flex items-center space-x-6">
-              <DarkModeToggle />
-            </div>
+            </span>
           </div>
-          
-          {/* Bottom row with navigation buttons */}
-          <div className="flex items-center space-x-2 pl-1 overflow-x-auto pb-2 pt-2">
-          <button
-                onClick={() => navigate('/home')}
-                className="text-black hover:text-gray-700 px-2 py-1 text-sm whitespace-nowrap"
+
+          <div className="flex items-center gap-4">
+            <DarkModeToggle />
+            {/* Hamburger button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden text-black hover:text-gray-800 focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                Home
-              </button>
-            
-            <button
-              onClick={() => navigate('/teams-and-drivers')}
-              className="text-black hover:text-gray-700 px-2 py-1 text-sm whitespace-nowrap"
-            >
-              Teams & Drivers
+                {isMenuOpen ? (
+                  <path d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
             </button>
-            <button
-              onClick={() => navigate('/events')}
-              className="text-black hover:text-gray-700 px-2 py-1 text-sm whitespace-nowrap"
-            >
-              Events
-            </button>
-            <button
-              onClick={() => navigate('/racing-spots')}
-              className="text-black hover:text-gray-700 px-2 py-1 text-sm whitespace-nowrap"
-            >
-              Racing Spots
-            </button>
-            <button
-              onClick={() => navigate('/race-weather')}
-              className="text-black hover:text-gray-700 px-2 py-1 text-sm whitespace-nowrap"
-            >
-              Race Weather
-            </button>
-            <button
-              onClick={() => navigate('/standings')}
-              className="text-black hover:text-gray-700 px-2 py-1 text-sm whitespace-nowrap"
-            >
-              Standings
-            </button>
-            <div className="flex items-center ml-auto space-x-4">
-          <button
-              onClick={() => navigate('/profile')}
-              className="text-black hover:text-gray-700 px-2 py-1 text-sm whitespace-nowrap"
-            >
-              My Profile
-            </button>
+          </div>
+        </div>
+
+        {/* Navigation items */}
+        <div 
+          className={`${
+            isMenuOpen ? 'block' : 'hidden'
+          } lg:block lg:static fixed top-[56px] left-0 right-0 max-h-[calc(100vh-56px)] overflow-y-auto lg:bg-transparent lg:max-h-none lg:overflow-visible z-50`}
+        >
+          <div className="flex flex-col lg:flex-row lg:items-center gap-2 p-4 lg:justify-start max-w-[280px] mx-auto lg:max-w-none">
+            {navItems.map((item) => (
               <button
-                onClick={handleLogout}
-                className="bg-white text-red-600 px-2 py-1 rounded-md hover:bg-gray-100 text-sm whitespace-nowrap"
+                key={item.path}
+                onClick={() => {
+                  navigate(item.path);
+                  setIsMenuOpen(false);
+                }}
+                className="text-black hover:text-gray-700 px-3 py-2 text-sm whitespace-nowrap bg-white rounded-full hover:bg-gray-100 transition-colors w-full lg:w-auto text-center"
               >
-                Logout
+                {item.label}
               </button>
-            </div>
+            ))}
+            <button
+              onClick={() => {
+                handleLogout();
+                setIsMenuOpen(false);
+              }}
+              className="text-red-600 hover:text-red-700 px-3 py-2 text-sm whitespace-nowrap bg-white rounded-full hover:bg-gray-100 transition-colors w-full lg:w-auto text-center mb-4 lg:mb-0"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>

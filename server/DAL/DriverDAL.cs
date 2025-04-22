@@ -110,25 +110,27 @@ VALUES (@Id, @Name, @PhotoURL, @TeamId, @AcronymName)", conn))
         // Create a response model for deserializing the API response
         public class ApiResponse
         {
-            public List<DriverApiData> Data { get; set; } = new List<DriverApiData>();
+            public List<DriverApiData> Data { get; set; } = new();
         }
 
         public class DriverApiData
         {
+            // Map the JSON properties to C# properties like the api provides.
+
             [JsonProperty("driver_number")]
-            public int DriverNumber { get; set; }
+            public int Id { get; set; }
 
             [JsonProperty("full_name")]
-            public string FullName { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
 
             [JsonProperty("headshot_url")]
-            public string HeadshotUrl { get; set; } = string.Empty;
+            public string PhotoUrl { get; set; } = string.Empty;
 
             [JsonProperty("team_name")]
-            public string TeamName { get; set; } = string.Empty;
+            public string TeamId { get; set; } = string.Empty;
 
             [JsonProperty("name_acronym")]
-            public string NameAcronym { get; set; } = string.Empty;
+            public string AcronymName { get; set; } = string.Empty;
         }
     }
 }

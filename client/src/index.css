@@ -1,27 +1,325 @@
-@import "tailwindcss";
 @import "slick-carousel/slick/slick.css";
 @import "slick-carousel/slick/slick-theme.css";
 
-/* Base styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset all default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Root styles */
 :root {
   --navbar-light: #ef4444;
   --navbar-dark: #450a0a;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #213547;
+}
+
+/* Core layout styles */
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
   background-color: #ffffff;
+  color: #213547;
 }
 
-/* Light mode styles */
-.bg-red-600 {
-  background-color: var(--navbar-light);
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Dark mode base styles */
+/* Main content area */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Container styles */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Section styles */
+.events-section,
+.racing-spots-section,
+.teams-drivers-section,
+.standings-section {
+  width: 100%;
+  padding: 1rem;
+  background-color: #f3f4f6;
+}
+
+/* Hide scrollbar while maintaining functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dark mode */
 body.dark-mode {
   background-color: #0a0f1a;
   color: #e5e7eb;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+/* Base status badge styles */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Status badge colors */
+.status-badge-development {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge-confirmed {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge-testing {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* Dark mode status badge colors */
+.dark-mode .status-badge-development {
+  background-color: #1a2c4d;
+  color: #bfdbfe;
+}
+
+.dark-mode .status-badge-confirmed {
+  background-color: #0f3d2c;
+  color: #bbf7d0;
+}
+
+.dark-mode .status-badge-testing {
+  background-color: #3f2c0f;
+  color: #fef08a;
+}
+
+/* Racing spots specific status badge overrides */
+.racing-spots-section .status-badge {
+  margin-top: auto;
+  width: auto;
+  min-width: 100px;
+}
+
+/* Carousel styles */
+.carousel-container {
+  width: 100%;
+  margin: 0;
+}
+
+.carousel-slide {
+  padding: 0 0.5rem;
+}
+
+.carousel-card {
+  position: relative;
+  height: 300px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* News indicators */
+.news-indicators button {
+  min-width: 0.5rem;
+  min-height: 0.5rem;
+  border-radius: 9999px;
+  background-color: #9ca3af;
+}
+
+.news-indicators button.active {
+  min-width: 1rem;
+  background-color: #dc2626;
+}
+
+.news-indicators button:hover {
+  background-color: #ef4444;
+}
+
+/* Dark mode styles */
+body.dark-mode {
+  background-color: #0a0f1a;
+  color: #e5e7eb;
+}
+
+/* Navbar styles - Light Mode */
+nav.bg-red-600 {
+  background-color: #ef4444 !important;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+}
+
+/* Mobile navigation styles */
+@media (max-width: 1023px) {
+  nav .flex-col {
+    background-color: #ffffff !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  nav .flex-col button {
+    text-align: left !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 9999px !important;
+    margin-bottom: 0.5rem !important;
+    width: 100% !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  }
+
+  nav .flex-col button:hover {
+    background-color: #f3f4f6 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  nav .flex-col button:active {
+    transform: translateY(0px) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  }
+
+  /* Remove red background from mobile menu container */
+  .lg\:block.fixed {
+    background-color: #ffffff !important;
+  }
+
+  /* Dark mode styles */
+  body.dark-mode nav .flex-col {
+    background-color: #1f2937 !important;
+  }
+
+  body.dark-mode nav .flex-col button {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  body.dark-mode nav .flex-col button:hover {
+    background-color: #4b5563 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  body.dark-mode nav .flex-col button:active {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  body.dark-mode .lg\:block.fixed {
+    background-color: #1f2937 !important;
+  }
+}
+
+/* Navbar styles - Dark Mode */
+body.dark-mode nav.bg-red-600 {
+  background-color: #991b1b !important;
+}
+
+/* Dark mode mobile navigation */
+body.dark-mode nav .flex-col {
+  background-color: #1f2937;
+}
+
+/* Ensure navbar buttons are visible in both modes */
+nav button.bg-white {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+nav button.bg-white:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Dark mode navbar buttons */
+body.dark-mode nav button.bg-white {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+}
+
+body.dark-mode nav button.bg-white:hover {
+  background-color: #e5e7eb !important;
+}
+
+/* Ensure navbar text is visible */
+nav .text-white {
+  color: #ffffff !important;
+}
+
+/* Section styles */
+.events-section,
+.racing-spots-section,
+.teams-drivers-section,
+.standings-section {
+  min-height: calc(100vh - 64px); /* Adjust for navbar height */
+  background-color: #f3f4f6;
+}
+
+body.dark-mode .events-section,
+body.dark-mode .racing-spots-section,
+body.dark-mode .teams-drivers-section,
+body.dark-mode .standings-section {
+  background-color: #111827;
 }
 
 /* Dark mode navbar override */
@@ -49,16 +347,6 @@ body.dark-mode .text-black {
 
 body.dark-mode .text-gray-600 {
   color: #9ca3af !important;
-}
-
-/* Navbar button colors in dark mode */
-body.dark-mode nav button.bg-white {
-  background-color: #1f2937 !important;
-  color: #e5e7eb !important;
-}
-
-body.dark-mode nav button.bg-white:hover {
-  background-color: #374151 !important;
 }
 
 /* Base button styles - Light Mode */
@@ -208,25 +496,64 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Dark mode toggle button styles */
+/* Dark mode toggle button - HIGHEST PRIORITY */
 button[aria-label*="mode"] {
-  width: 48px;
-  height: 48px;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 50;
-  background-color: #1f2937;
-  color: #e5e7eb;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  position: fixed !important;
+  bottom: 1rem !important;
+  right: 1rem !important;
+  z-index: 50 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.2s ease-in-out !important;
+  border: 1px solid #e5e7eb !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+button[aria-label*="mode"]:focus {
+  outline: none !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }
 
 button[aria-label*="mode"]:hover {
-  background-color: #374151;
+  background-color: #f3f4f6 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Dark mode specific styles */
+body.dark-mode button[aria-label*="mode"] {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+  border-color: #374151 !important;
+}
+
+body.dark-mode button[aria-label*="mode"]:focus {
+  border-color: #374151 !important;
+}
+
+body.dark-mode button[aria-label*="mode"]:hover {
+  background-color: #374151 !important;
+}
+
+/* Remove any padding or margin that might affect the shape */
+button[aria-label*="mode"] * {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
 }
 
 /* Light mode specific overrides */
@@ -793,8 +1120,8 @@ body.dark-mode .status-badge-testing {
 
 /* Carousel styles */
 .carousel-container {
-  margin: 2rem 0;
-  padding: 0 1rem;
+  margin: 0;
+  width: 100%;
 }
 
 .carousel-slide {
@@ -803,8 +1130,8 @@ body.dark-mode .status-badge-testing {
 
 .carousel-card {
   position: relative;
-  height: 400px;
-  border-radius: 1rem;
+  height: 300px;
+  border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s ease;
@@ -825,19 +1152,19 @@ body.dark-mode .status-badge-testing {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 2rem;
+  padding: 1.5rem;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
   color: white;
 }
 
 .carousel-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
 .carousel-description {
-  font-size: 1rem;
+  font-size: 0.875rem;
   opacity: 0.9;
 }
 
@@ -849,5 +1176,605 @@ body.dark-mode .carousel-card {
 body.dark-mode .slick-prev:before,
 body.dark-mode .slick-next:before {
   color: #ef4444;
+}
+
+/* Carousel arrow styles - Light mode */
+.slick-prev:before,
+.slick-next:before {
+  color: #4B5563 !important; /* gray-600 */
+  opacity: 0.75;
+}
+
+/* Carousel arrow styles - Dark mode */
+body.dark-mode .slick-prev:before,
+body.dark-mode .slick-next:before {
+  color: #ef4444 !important; /* red-500 */
+  opacity: 0.75;
+}
+
+.slick-prev:hover:before,
+.slick-next:hover:before {
+  opacity: 1;
+}
+
+/* Device-specific breakpoints */
+
+/* iPhone SE (320px) */
+@media screen and (max-width: 320px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  .profile-hero {
+    padding: 0.5rem 0;
+  }
+  
+  .profile-hero h2 {
+    font-size: 1rem;
+  }
+  
+  .container {
+    padding: 0 0.5rem;
+  }
+}
+
+/* iPhone XR, iPhone 12 Pro (390px) */
+@media screen and (min-width: 321px) and (max-width: 390px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  .profile-hero {
+    padding: 0.75rem 0;
+  }
+}
+
+/* iPhone 14 Pro Max, Pixel 7 (430px) */
+@media screen and (min-width: 391px) and (max-width: 430px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Samsung Galaxy devices (360px - 384px) */
+@media screen and (min-width: 360px) and (max-width: 384px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Galaxy Z Fold 5 (inner display) */
+@media screen and (min-width: 734px) and (max-width: 904px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* iPad Mini */
+@media screen and (min-width: 768px) and (max-width: 810px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* iPad Air, iPad Pro */
+@media screen and (min-width: 820px) and (max-width: 1180px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Common mobile optimizations */
+@media screen and (max-width: 430px) {
+  /* Optimize touch targets */
+  button, 
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Adjust text sizes */
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+  }
+  
+  p, span {
+    font-size: 0.875rem;
+  }
+
+  /* Adjust spacing */
+  .space-y-2 > * + * {
+    margin-top: 0.375rem;
+  }
+  
+  .space-y-3 > * + * {
+    margin-top: 0.5rem;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 0.75rem;
+  }
+
+  /* Optimize scrolling */
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent zoom on inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    font-size: 16px;
+  }
+}
+
+/* Fix for notched devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .fixed,
+  .sticky {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Prevent pull-to-refresh on iOS */
+html {
+  overscroll-behavior-y: none;
+}
+
+/* Smooth scrolling for iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix for mobile viewport height issues */
+.min-h-screen {
+  min-height: -webkit-fill-available;
+  min-height: 100vh;
+}
+
+/* Fix for mobile keyboard issues */
+.h-screen {
+  height: -webkit-fill-available;
+  height: 100vh;
+}
+
+/* Optimize images for mobile */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Better touch feedback */
+@media (hover: none) {
+  button:active,
+  [role="button"]:active {
+    opacity: 0.7;
+  }
+}
+
+/* Fix font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Remove background from heart buttons in Teams & Drivers and Racing Spots */
+.teams-drivers-section button[title*="favorite"],
+.racing-spots-section button[title*="favorite"] {
+  background: none !important;
+}
+
+.teams-drivers-section button[title*="favorite"]:hover,
+.racing-spots-section button[title*="favorite"]:hover {
+  background: none !important;
+  opacity: 0.8;
+}
+
+/* Remove focus outline and ring from favorite buttons */
+.teams-drivers-section button[title*="favorite"]:focus,
+.racing-spots-section button[title*="favorite"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Remove background from carousel arrows */
+.slick-prev,
+.slick-next {
+  background: none !important;
+}
+
+.slick-prev:hover,
+.slick-next:hover {
+  background: none !important;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  font-size: 24px !important;
+}
+
+/* Racing spots status positioning */
+.racing-spots-section .status-badge {
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+}
+
+.racing-spots-section .status-badge span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 1rem;
+}
+
+/* Ensure these styles take precedence */
+.teams-drivers-section button[title*="favorite"].p-1,
+.teams-drivers-section button[title*="favorite"].hover\:bg-white\/10 {
+  background: none !important;
+}
+
+.slick-prev.slick-arrow,
+.slick-next.slick-arrow {
+  background: none !important;
+}
+
+/* Override any conflicting styles */
+button[class*="hover:bg-white/10"],
+button[class*="hover:bg-gray"] {
+  &[title*="favorite"] {
+    background: none !important;
+    &:hover {
+      background: none !important;
+    }
+  }
+}
+
+/* Ensure status badge text is centered */
+.status-badge-development,
+.status-badge-confirmed,
+.status-badge-testing {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Racing spots card layout */
+.racing-spots-section .bg-white {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.racing-spots-section .p-6 {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Status badge styles */
+.racing-spots-section .rounded-full {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  margin-top: 0.5rem;
+}
+
+/* Region text styles */
+.racing-spots-section .text-gray-500 {
+  text-align: center;
+}
+
+/* Ensure proper spacing */
+.racing-spots-section .mb-4 {
+  margin-bottom: 1rem;
+}
+
+.racing-spots-section .mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+/* Push content to the bottom */
+.racing-spots-section .mt-auto {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+/* Updated Racing Spots styles - place these at the end of the file */
+.racing-spots-section .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  padding-bottom: 3rem; /* Space for the status badge */
+}
+
+.racing-spots-section .card-content {
+  flex: 1;
+}
+
+.racing-spots-section .region {
+  margin-bottom: 1rem;
+}
+
+.racing-spots-section .status-badge {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Status badge styles - ensure these come after any other badge styles */
+.racing-spots-section .status-badge-development {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+.racing-spots-section .status-badge-confirmed {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+}
+
+.racing-spots-section .status-badge-testing {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+/* Dark mode overrides - keep these last */
+.dark-mode .racing-spots-section .status-badge-development {
+  background-color: #1a2c4d !important;
+  color: #bfdbfe !important;
+}
+
+.dark-mode .racing-spots-section .status-badge-confirmed {
+  background-color: #0f3d2c !important;
+  color: #bbf7d0 !important;
+}
+
+.dark-mode .racing-spots-section .status-badge-testing {
+  background-color: #3f2c0f !important;
+  color: #fef08a !important;
+}
+
+/* Racing Spots Card Styles */
+.bg-white.rounded-lg.shadow-lg.overflow-hidden {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.bg-white.rounded-lg.shadow-lg.overflow-hidden .p-6 {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.rounded-full {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.text-gray-500 {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mt-auto {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+/* Racing spots status badges - Light Mode */
+.racing-spots-section span.rounded-full {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.racing-spots-section span.rounded-full.bg-green-100 {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+.racing-spots-section span.rounded-full.bg-blue-100 {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+.racing-spots-section span.rounded-full.bg-gray-100 {
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+/* Racing spots status badges - Dark Mode */
+body.dark-mode .racing-spots-section span.rounded-full {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Remove any other background colors in dark mode */
+body.dark-mode .racing-spots-section span.rounded-full[class*="bg-"] {
+  background-color: transparent !important;
+}
+
+/* Ensure text color stays white in dark mode for all status types */
+body.dark-mode .racing-spots-section span.rounded-full[class*="text-"] {
+  color: #ffffff !important;
+}
+
+/* Place these styles at the very end of the file */
+
+/* Racing Spots Badge Styles - HIGHEST PRIORITY */
+.min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 80px !important;
+  padding: 0.25rem 1rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  border-radius: 9999px !important;
+}
+
+/* Light mode specific colors */
+.min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full.bg-green-100 {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+.min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full.bg-blue-100 {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+.min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full.bg-gray-100 {
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+/* Dark mode overrides */
+body.dark-mode .min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Ensure no backgrounds in dark mode */
+body.dark-mode .min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full.bg-green-100,
+body.dark-mode .min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full.bg-blue-100,
+body.dark-mode .min-h-screen.bg-gray-100 .bg-white.dark\:bg-gray-800 .p-6 .flex .rounded-full.bg-gray-100 {
+  background-color: transparent !important;
+}
+
+/* Latest News indicator buttons - MAXIMUM SPECIFICITY */
+.bg-white.dark\:bg-gray-800 .bg-gray-50.dark\:bg-gray-700 .flex.justify-center button {
+  width: 0.5rem !important;
+  height: 0.5rem !important;
+  border-radius: 9999px !important;
+  transition: all 0.2s ease-in-out !important;
+  opacity: 1 !important;
+}
+
+.bg-white.dark\:bg-gray-800 .bg-gray-50.dark\:bg-gray-700 .flex.justify-center button[aria-label*="news"] {
+  background-color: #9ca3af !important;
+}
+
+.bg-white.dark\:bg-gray-800 .bg-gray-50.dark\:bg-gray-700 .flex.justify-center button[aria-label*="news"]:hover {
+  background-color: #6b7280 !important;
+}
+
+/* Active button */
+.bg-white.dark\:bg-gray-800 .bg-gray-50.dark\:bg-gray-700 .flex.justify-center button.w-4 {
+  width: 1rem !important;
+  background-color: #4b5563 !important; /* darker grey for light mode */
+}
+
+/* Dark mode overrides */
+body.dark-mode .bg-white.dark\:bg-gray-800 .bg-gray-50.dark\:bg-gray-700 .flex.justify-center button[aria-label*="news"] {
+  background-color: #4b5563 !important;
+}
+
+body.dark-mode .bg-white.dark\:bg-gray-800 .bg-gray-50.dark\:bg-gray-700 .flex.justify-center button[aria-label*="news"]:hover {
+  background-color: #6b7280 !important;
+}
+
+body.dark-mode .bg-white.dark\:bg-gray-800 .bg-gray-50.dark\:bg-gray-700 .flex.justify-center button.w-4 {
+  background-color: #ffffff !important; /* white for dark mode */
+}
+
+/* Team Updates badges - HIGHEST PRIORITY */
+.bg-white.dark\:bg-gray-800 span[class*="bg-green"],
+.bg-white.dark\:bg-gray-800 span[class*="bg-yellow"],
+.bg-white.dark\:bg-gray-800 span[class*="bg-blue"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.25rem 1rem !important;
+  border-radius: 9999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+}
+
+/* Light mode badge colors */
+.bg-white.dark\:bg-gray-800 span[class*="bg-green"] {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+}
+
+.bg-white.dark\:bg-gray-800 span[class*="bg-yellow"] {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+.bg-white.dark\:bg-gray-800 span[class*="bg-blue"] {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+/* Dark mode badge colors */
+body.dark-mode .bg-white.dark\:bg-gray-800 span[class*="bg-green"],
+body.dark-mode .bg-white.dark\:bg-gray-800 span[class*="bg-yellow"],
+body.dark-mode .bg-white.dark\:bg-gray-800 span[class*="bg-blue"] {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Profile favorite drivers photo styles - HIGHEST SPECIFICITY */
+.bg-white.dark\:bg-gray-800 .space-y-2 .flex.items-center.justify-center img[alt*="driver"] {
+  height: 2rem !important;
+  width: 2rem !important;
+  object-fit: contain !important;
+  border-radius: 9999px !important;
+  padding: 1px !important;
+}
+
+@media (min-width: 640px) {
+  .bg-white.dark\:bg-gray-800 .space-y-2 .flex.items-center.justify-center img[alt*="driver"] {
+    height: 2.5rem !important;
+    width: 2.5rem !important;
+  }
+}
+
+/* Dark mode adjustments */
+body.dark-mode .bg-white.dark\:bg-gray-800 .space-y-2 .flex.items-center.justify-center img[alt*="driver"] {
+  background-color: #374151 !important;
 }
 

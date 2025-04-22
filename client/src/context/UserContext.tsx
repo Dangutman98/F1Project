@@ -26,36 +26,32 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Initialize state from sessionStorage instead of localStorage
   const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem('user');
+    const savedUser = sessionStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
+  // Update sessionStorage when user state changes
   useEffect(() => {
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('user');
     }
   }, [user]);
 
   const login = (userData: any) => {
-
-    // Handle registration response which might be nested in a 'user' property
     const userDataToProcess = userData.user || userData;
     
-    // For registration response, check both direct and nested locations for id
     const userId = userDataToProcess.id || userDataToProcess.userId;
     const username = userDataToProcess.username;
     
-
-    // Check if we have the required fields
     if (!userId || !username) {
         console.error('Missing required user data:', { userId, username, originalData: userData });
         return;
     }
 
-    // Create user object with required structure
     const user: User = {
         id: Number(userId),
         username: username,
@@ -70,12 +66,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     setUser(user);
-    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('user', JSON.stringify(user));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
   };
 
   const updateProfile = (profileData: UserProfile) => {
@@ -87,7 +83,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    sessionStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   return (

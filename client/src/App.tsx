@@ -18,84 +18,129 @@ function App() {
   return (
     <UserProvider>
       <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/edit-profile" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <EditProfile />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/home" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <HomePage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/teams-and-drivers" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <TeamsAndDrivers />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/events" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <Events />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/racing-spots" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <RacingSpots />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/standings" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <DriverStandings />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/race-weather" 
-            element={
-              <ProtectedRoute>
-                <Navbar />
-                <RaceWeather />
-              </ProtectedRoute>
-            } 
-          />
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+        <div className="min-h-screen flex flex-col bg-gray-50">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <Navigate to="/home" replace />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <HomePage />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <Profile />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-profile"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <EditProfile />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/teams-and-drivers"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <TeamsAndDrivers />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <Events />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/racing-spots"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <RacingSpots />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/race-weather"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <RaceWeather />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/standings"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <DriverStandings />
+                    </main>
+                  </>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </div>
       </Router>
     </UserProvider>
   );

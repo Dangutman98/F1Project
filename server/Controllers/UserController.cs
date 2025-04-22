@@ -508,7 +508,7 @@ namespace server.Controllers
 
         public class FavoriteAnimalUpdate
         {
-            public string? FavoriteAnimal { get; set; }
+            public string FavoriteAnimal { get; set; } = string.Empty;
         }
     }
 

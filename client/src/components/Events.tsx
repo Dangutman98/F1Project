@@ -128,7 +128,7 @@ export default function Events() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 events-section">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
         <div className="py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-8">F1 Past Race Events</h1>
@@ -157,49 +157,54 @@ export default function Events() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 events-section">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Main Content */}
-      <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">F1 Past Race Events</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="aspect-w-16 aspect-h-9">
-                  <img
-                    src={getEventImage(event.raceName)}
-                    alt={`${event.raceName} circuit`}
-                    className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = 'https://via.placeholder.com/400x225?text=Circuit+Image+Not+Available';
-                    }}
-                  />
-                </div>
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                    {event.raceName}
-                  </h2>
-                  <div className="space-y-2 text-gray-600">
-                    <p>
-                      <span className="font-medium">Location:</span> {event.location}
-                    </p>
-                    <p>
-                      <span className="font-medium">Date:</span>{' '}
-                      {new Date(event.raceDate).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Content Container */}
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="p-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-8">F1 Past Race Events</h1>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {events.map((event) => (
+                  <div
+                    key={event.id}
+                    className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="aspect-w-16 aspect-h-9">
+                      <img
+                        src={getEventImage(event.raceName)}
+                        alt={`${event.raceName} circuit`}
+                        className="w-full h-48 object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = 'https://via.placeholder.com/400x225?text=Circuit+Image+Not+Available';
+                        }}
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                        {event.raceName}
+                      </h2>
+                      <div className="space-y-2 text-gray-600">
+                        <p>
+                          <span className="font-medium">Location:</span> {event.location}
+                        </p>
+                        <p>
+                          <span className="font-medium">Date:</span>{' '}
+                          {new Date(event.raceDate).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>

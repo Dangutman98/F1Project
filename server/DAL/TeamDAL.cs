@@ -81,13 +81,14 @@ namespace server.DAL
 
         public class TeamApiData
         {
+            // Map the JSON properties to C# properties like the API provides.
             public int Id { get; set; }
 
             [JsonProperty("team_name")]
             public string Name { get; set; } = string.Empty;
 
             [JsonProperty("team_colour")]
-            public string Color { get; set; } = string.Empty;
+            public string TeamColour { get; set; } = string.Empty;  // Maps to "team_colour" in the API response
         }
     }
 }

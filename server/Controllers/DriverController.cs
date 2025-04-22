@@ -16,7 +16,7 @@ namespace server.Controllers
         {
             _driverDal = driverDal;
         }
-
+  
         // Fetch drivers from OpenF1 API
         [HttpGet("fetch")]
         public async Task<ActionResult<List<Driver>>> FetchDrivers()
@@ -57,8 +57,6 @@ namespace server.Controllers
             return Ok("All previous drivers were deleted, and new drivers were saved successfully.");
         }
 
-
-
         [HttpPut("update/{id}")]
         public async Task<ActionResult> UpdateDriver(int id)
         {
@@ -78,7 +76,5 @@ namespace server.Controllers
 
             return Ok("Driver updated successfully.");
         }
-
-    
     }
 }

@@ -305,27 +305,27 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-          <div className="p-8">
-            <h2 className="text-2xl font-bold text-center mb-8">Edit Profile</h2>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+      <div className="flex-1 py-2 px-4">
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+          <div className="p-3 sm:p-4">
+            <h2 className="text-base sm:text-lg font-bold text-center mb-3 text-gray-900 dark:text-white">Edit Profile</h2>
             
             {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded mb-3 text-xs sm:text-sm">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Profile Photo {!formData.profilePhoto && <span className="text-gray-500">(Optional)</span>}
                 </label>
-                <div className="mt-1 flex flex-col items-center space-y-4">
+                <div className="mt-1 flex flex-col items-center space-y-2">
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="h-24 w-24 rounded-full overflow-hidden bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
+                    className="h-12 w-12 sm:h-16 sm:w-16 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                   >
                     {formData.profilePhoto ? (
                       <img
@@ -354,40 +354,40 @@ export default function EditProfile() {
                     className="hidden"
                   />
                   
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-2">
                     <button
                       type="button"
                       onClick={startCamera}
-                      className="px-4 py-2 bg-blue-600 text-black rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium"
+                      className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-900 text-xs sm:text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors border border-gray-300 shadow-sm hover:shadow"
                     >
                       Take Photo
                     </button>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">*Click on photo to add from device</p>
+                  <p className="text-xs text-gray-700 dark:text-gray-300">*Click on photo to add from device</p>
                 </div>
 
                 {showCamera && (
-                  <div className="mt-4 relative">
+                  <div className="mt-2 relative">
                     <video
                       ref={videoRef}
                       autoPlay
                       playsInline
                       muted
                       className="w-full max-w-md mx-auto rounded-lg"
-                      style={{ transform: 'scaleX(-1)' }} // Mirror the camera view
+                      style={{ transform: 'scaleX(-1)' }}
                     />
-                    <div className="mt-2 flex justify-center space-x-4">
+                    <div className="mt-2 flex justify-center space-x-2">
                       <button
                         type="button"
                         onClick={capturePhoto}
-                        className="px-4 py-2 bg-green-600 text-black rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium"
+                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-900 text-xs sm:text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors border border-gray-300 shadow-sm hover:shadow"
                       >
                         Capture
                       </button>
                       <button
                         type="button"
                         onClick={stopCamera}
-                        className="px-4 py-2 bg-red-600 text-black rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 font-medium"
+                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-900 text-xs sm:text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors border border-gray-300 shadow-sm hover:shadow"
                       >
                         Cancel
                       </button>
@@ -396,28 +396,31 @@ export default function EditProfile() {
                 )}
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-3">
                 <AnimalEmojiSelector
-                    selectedAnimal={formData.favoriteAnimal || ''}
-                    onSelect={(animal) => setFormData(prev => ({ ...prev, favoriteAnimal: animal }))}
+                  selectedAnimal={formData.favoriteAnimal || ''}
+                  onSelect={(animal) => setFormData(prev => ({ ...prev, favoriteAnimal: animal }))}
                 />
               </div>
 
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => navigate('/profile')}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-black hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-black bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  {isLoading ? 'Saving...' : 'Save Changes'}
-                </button>
+              {/* Action Buttons - Inside card */}
+              <div className="pt-4 mt-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex flex-row justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/profile')}
+                    className="w-1/2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-500 dark:hover:bg-gray-600 text-gray-700 dark:text-white py-2 px-3 rounded-md text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors border border-gray-300 dark:border-transparent shadow-sm hover:shadow"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-1/2 bg-gray-100 hover:bg-gray-200 dark:bg-red-600 dark:hover:bg-red-700 text-gray-900 dark:text-white py-2 px-3 rounded-md text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors border border-gray-300 dark:border-transparent shadow-sm hover:shadow"
+                  >
+                    {isLoading ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
