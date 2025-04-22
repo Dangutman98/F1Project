@@ -5,14 +5,14 @@ import { useState, useEffect } from 'react';
 // Import team logos
 import alfaRomeoLogo from '../assets/TeamsIcons/alfa romeo.png';
 import alphaTauriLogo from '../assets/TeamsIcons/alpha tauri.jpg';
-import alpineLogo from '../assets/TeamsIcons/alpine.avif';
-import astonMartinLogo from '../assets/TeamsIcons/aston martin.avif';
-import ferrariLogo from '../assets/TeamsIcons/ferrari.avif';
-import haasLogo from '../assets/TeamsIcons/haas.avif';
-import mcLarenLogo from '../assets/TeamsIcons/mclaren.avif';
-import mercedesLogo from '../assets/TeamsIcons/mercedes.avif';
-import redBullLogo from '../assets/TeamsIcons/red bull.avif';
-import williamsLogo from '../assets/TeamsIcons/williams.avif';
+import alpineLogo from '../assets/TeamsIcons/alpine-DZMZVEL_.jpg';
+import astonMartinLogo from '../assets/TeamsIcons/Aston-Martin.jpg';
+import ferrariLogo from '../assets/TeamsIcons/ferrari-nin9UOPe.jpg';
+import haasLogo from '../assets/TeamsIcons/haas.jpg';
+import mcLarenLogo from '../assets/TeamsIcons/mclaren.jpg';
+import mercedesLogo from '../assets/TeamsIcons/Mercedes.jpg';
+import redBullLogo from '../assets/TeamsIcons/red bull-zr1Qozou.jpg';
+import williamsLogo from '../assets/TeamsIcons/williams.jpg';
 
 // Animal emoji mapping
 const animalEmojis: { [key: string]: string } = {

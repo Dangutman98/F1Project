@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import Slider from 'react-slick';
 
 // Import images
-import ferrariImg from '../assets/car-imgs/ferrari-sf24-past-model-fullimg-d.avif';
-import redbullImg from '../assets/car-imgs/oracle-red-bull-racing-rb20-launch-2024.avif';
-import mercedesImg from '../assets/car-imgs/Mercedes-AMG W15 E PERFORMANCE - Lewis Hamilton - Front Quarter.avif';
-import mclarenImg from '../assets/car-imgs/car-reveal-2024-article-cover-square.jpg';
+const ferrariImg = new URL('../assets/car-imgs/ferrari-sf24-past-model-fullimg-d.jpg', import.meta.url).href;
+const redbullImg = new URL('../assets/car-imgs/oracle-red-bull-racing-rb20-launch-2024.jpg', import.meta.url).href;
+const mercedesImg = new URL('../assets/car-imgs/Mercedes-AMG W15 E PERFORMANCE - Lewis Hamilton - Front Quarter.jpg', import.meta.url).href;
+const mclarenImg = new URL('../assets/car-imgs/car-reveal-2024-article-cover-square.jpg', import.meta.url).href;
 
 export default function HomePage() {
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);

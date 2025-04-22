@@ -2,17 +2,31 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useState, useEffect } from 'react';
 
-// Import team logos
+// Import team logos directly
 import alfaRomeoLogo from '../assets/TeamsIcons/alfa romeo.png';
 import alphaTauriLogo from '../assets/TeamsIcons/alpha tauri.jpg';
-import alpineLogo from '../assets/TeamsIcons/alpine.avif';
-import astonMartinLogo from '../assets/TeamsIcons/aston martin.avif';
-import ferrariLogo from '../assets/TeamsIcons/ferrari.avif';
-import haasLogo from '../assets/TeamsIcons/haas.avif';
-import mcLarenLogo from '../assets/TeamsIcons/mclaren.avif';
-import mercedesLogo from '../assets/TeamsIcons/mercedes.avif';
-import redBullLogo from '../assets/TeamsIcons/red bull.avif';
-import williamsLogo from '../assets/TeamsIcons/williams.avif';
+import alpineLogo from '../assets/TeamsIcons/alpine-DZMZVEL_.jpg';
+import astonMartinLogo from '../assets/TeamsIcons/Aston-Martin.jpg';
+import ferrariLogo from '../assets/TeamsIcons/ferrari-nin9UOPe.jpg';
+import haasLogo from '../assets/TeamsIcons/haas.jpg';
+import mcLarenLogo from '../assets/TeamsIcons/mclaren.jpg';
+import mercedesLogo from '../assets/TeamsIcons/Mercedes.jpg';
+import redBullLogo from '../assets/TeamsIcons/red bull-zr1Qozou.jpg';
+import williamsLogo from '../assets/TeamsIcons/williams.jpg';
+
+// Team logos mapping
+const teamLogos: { [key: string]: string } = {
+  'Alfa Romeo': alfaRomeoLogo,
+  'AlphaTauri': alphaTauriLogo,
+  'Alpine': alpineLogo,
+  'Aston Martin': astonMartinLogo,
+  'Ferrari': ferrariLogo,
+  'Haas F1 Team': haasLogo,
+  'McLaren': mcLarenLogo,
+  'Mercedes': mercedesLogo,
+  'Red Bull Racing': redBullLogo,
+  'Williams': williamsLogo
+};
 
 interface Team {
   id: number;
@@ -27,22 +41,6 @@ interface Driver {
   teamId: string;
   acronymName: string;
 }
-
-
-
-// Map team names to their logos
-const teamLogos: { [key: string]: string } = {
-  'Alfa Romeo': alfaRomeoLogo,
-  'AlphaTauri': alphaTauriLogo,
-  'Alpine': alpineLogo,
-  'Aston Martin': astonMartinLogo,
-  'Ferrari': ferrariLogo,
-  'Haas F1 Team': haasLogo,
-  'McLaren': mcLarenLogo,
-  'Mercedes': mercedesLogo,
-  'Red Bull Racing': redBullLogo,
-  'Williams': williamsLogo
-};
 
 const LoadingSkeleton = () => (
   <div className="space-y-6">

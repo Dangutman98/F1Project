@@ -1,30 +1,32 @@
 import { useState, useEffect } from 'react';
 
 // Import event images
-import bahrainImg from '../assets/events-pics/Bahrain.avif';
-import saudiArabiaImg from '../assets/events-pics/Saudi_Arabia.avif';
-import australiaImg from '../assets/events-pics/Australia.avif';
-import japanImg from '../assets/events-pics/Japan.avif';
-import chineseImg from '../assets/events-pics/Chinese.avif';
-import miamiImg from '../assets/events-pics/Miami.jpg';
-import emiliaRomagnaImg from '../assets/events-pics/Emilia Romagna.avif';
-import monacoImg from '../assets/events-pics/Monaco.avif';
-import canadianImg from '../assets/events-pics/Canadian.avif';
-import spainImg from '../assets/events-pics/Spain.avif';
-import austriaImg from '../assets/events-pics/Austria.avif';
-import britishImg from '../assets/events-pics/British.avif';
-import hungaryImg from '../assets/events-pics/Hungary.avif';
-import belgianImg from '../assets/events-pics/Belgian.avif';
-import dutchImg from '../assets/events-pics/Dutch.jpg';
-import italyImg from '../assets/events-pics/Italy.avif';
-import azerbaijanImg from '../assets/events-pics/Azerbaijan.jpg';
-import singaporeImg from '../assets/events-pics/Singapore.avif';
-import usaImg from '../assets/events-pics/USA.avif';
-import mexicoImg from '../assets/events-pics/Mexico.avif';
-import brazilImg from '../assets/events-pics/Brazil.avif';
-import lasVegasImg from '../assets/events-pics/Las Vegas.avif';
-import qatarImg from '../assets/events-pics/Qatar.avif';
-import abuDhabiImg from '../assets/events-pics/Abu Dhabi.avif';
+const eventImages: { [key: string]: string } = {
+  'Bahrain': '/cgroup79/test2/tar2/client/assets/events-pics/Bahrain.jpg',
+  'Saudi Arabian': '/cgroup79/test2/tar2/client/assets/events-pics/Saudi_Arabia.jpg',
+  'Australian': '/cgroup79/test2/tar2/client/assets/events-pics/Australia.jpg',
+  'Japanese': '/cgroup79/test2/tar2/client/assets/events-pics/Japan.jpg',
+  'Chinese': '/cgroup79/test2/tar2/client/assets/events-pics/Chinese.jpg',
+  'Miami': '/cgroup79/test2/tar2/client/assets/events-pics/Miami.jpg',
+  'Emilia Romagna': '/cgroup79/test2/tar2/client/assets/events-pics/Emilia_Romagna.jpg',
+  'Monaco': '/cgroup79/test2/tar2/client/assets/events-pics/Monaco.jpg',
+  'Canadian': '/cgroup79/test2/tar2/client/assets/events-pics/Canadian.jpg',
+  'Spanish': '/cgroup79/test2/tar2/client/assets/events-pics/Spain.jpg',
+  'Austrian': '/cgroup79/test2/tar2/client/assets/events-pics/Austria.jpg',
+  'British': '/cgroup79/test2/tar2/client/assets/events-pics/British.jpg',
+  'Hungarian': '/cgroup79/test2/tar2/client/assets/events-pics/Hungary.jpg',
+  'Belgian': '/cgroup79/test2/tar2/client/assets/events-pics/Belgian.jpg',
+  'Dutch': '/cgroup79/test2/tar2/client/assets/events-pics/Dutch.jpg',
+  'Italian': '/cgroup79/test2/tar2/client/assets/events-pics/Italy.jpg',
+  'Azerbaijan': '/cgroup79/test2/tar2/client/assets/events-pics/Azerbaijan.jpg',
+  'Singapore': '/cgroup79/test2/tar2/client/assets/events-pics/Singapore.jpg',
+  'United States': '/cgroup79/test2/tar2/client/assets/events-pics/USA.jpg',
+  'Mexico City': '/cgroup79/test2/tar2/client/assets/events-pics/Mexico.jpg',
+  'São Paulo': '/cgroup79/test2/tar2/client/assets/events-pics/Brazil.jpg',
+  'Las Vegas': '/cgroup79/test2/tar2/client/assets/events-pics/Las_Vegas.jpg',
+  'Qatar': '/cgroup79/test2/tar2/client/assets/events-pics/Qatar.jpg',
+  'Abu Dhabi': '/cgroup79/test2/tar2/client/assets/events-pics/Abu_Dhabi.jpg'
+};
 
 interface Event {
   id: number;
@@ -32,34 +34,6 @@ interface Event {
   raceDate: string;
   location: string;
 }
-
-// Map race names to their corresponding images
-const eventImages: { [key: string]: any } = {
-  'Bahrain': bahrainImg,
-  'Saudi Arabian': saudiArabiaImg,
-  'Australian': australiaImg,
-  'Japanese': japanImg,
-  'Chinese': chineseImg,
-  'Miami': miamiImg,
-  'Emilia Romagna': emiliaRomagnaImg,
-  'Monaco': monacoImg,
-  'Canadian': canadianImg,
-  'Spanish': spainImg,
-  'Austrian': austriaImg,
-  'British': britishImg,
-  'Hungarian': hungaryImg,
-  'Belgian': belgianImg,
-  'Dutch': dutchImg,
-  'Italian': italyImg,
-  'Azerbaijan': azerbaijanImg,
-  'Singapore': singaporeImg,
-  'United States': usaImg,
-  'Mexico City': mexicoImg,
-  'São Paulo': brazilImg,
-  'Las Vegas': lasVegasImg,
-  'Qatar': qatarImg,
-  'Abu Dhabi': abuDhabiImg
-};
 
 const LoadingSkeleton = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -104,26 +78,23 @@ export default function Events() {
   }, []);
 
   const getEventImage = (raceName: string): string => {
-    try {
-      // Extract the base name without "Grand Prix" for matching
-      const baseName = raceName.replace(' Grand Prix', '');
-      
-      const image = eventImages[baseName];
-      if (!image) {
-        console.log('No direct match, trying alternative names...'); // Debug log
-        // Try alternative names
-        for (const [key, value] of Object.entries(eventImages)) {
-          if (baseName.includes(key)) {
-            console.log('Found match with:', key); // Debug log
-            return value;
-          }
-        }
-      }
-      return image || 'https://via.placeholder.com/400x225?text=Circuit+Image+Not+Available';
-    } catch (error) {
-      console.error('Error getting event image:', error);
-      return 'https://via.placeholder.com/400x225?text=Circuit+Image+Not+Available';
+    // Extract the base name without "Grand Prix" for matching
+    const baseName = raceName.replace(' Grand Prix', '').trim();
+    
+    // First try direct match
+    if (eventImages[baseName]) {
+      return eventImages[baseName];
     }
+    
+    // If no direct match, try partial match once
+    for (const [key, value] of Object.entries(eventImages)) {
+      if (baseName.includes(key) || key.includes(baseName)) {
+        return value;
+      }
+    }
+    
+    // If no match found, return placeholder
+    return 'https://via.placeholder.com/400x225?text=Circuit+Image+Not+Available';
   };
 
   if (isLoading) {

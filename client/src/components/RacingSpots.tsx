@@ -12,6 +12,8 @@ export default function RacingSpots() {
   const [favoriteSpots, setFavoriteSpots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const defaultImage = '/assets/default-racing-spot.jpg';
+
   useEffect(() => {
     const fetchFavoriteSpots = async () => {
       if (!user?.id) {
@@ -128,7 +130,7 @@ export default function RacingSpots() {
                   <div key={spot.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                     <div className="relative h-48">
                       <img
-                        src={spot.imageUrl}
+                        src={spot.imageUrl || defaultImage}
                         alt={spot.spotName}
                         className="w-full h-full object-cover"
                       />
