@@ -596,8 +596,6 @@ namespace server.DAL
                     }
                 }
 
-                Console.WriteLine($"Found {favorites.Drivers.Count} favorite drivers");
-
                 // Move to next result set (teams with details)
                 if (!await reader.NextResultAsync())
                 {
@@ -626,8 +624,6 @@ namespace server.DAL
                     }
                 }
 
-                Console.WriteLine($"Found {favorites.Teams.Count} favorite teams");
-
                 // Move to next result set (racing spots)
                 if (!await reader.NextResultAsync())
                 {
@@ -651,7 +647,6 @@ namespace server.DAL
                     }
                 }
 
-                Console.WriteLine($"Found {favorites.RacingSpots.Count} favorite racing spots");
                 return favorites;
             }
             catch (Exception ex)
