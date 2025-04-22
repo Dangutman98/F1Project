@@ -129,7 +129,7 @@ export default function RacingSpots() {
                     <div className="relative h-48">
                       <img
                         src={spot.imageUrl}
-                        alt={spot.name}
+                        alt={spot.spotName}
                         className="w-full h-full object-cover"
                       />
                     </div>
