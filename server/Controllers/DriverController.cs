@@ -8,11 +8,15 @@ namespace server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DriverController(DriverDal driverDal) : ControllerBase
+    public class DriverController : ControllerBase
     {
-        private readonly DriverDal _driverDal = driverDal;
+        private readonly DriverDal _driverDal;
 
-  
+        public DriverController(DriverDal driverDal)
+        {
+            _driverDal = driverDal;
+        }
+
         // Fetch drivers from OpenF1 API
         [HttpGet("fetch")]
         public async Task<ActionResult<List<Driver>>> FetchDrivers()
@@ -70,7 +74,7 @@ namespace server.Controllers
             }
 
             // Save the updated driver data to the database
-            await _driverDal.SaveDriversToDatabaseAsync([driverToUpdate]);
+            await _driverDal.SaveDriversToDatabaseAsync(new List<Driver> { driverToUpdate });
 
             return Ok("Driver updated successfully.");
         }

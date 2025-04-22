@@ -6,9 +6,14 @@ namespace server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TeamController(TeamDal teamDal) : ControllerBase
+    public class TeamController : ControllerBase
     {
-        private readonly TeamDal _teamDal = teamDal;
+        private readonly TeamDal _teamDal;
+
+        public TeamController(TeamDal teamDal)
+        {
+            _teamDal = teamDal;
+        }
 
         // GET: api/teams
         [HttpGet]

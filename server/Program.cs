@@ -8,12 +8,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add logging
-builder.Services.AddLogging(logging =>
-{
-    logging.AddConsole();
-    logging.AddDebug();
-});
 
 // Add controllers with Newtonsoft.Json for JSON serialization
 builder.Services.AddControllers()
@@ -114,6 +108,10 @@ app.UseCors("AllowAll"); // Use the CORS policy
 // Configure HTTPS after CORS
 app.UseHsts(); // Enable HTTP Strict Transport Security (HSTS)
 app.UseHttpsRedirection(); // Ensures HTTP requests are redirected to HTTPS
+
+
+//developer exception page
+app.UseDeveloperExceptionPage();
 
 // Add authentication middleware
 app.UseAuthentication();

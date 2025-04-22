@@ -18,9 +18,9 @@ namespace server.Models
 
         //get/set
         public int Id { get => id; set => id = value; }
-        public required string Username { get => username; set => username = value; }
+        public string Username { get => username; set => username = value; }
         public string PasswordHash { get => passwordHash; set => passwordHash = value; }
-        public required string Email { get => email; set => email = value; }
+        public string Email { get => email; set => email = value; }
         public string FavoriteAnimal { get => favoriteAnimal; set => favoriteAnimal = value; }
         public int? FavoriteDriverId { get => favoriteDriverId; set => favoriteDriverId = value; }
         public int? FavoriteTeamId { get => favoriteTeamId; set => favoriteTeamId = value; }
