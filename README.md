@@ -1,5 +1,6 @@
-# F1 Project
+🏎️ ***Project F1***
 
+<<<<<<< HEAD
 ## Overview
 This is a comprehensive Formula 1 web application that provides fans with real-time race information, team statistics, and an interactive experience for following the F1 season. The project is built using modern web technologies and follows a client-server architecture.
 
@@ -37,7 +38,38 @@ This is a comprehensive Formula 1 web application that provides fans with real-t
 - OpenWeatherMap API key
 
 ## Environment Setup
+=======
+# 🚀 Project Overview
+>>>>>>> c5d650a43c16647ee2e661ad4b540fce15b61a4f
 
+An interactive Formula 1 full-stack web app where users can explore races, weather conditions, and teams — and personalize their own profile.
+
+---
+## 🔧 Tech Stack
+- **Frontend**: React (TypeScript), Firebase (Auth + Firestore)
+- **Backend**: ASP.NET Core (.NET 6)
+- **Other Tools**: OpenF1 API,OpenWeatherMap API, Git LFS
+---
+### 🧩 Key Features
+- 🔐 **Authentication** using Firebase
+- ☁️ **Real-time weather updates** for race locations
+- 🏁 **Dynamic content** for F1 teams, events, and tracks
+- 👤 **Editable user profile**:
+  - Upload profile photo (with image upload plugin)
+  - Select favorite:
+    - Drivers
+    - Teams
+    - Circuits
+    - Animals 🐾 (just for fun!)
+- 🌐 **Responsive design** for desktop and mobile
+- 🖼️ **Media-rich UI** with logos, race images, and carousel animations
+
+**#### API links**
+- https://openf1.org/
+- https://openweathermap.org/api
+
+
+------------------------------need to be changed---------------------------------
 ### Client Setup
 1. Copy `client/.env.example` to `client/.env`
 2. Fill in the environment variables in `client/.env`:
@@ -87,6 +119,7 @@ The assets are located in the following directories:
 - `client/src/assets/events-pics/` - Event images
 - `client/src/assets/racing-spots/` - Racing spot images
 - `client/src/assets/racing-spots/` - Car carousel images
+<<<<<<< HEAD
 Note: Make sure you have Git LFS installed before cloning the repository to ensure all assets are downloaded correctly.
 
 ## Project Structure
@@ -113,3 +146,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - OpenWeatherMap for weather data
 - Firebase for authentication services
 - All contributors who have helped with the project 
+=======
+Note: Make sure you have Git LFS installed before cloning the repository to ensure all assets are downloaded correctly. 
+>>>>>>> c5d650a43c16647ee2e661ad4b540fce15b61a4f
