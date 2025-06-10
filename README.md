@@ -1,7 +1,35 @@
-# F1 Project
+🏎️ ***Project F1***
 
-## Environment Setup
+# 🚀 Project Overview
 
+An interactive Formula 1 full-stack web app where users can explore races, weather conditions, and teams — and personalize their own profile.
+
+---
+## 🔧 Tech Stack
+- **Frontend**: React (TypeScript), Firebase (Auth + Firestore)
+- **Backend**: ASP.NET Core (.NET 6)
+- **Other Tools**: OpenF1 API,OpenWeatherMap API, Git LFS
+---
+### 🧩 Key Features
+- 🔐 **Authentication** using Firebase
+- ☁️ **Real-time weather updates** for race locations
+- 🏁 **Dynamic content** for F1 teams, events, and tracks
+- 👤 **Editable user profile**:
+  - Upload profile photo (with image upload plugin)
+  - Select favorite:
+    - Drivers
+    - Teams
+    - Circuits
+    - Animals 🐾 (just for fun!)
+- 🌐 **Responsive design** for desktop and mobile
+- 🖼️ **Media-rich UI** with logos, race images, and carousel animations
+
+**#### API links**
+- https://openf1.org/
+- https://openweathermap.org/api
+
+
+------------------------------need to be changed---------------------------------
 ### Client Setup
 1. Copy `client/.env.example` to `client/.env`
 2. Fill in the environment variables in `client/.env`:
