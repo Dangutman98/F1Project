@@ -1,14 +1,14 @@
-🏎️ ## Project F1
+## 🏎️ Project F1
 
-🚀 # Project Overview
-An interactive Formula 1 full-stack web app where users can explore races, weather conditions, and teams — and personalize their own profile.
+# 📝 Project Overview
+An interactive Formula 1 full-stack web app where users can explore races, weather conditions, and teams, and personalize their profile.
 
-🔧 # Tech Stack
+# 🔧 Tech Stack
 - **Frontend:** React (TypeScript), Firebase (Auth + Firestore)
 - **Backend:** ASP.NET Core (.NET 6)
 - **Other Tools:** OpenF1 API, OpenWeatherMap API, Git LFS
 
-🧩 # Key Features
+# 🧩 Key Features
 - 🔐 Authentication using Firebase
 - ☁️ Real-time weather updates for race locations
 - 🏁 Dynamic content for F1 teams, events, and tracks
@@ -16,11 +16,11 @@ An interactive Formula 1 full-stack web app where users can explore races, weath
 - 🌐 Responsive design for desktop and mobile
 - 🖼️ Media-rich UI with logos, race images, and carousel animations
   
-🔗 # API Links
+# 🔗 API Links
 - OpenF1 API
 - OpenWeatherMap API
 
-⚡ # Prerequisites
+# ⚡ Requirements
 - Node.js (v16+)
 - .NET 6 SDK
 - SQL Server (2019+)
@@ -28,7 +28,7 @@ An interactive Formula 1 full-stack web app where users can explore races, weath
 - OpenWeatherMap API key
 - Git LFS
 
-🚀 # Quick Start
+# 🚀 Quick Start
 1. Clone the repository and set up Git LFS
     git clone https://github.com/Dangutman98/F1Project.git
     cd F1Project
@@ -61,7 +61,7 @@ cd server
 dotnet restore
 dotnet run
 
-🗂️ # Project Structure
+# 🗂️ Project Structure
 <pre>
 F1Project/
 ├── client/      # React frontend application
@@ -70,14 +70,14 @@ F1Project/
 └── node_modules/ # Frontend dependencies
 </pre>
 
-🖼️ # Assets
+# 🖼️ Assets
 - Managed with Git LFS
 - Located in client/src/assets/
 - TeamsIcons/ - Team logos and icons
 - events-pics/ - Event images
 - racing-spots/ - Racing spot and car carousel images
 
-📝 # Notes
+# 📝 Notes
 - Ensure Git LFS is installed before cloning to get all assets.
 - Never commit real secrets or credentials to the repository.
 - For any issues, check your environment variables and database setup first.
