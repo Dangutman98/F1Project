@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react';
 import {RacingSpot, racingSpots as initialRacingSpots} from '../data/racingSpots';
 
+
+
 // Circuit to city mapping for weather data
 const circuitToCity: { [key: string]: string } = {
   // Current Circuits

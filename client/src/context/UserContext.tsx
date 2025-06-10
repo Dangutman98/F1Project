@@ -71,7 +71,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    sessionStorage.removeItem('user');
+    // Clear all session storage data
+    sessionStorage.clear();
+    // Clear any other stored data if exists
+    localStorage.removeItem('darkMode');
   };
 
   const updateProfile = (profileData: UserProfile) => {

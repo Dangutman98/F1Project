@@ -1,5 +1,41 @@
 # F1 Project
 
+## Overview
+This is a comprehensive Formula 1 web application that provides fans with real-time race information, team statistics, and an interactive experience for following the F1 season. The project is built using modern web technologies and follows a client-server architecture.
+
+### Key Features
+- Real-time race updates and statistics
+- Team and driver information
+- Weather updates for race locations
+- Interactive race calendar
+- User authentication and personalized experience
+- Responsive design for all devices
+
+## Technology Stack
+### Frontend
+- React.js with TypeScript
+- Firebase Authentication
+- HeadlessUI for UI components
+- OpenWeatherMap API integration
+- Responsive design with modern CSS
+
+### Backend
+- .NET Core API
+- SQL Database
+- Firebase Admin SDK
+- JWT Authentication
+- RESTful API architecture
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- .NET Core SDK
+- Git and Git LFS
+- SQL Server
+- Firebase account
+- OpenWeatherMap API key
+
 ## Environment Setup
 
 ### Client Setup
@@ -51,4 +87,29 @@ The assets are located in the following directories:
 - `client/src/assets/events-pics/` - Event images
 - `client/src/assets/racing-spots/` - Racing spot images
 - `client/src/assets/racing-spots/` - Car carousel images
-Note: Make sure you have Git LFS installed before cloning the repository to ensure all assets are downloaded correctly. 
+Note: Make sure you have Git LFS installed before cloning the repository to ensure all assets are downloaded correctly.
+
+## Project Structure
+```
+F1Project/
+├── client/           # React frontend application
+├── server/           # .NET Core backend API
+├── secrets/          # Configuration templates
+└── node_modules/     # Frontend dependencies
+```
+
+## Contributing
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+- Formula 1 for inspiration and data
+- OpenWeatherMap for weather data
+- Firebase for authentication services
+- All contributors who have helped with the project 

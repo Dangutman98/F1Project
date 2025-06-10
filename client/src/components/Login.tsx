@@ -9,7 +9,7 @@ export default function Login() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-    const { login } = useUser();
+    const { login, logout } = useUser();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,15 +28,21 @@ export default function Login() {
                 })
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                console.error('Login failed:', data);
-                if (response.status === 401) {
-                    throw new Error('Invalid username or password');
+                const text = await response.text();
+                let errorMessage;
+                try {
+                    const data = JSON.parse(text);
+                    errorMessage = data.message || 'Login failed, try different username or password';
+                } catch (e) {
+                    errorMessage = 'Login failed, try different username or password';
                 }
-                throw new Error(data.message || 'Login failed');
+                setError(errorMessage);
+                setIsLoading(false);
+                return;
             }
+
+            const data = await response.json();
 
             // Transform the data to match our User interface
             const userData = {
@@ -64,10 +70,23 @@ export default function Login() {
     const handleGoogleLogin = async () => {
         try {
             setIsLoading(true);
+            setError('');
+            
+            // Clear any existing session and local storage data
+            sessionStorage.clear();
+            localStorage.clear();
+            
+            // Clear any existing user data
+            logout();
+            
             const result = await signInWithGoogle();
+            if (!result || !result.user) {
+                return;
+            }
+
             const user = result.user;
             
-            // Create user record in your database
+            // Attempt to get user data from server
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/google-login`, {
                 method: 'POST',
                 headers: {
@@ -81,31 +100,35 @@ export default function Login() {
                 })
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to create user record');
+            // If server responds successfully and user exists
+            if (response.ok) {
+                const data = await response.json();
+                if (!data.isNewUser) {
+                    const userData = {
+                        id: data.id,
+                        username: data.username,
+                        profile: {
+                            favoriteAnimal: data.favoriteAnimal || 'Not Set',
+                            email: data.email || '',
+                            favoriteDriver: data.favoriteDriver || '',
+                            favoriteTeam: data.favoriteTeam || '',
+                            favoriteRacingSpot: data.favoriteRacingSpot || '',
+                            profilePhoto: data.profilePhoto || user.photoURL
+                        }
+                    };
+                    login(userData);
+                    navigate('/home');
+                    return;
+                }
             }
 
-            const data = await response.json();
-            
-            // Transform the data to match our User interface
-            const userData = {
-                id: data.id,
-                username: data.username,
-                profile: {
-                    favoriteAnimal: data.favoriteAnimal || 'Not Set',
-                    email: data.email || '',
-                    favoriteDriver: '',
-                    favoriteTeam: '',
-                    favoriteRacingSpot: '',
-                    profilePhoto: data.profilePhoto
-                }
-            };
+            // If we get here, either the server had an error or it's a new user
+            // In either case, show the registration message
+            setError('now you registered, try to log with google again');
 
-            login(userData);
-            navigate('/home');
         } catch (error) {
-            console.error('Google login error:', error);
-            setError('Failed to sign in with Google');
+            // Show registration message for any error
+            setError('now you registered, try to log with google again');
         } finally {
             setIsLoading(false);
         }

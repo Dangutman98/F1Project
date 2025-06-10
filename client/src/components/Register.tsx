@@ -91,7 +91,12 @@ export default function Register() {
 
       if (!response.ok) {
         if (response.status === 409) {
-          setError('User already exists, choose different');
+          const data = await response.json();
+          if (data.toLowerCase().includes('email')) {
+            setValidationErrors(prev => ({ ...prev, email: 'Registration failed, email already in use' }));
+          } else {
+            setError('Username already exists, choose different');
+          }
         } else {
           throw new Error('Registration failed');
         }

@@ -11127,11 +11127,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\server.csproj",
+      "projectUniqueName": "C:\\Users\\Dan\\Desktop\\Projects\\F1 Project\\F1Project\\server\\server.csproj",
       "projectName": "server",
-      "projectPath": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\server.csproj",
+      "projectPath": "C:\\Users\\Dan\\Desktop\\Projects\\F1 Project\\F1Project\\server\\server.csproj",
       "packagesPath": "C:\\Users\\Dan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Dan\\Desktop\\F1Project\\server\\obj\\",
+      "outputPath": "C:\\Users\\Dan\\Desktop\\Projects\\F1 Project\\F1Project\\server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

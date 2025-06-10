@@ -64,7 +64,7 @@ namespace server.Controllers
         /// <param name="username" name="passwordHash">The user to create.</param>
         /// using userDto.cs file in models to add only username,password,email when new user created.
         [HttpPost]
-        public IActionResult Post([FromBody] UserDto userDto)
+        public async Task<IActionResult> Post([FromBody] UserDto userDto)
         {
             if (userDto == null)
             {
@@ -83,6 +83,13 @@ namespace server.Controllers
                 !userDto.PasswordHash.Any(char.IsDigit))
             {
                 return BadRequest("Must contain at least 7 characters with one uppercase letter, one lowercase letter, and one number");
+            }
+
+            // Check if email already exists
+            var existingUser = await _userDAL.GetUserByEmail(userDto.Email);
+            if (existingUser != null)
+            {
+                return Conflict("Registration failed, email already in use");
             }
 
             // Hash the password before saving
@@ -137,13 +144,13 @@ namespace server.Controllers
                 var user = _userDAL.GetUserByUsername(userInput.Username);
                 if (user == null)
                 {
-                    return Unauthorized("Invalid username or password.");
+                    return Unauthorized("Login failed, try different username or password");
                 }
 
                 bool isValidPassword = BCrypt.Net.BCrypt.Verify(userInput.Password, user.PasswordHash);
                 if (!isValidPassword)
                 {
-                    return Unauthorized("Invalid username or password.");
+                    return Unauthorized("Login failed, try different username or password");
                 }
 
                 // Get the profile photo
@@ -427,11 +434,13 @@ namespace server.Controllers
                     
                     return Ok(new
                     {
+                        isNewUser = true,
+                        message = "Account created successfully. Please try logging in again.",
                         id = createdUser.Id,
                         username = createdUser.Username,
                         email = createdUser.Email,
                         favoriteAnimal = createdUser.FavoriteAnimal,
-                        profilePhoto = request.PhotoURL // Return the Google photo URL but don't store it
+                        profilePhoto = request.PhotoURL
                     });
                 }
                 else
