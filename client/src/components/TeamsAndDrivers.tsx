@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 // Import team logos directly
 import alfaRomeoLogo from '../assets/TeamsIcons/alfa romeo.png';
@@ -93,11 +94,11 @@ export default function TeamsAndDrivers() {
         setLoading(true);
         
         // Fetch teams, drivers, and favorites in parallel
-        const teamsData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/Team`);
+        const teamsData = await fetchWithRetry(`${API_BASE_URL}/Team`);
         
-        const driversData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/Driver/fetch`);
+        const driversData = await fetchWithRetry(`${API_BASE_URL}/Driver/fetch`);
         
-        const favoritesData = await fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorites`);
+        const favoritesData = await fetchWithRetry(`${API_BASE_URL}/user/${user.id}/favorites`);
 
         if (teamsData) {
           
@@ -143,7 +144,7 @@ export default function TeamsAndDrivers() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorite/driver/${driverId}`, {
+      const response = await fetch(`${API_BASE_URL}/user/${user.id}/favorite/driver/${driverId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -182,7 +183,7 @@ export default function TeamsAndDrivers() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorite/team/${teamId}`, {
+      const response = await fetch(`${API_BASE_URL}/user/${user.id}/favorite/team/${teamId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

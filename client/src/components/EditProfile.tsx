@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import AnimalEmojiSelector from './AnimalEmojiSelector';
+import { API_BASE_URL } from '../config';
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ export default function EditProfile() {
           photoData = photoData.split(',')[1];
         }
 
-        const photoResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/profile-photo`, {
+        const photoResponse = await fetch(`${API_BASE_URL}/user/${user.id}/profile-photo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +109,7 @@ export default function EditProfile() {
 
       // Update favorite animal if changed
       if (formData.favoriteAnimal !== user.profile?.favoriteAnimal) {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorite-animal`, {
+        const response = await fetch(`${API_BASE_URL}/user/${user.id}/favorite-animal`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

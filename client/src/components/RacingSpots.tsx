@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RacingSpot, racingSpots as initialRacingSpots } from '../data/racingSpots';
 import { useUser } from '../context/UserContext';
+import { API_BASE_URL } from '../config';
 
 export default function RacingSpots() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function RacingSpots() {
       }
       
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/event/favorite/all/${user.id}`);
+        const response = await fetch(`${API_BASE_URL}/event/favorite/all/${user.id}`);
         
         
         if (response.ok) {
@@ -52,7 +53,7 @@ export default function RacingSpots() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/event/favorite/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/event/favorite/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

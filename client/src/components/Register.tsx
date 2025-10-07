@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import AnimalEmojiSelector from './AnimalEmojiSelector';
+import { API_BASE_URL } from '../config';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user`, {
+      const response = await fetch(`${API_BASE_URL}/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

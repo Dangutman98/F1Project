@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { API_BASE_URL } from '../config';
 
 interface DriverStanding {
     position: number;
@@ -47,8 +48,8 @@ const DriverStandings: React.FC = () => {
 
                 
                 const [data2023, data2024] = await Promise.all([
-                    fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/DriverStandings/2023`),
-                    fetchWithRetry(`${import.meta.env.VITE_API_BASE_URL}/DriverStandings/2024`)
+                    fetchWithRetry(`${API_BASE_URL}/DriverStandings/2023`),
+                    fetchWithRetry(`${API_BASE_URL}/DriverStandings/2024`)
                 ]);
 
 

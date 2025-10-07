@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 // Import team logos
 import alfaRomeoLogo from '../assets/TeamsIcons/alfa romeo.png';
@@ -103,7 +104,7 @@ export default function Profile() {
       try {
         
         // Always fetch photo from our endpoint
-        const photoResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/profile-photo`);
+        const photoResponse = await fetch(`${API_BASE_URL}/user/${user.id}/profile-photo`);
         if (photoResponse.ok) {
           const photoData = await photoResponse.json();
           setProfilePhoto(photoData.profilePhoto || '');
@@ -113,7 +114,7 @@ export default function Profile() {
         }
 
         // Fetch favorites
-        const favoritesResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}/favorites`);
+        const favoritesResponse = await fetch(`${API_BASE_URL}/user/${user.id}/favorites`);
         if (!favoritesResponse.ok) {
           console.error('Failed to fetch favorites:', await favoritesResponse.text());
           throw new Error('Failed to fetch data');
@@ -142,7 +143,7 @@ export default function Profile() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/user/${user.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { signInWithGoogle } from '../services/authService';
+import { API_BASE_URL } from '../config';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -17,7 +18,7 @@ export default function Login() {
         setError('');
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/login`, {
+            const response = await fetch(`${API_BASE_URL}/user/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,7 +88,7 @@ export default function Login() {
             const user = result.user;
             
             // Attempt to get user data from server
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/google-login`, {
+            const response = await fetch(`${API_BASE_URL}/user/google-login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,8 +128,8 @@ export default function Login() {
             setError('now you registered, try to log with google again');
 
         } catch (error) {
-            // Show registration message for any error
-            setError('now you registered, try to log with google again');
+            console.error('Google login error:', error);
+            setError('Google login failed. Please try again.');
         } finally {
             setIsLoading(false);
         }

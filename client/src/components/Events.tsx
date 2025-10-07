@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 // Import event images
 const eventImages: { [key: string]: string } = {
@@ -60,7 +61,7 @@ export default function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Event`);
+        const response = await fetch(`${API_BASE_URL}/Event`);
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }

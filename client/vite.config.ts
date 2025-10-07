@@ -5,7 +5,8 @@ import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/cgroup79/test2/tar2/client/',
+  // Commented out for local development - uncomment for production deployment
+  // base: '/cgroup79/test2/tar2/client/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
